@@ -27,30 +27,30 @@
 
 function AddVehicleCommandHandlers ( ) {
 
-    AddCommandHandler ( "AddVeh" , CreateVehicleCommand );
-    AddCommandHandler ( "DelVeh" , DeleteVehicleCommand );
-    AddCommandHandler ( "RentVehicle" , RentVehicleCommand );
-    AddCommandHandler ( "StopRent" , StopRentVehicleCommand );
-    AddCommandHandler ( "VehEngine" , VehicleEngineCommand );
-    AddCommandHandler ( "Engine" , VehicleEngineCommand );
-    AddCommandHandler ( "Lock" , VehicleLockCommand );
-    AddCommandHandler ( "VehLock" , VehicleLockCommand );
-    AddCommandHandler ( "Lights" , VehicleLightsCommand );
-    AddCommandHandler ( "VehLights" , VehicleLightsCommand );
-    AddCommandHandler ( "Siren" , VehicleSirenCommand );
-    AddCommandHandler ( "VehSiren" , VehicleSirenCommand );
-    AddCommandHandler ( "SirenLight" , VehicleSirenLightCommand );
-    AddCommandHandler ( "VehSirenLight" , VehicleSirenLightCommand );
-    AddCommandHandler ( "TaxiLight" , VehicleTaxiLightCommand );
-    AddCommandHandler ( "VehTaxiLight" , VehicleTaxiLightCommand );
-    AddCommandHandler ( "RentPrice" , SetVehicleRentPriceCommand );
-    AddCommandHandler ( "BuyPrice" , SetVehicleBuyPriceCommand );
-    AddCommandHandler ( "RespawnAll" , RespawnAllVehiclesCommand );
-    AddCommandHandler ( "ExplodeAll" , ExplodeAllVehiclesCommand );
-    AddCommandHandler ( "VehOwner" , SetVehicleOwnerCommand );
-    AddCommandHandler ( "VehColour" , SetVehicleColourCommand );
-    AddCommandHandler ( "VehFuel" , SetVehicleFuelCommand );
-    AddCommandHandler ( "VehHealth" , SetVehicleHealthCommand );
+    AddCommandHandler ( "AddVeh" , CreateVehicleCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageVehicles );
+    AddCommandHandler ( "DelVeh" , DeleteVehicleCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageVehicles );
+    AddCommandHandler ( "RentVehicle" , RentVehicleCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "StopRent" , StopRentVehicleCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "VehEngine" , VehicleEngineCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "Engine" , VehicleEngineCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "Lock" , VehicleLockCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "VehLock" , VehicleLockCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "Lights" , VehicleLightsCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "VehLights" , VehicleLightsCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "Siren" , VehicleSirenCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "VehSiren" , VehicleSirenCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "SirenLight" , VehicleSirenLightCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "VehSirenLight" , VehicleSirenLightCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "TaxiLight" , VehicleTaxiLightCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "VehTaxiLight" , VehicleTaxiLightCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "RentPrice" , SetVehicleRentPriceCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageVehicles );
+    AddCommandHandler ( "BuyPrice" , SetVehicleBuyPriceCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageVehicles );
+    AddCommandHandler ( "RespawnAll" , RespawnAllVehiclesCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageVehicles );
+    AddCommandHandler ( "ExplodeAll" , ExplodeAllVehiclesCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageVehicles );
+    AddCommandHandler ( "VehOwner" , SetVehicleOwnerCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageVehicles );
+    AddCommandHandler ( "VehColour" , SetVehicleColourCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageVehicles );
+    AddCommandHandler ( "VehFuel" , SetVehicleFuelCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageVehicles );
+    AddCommandHandler ( "VehHealth" , SetVehicleHealthCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageVehicles );
 
     return true;
     
@@ -218,7 +218,8 @@ function VehicleEngineCommand ( pPlayer , szCommand , szParams , bShowHelpOnly =
 
     if ( !szParams ) {
     
-        SendPlayerSyntaxMessage ( pPlayer , "/engine <on/off>" );
+        SendPlayerSyntaxMessage ( pPlayer , "/Engine <ON/OFF>" );
+        SendPlayerInfoMessage ( pPlayer , "Not case-sensitive. Example: OFF, Off, and off will all work." );
         
         return false;
     
@@ -340,7 +341,8 @@ function VehicleLockCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = f
 
         if ( !szParams ) {
         
-            SendPlayerSyntaxMessage ( pPlayer , "/lock <on/off>" );
+        SendPlayerSyntaxMessage ( pPlayer , "/Lights <ON/OFF>" );
+        SendPlayerInfoMessage ( pPlayer , "Not case-sensitive. Example: OFF, Off, and off will all work." );
             
             print ( "- Player '" + pPlayer.Name + "' (ID " + pPlayer.ID + ") failed to lock vehicle " + pClosestVehicle.ID + " (" + GetVehicleName ( pClosestVehicle.Model ) + "). Reason: No lock state param" );
             
@@ -351,6 +353,8 @@ function VehicleLockCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = f
         if ( ( szParams.tolower ( ) != "on" ) && ( szParams.tolower ( ) != "off" ) ) {
         
             SendPlayerErrorMessage ( pPlayer , "You entered an invalid lock state. It must ON or OFF" );
+            SendPlayerSyntaxMessage ( pPlayer , "/Lights <ON/OFF>" );
+            SendPlayerInfoMessage ( pPlayer , "Not case-sensitive. Example: OFF, Off, and off will all work." );            
             
             print ( "- Player '" + pPlayer.Name + "' (ID " + pPlayer.ID + ") failed to lock vehicle " + pClosestVehicle.ID + " (" + GetVehicleName ( pClosestVehicle.Model ) + "). Reason: Invalid lock state param" );
             
