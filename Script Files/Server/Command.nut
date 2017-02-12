@@ -47,25 +47,29 @@ function DoesCommandHandlerExist ( szCommand ) {
 
 function AddAllCommandHandlers ( ) {
 
-    AddCommandHandler ( "shout" , AreaShoutCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "s" , AreaShoutCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "Login" , PlayerLoginCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "Register" , PlayerRegisterCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+
+    AddCommandHandler ( "Shout" , AreaShoutCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "S" , AreaShoutCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
     
-    AddCommandHandler ( "talk" , AreaTalkCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "local" , AreaTalkCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "l" , AreaTalkCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "Talk" , AreaTalkCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "Local" , AreaTalkCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "L" , AreaTalkCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
     
-    AddCommandHandler ( "pm" , PrivateMessageCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "msg" , PrivateMessageCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "send" , PrivateMessageCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "PM" , PrivateMessageCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "MSG" , PrivateMessageCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "Send" , PrivateMessageCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
     
-    AddCommandHandler ( "bug" , SubmitBugCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "idea" , SubmitIdeaCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "Bug" , SubmitBugCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "Idea" , SubmitIdeaCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
     
-    AddCommandHandler ( "tazer" , ToggleTazerCommand );
+    // AddCommandHandler ( "tazer" , ToggleTazerCommand );
     
     AddVehicleCommandHandlers ( );
     AddPlayerCommandHandlers ( );
     AddScripterCommandHandlers ( );
+    AddClanCommandHandlers ( );
     
 }
 
