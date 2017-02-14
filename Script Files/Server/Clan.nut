@@ -1,32 +1,92 @@
-// NAME: Moderation.nut
-// DESC: Handles anything related to server moderation. Commands and information for server staff.
+// NAME: Clans.nut
+// DESC: Handles commands, data, and other utilities for clans, clan turf wars, clan services, etc.
 
 // -- COMMANDS -------------------------------------------------------------------------------------
 
-// - Kick                                   KickPlayerCommand                               BasicModeration
-// - Ban                                    BanPlayerCommand                                BasicModeration
-// - TempBan                                TempBanPlayerCommand                            BasicModeration
-// - Mute                                   MutePlayerCommand                               BasicModeration
-// - Unmute                                 UnmutePlayerCommand                             BasicModeration
-// - Freeze                                 FreezePlayerCommand                             BasicModeration
-// - Unfreeze                               UnfreezePlayerCommand                           BasicModeration
+// - NewClan,RequestClan                    NewClanCommand                                  ManageClans
+// - ReloadClans                            ReloadClansCommand                              ManageClans
+// - TakeTurf                               TakeTurfCommand                                 None
+// - GiveTurf                               GiveTurfCommand                                 None
+// - ClanOwner                              SetClanOwnerCommand                             ManageClans
+// - SetClanTagCommand                      SetClanTagCommand                               ManageClans
 
 // -------------------------------------------------------------------------------------------------
 
-function AddModerationCommandHandlers ( ) {
+function AddClanCommandHandlers ( ) {
 
-    AddCommandHandler ( "Kick" , KickPlayerCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
-    AddCommandHandler ( "Ban" , BanPlayerCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration);
-    AddCommandHandler ( "TempBan" , TempBanPlayerCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
-    AddCommandHandler ( "Mute" , MutePlayerCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
-    AddCommandHandler ( "Unmute" , UnmutePlayerCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
-    AddCommandHandler ( "Freeze" , FreezePlayerCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
-    AddCommandHandler ( "Unfreeze" , UnfreezePlayerCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
+    AddCommandHandler ( "NewClan" , NewClanCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageClans );
+    AddCommandHandler ( "ReloadClans" , ReloadClansCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageClans );
+    AddCommandHandler ( "TakeTurf" , TakeTurfCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "GiveTurf" , GiveTurfCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "ClanOwner" , SetClanOwnerCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageClans );
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function LoadClansFromDatabase ( ) {
+   
+    local pClansData = [ ];
+    local pClanData = { };
+    local iClansCount = 0;
     
-    AddCommandHandler ( "Goto" , GotoPlayerCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
-    AddCommandHandler ( "GotoVeh" , GotoVehicleCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
-    AddCommandHandler ( "GotoBusiness" , GotoBusinessCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
-    AddCommandHandler ( "GotoHouse" , GotoHouseCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
+    iClansCount = GetNumberOfClans ( );
+    
+    for ( local i = 1 ; i <= iClansCount ; i++ ) {
+    
+        pClanData = GetCoreTable ( ).Classes.ClanData ( );
+        
+        pClansData.push ( pClansData );
+    
+    }
+    
+    // -- Return the table, even if it's empty. It will show that no clans exist to load.
+    
+    return pClansData;
+    
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function GetNumberOfClans ( ) {
+
+    return ReadIniInteger ( "Scripts/LURP/Data/Index.ini" , "General" , "iClanAmount" );
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function NewClanCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
+
+    if ( bShowHelpOnly ) {
+        
+        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Requests a new clan to be created." , [ "newclan" , "requestclan" ] , "Clan must be accepted by an admin." );
+        
+        return false;
+    
+    }
+
+    if ( !szParams ) {
+    
+        SendPlayerSyntaxMessage ( pPlayer , "/NewClan <Name>" );
+        
+        return false;
+    
+    }
+    
+    if ( szParams.len ( ) > 3 ) {
+    
+        SendPlayerErrorMessage ( pPlayer , "The full clan name must be at least three characters" );
+        
+        return false;
+    
+    }
+    
+    local pClanData = CreateNewClan ( szParams );
+    
+    ReloadAllClans ( );
+    
+    SendPlayerSuccessMessage ( pPlayer , "The '" + pClanData.szName + "' clan has been created! ID: " + pClanData.iDatabaseID );
     
     return true;
 
@@ -34,45 +94,17 @@ function AddModerationCommandHandlers ( ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function BanPlayerCommand ( pPlayer , szCommand , szParams ) {
+function ReloadClansCommand ( pPlayer , szCommand , bShowHelpOnly ) {
 
     if ( bShowHelpOnly ) {
         
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Bans a player from the server" , [ "ban" ] , "You must have the BasicModeration staff flag." );
+        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Reloads all clans." , [ "reloadclans" ] , "Stops all turf wars too." );
         
         return false;
     
     }
 
-    if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
-        
-        return false;
-    
-    }
-    
-    if( !szParams ) {
-    
-        SendPlayerSyntaxMessage ( pPlayer , "/Ban <Player Name/ID>" );
-        
-        return false;
-    
-    }
-    
-    if ( !FindPlayer ( szParams ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
-        
-        return false;
-    
-    }
-    
-    local pTarget = FindPlayer ( szParams );
-    
-    SendAllAdminMessage ( pTarget.Name + " has been banned by " + pPlayer.Name );
-    
-    BanPlayer ( pTarget , BANTYPE_LUID );
+    ReloadAllClans ( );
     
     return true;
 
@@ -80,45 +112,143 @@ function BanPlayerCommand ( pPlayer , szCommand , szParams ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function TempBanPlayerCommand ( pPlayer , szCommand , szParams ) {
+function ReloadAllClans ( ) {
+
+    StopAllTurfWars ( );
+    
+    GetCoreTable ( ).Clans <- null;
+    GetCoreTable ( ).Clans <- LoadClansFromDatabase ( );
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function StopAllTurfWars ( ) {
+
+    return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function TakeTurfCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
 
     if ( bShowHelpOnly ) {
         
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Temporarily bans a player from the server" , [ "tempban" ] , "You must have the BasicModeration staff flag." );
+        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Starts a turf war." , [ "taketurf" ] , "Must be in another clan's turf." );
         
         return false;
     
     }
 
-    if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
+    return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function GiveTurfCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
+
+    if ( bShowHelpOnly ) {
+        
+        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Gives a turf to another clan" , [ "giveturf" ] , "No turf war. Other clan has immediate ownership." );
+        
+        return false;
     
-        SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
+    }
+
+    if ( DoesPlayerHaveClanPermission ( pPlayer , "ClanOwner" ) ) {
+    
+        return false;
+    
+    }
+    return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function SetClanOwnerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
+
+    if ( bShowHelpOnly ) {
+        
+        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Sets a clan owner" , [ "setclanowner" ] , "" );
+        
+        return false;
+    
+    }
+
+    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    
+    if ( !szParams ) {
+    
+        SendPlayerSyntaxMessage ( pPlayer , "/ClanOwner <Clan ID> <Player ID/Name>" );
+        SendPlayerAlertMessage ( pPlayer , "Use /Clans for a list of all clan ID's" );
         
         return false;
     
     }
     
-    if( !szParams ) {
+    if ( NumTok ( szParams , " " ) != 2 ) {
     
-        SendPlayerSyntaxMessage ( pPlayer , "/TempBan <Player Name/ID> <Time in Hours>" );
+        SendPlayerSyntaxMessage ( pPlayer , "/ClanOwner <Clan ID> <Player ID/Name>" );
+        SendPlayerAlertMessage ( pPlayer , "Use /Clans for a list of all clan ID's" );
         
         return false;
     
     }
     
-    if ( !FindPlayer ( szParams ) ) {
+    local iClan = FindPlayer ( GetTok ( szParams , " " , 1 ) );
     
-        SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
+    if ( IsNum ( iClan ) ) {
+    
+        SendPlayerErrorMessage ( pPlayer , "The clan ID must be a number!" );
         
         return false;
     
     }
     
-    local pTarget = FindPlayer ( szParams );
+    iClan = iClan.tointeger ( );
     
-    SendAllAdminMessage ( pTarget.Name + " has been temp-banned by " + pPlayer.Name );
+    local pClanData = GetClanFromDatabaseID ( iClan );
     
-    BanPlayer ( pTarget , BANTYPE_LUID );
+    if ( !pClanData ) {
+    
+        SendPlayerErrorMessage ( pPlayer , "That clan does not exist!" );
+        
+        return false;
+    
+    }
+    
+    local pTarget = FindPlayer ( GetTok ( szParams , " " , 2 ) );
+    
+    if ( !pTarget ) {
+    
+        SendPlayerErrorMessage ( pPlayer , "That player is invalid or offline" );
+        
+        return false;
+        
+    }
+    
+    local pTargetData = GetCoreTable ( ).Players [ pTarget.ID ];
+    
+    if ( pTargetData.iClan != 0 ) {
+    
+        if ( pTargetData.iClan == pClanData.iDatabaseID ) {
+        
+            SetClanOwner ( pTarget , pClanData );
+            
+            SendPlayerSuccessMessage ( pPlayer , format ( GetPlayerLocaleMessage ( pPlayer , "ClanLeaderSet" ) , pTarget.Name , pClanData.szName ) );
+            
+            return true;
+        
+        }
+    
+        SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "PlayerAlreadyInClan" ) );
+        
+        return false;
+    
+    }
     
     return true;
 
@@ -126,45 +256,111 @@ function TempBanPlayerCommand ( pPlayer , szCommand , szParams ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function KickPlayerCommand ( pPlayer , szCommand , szParams ) {
+function SetClanTagCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
 
     if ( bShowHelpOnly ) {
         
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Kicks a player from the server" , [ "kick" ] , "You must have the BasicModeration staff flag." );
+        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Sets a clan tag (the letters in brackets)" , [ "clantag" ] , "" );
         
         return false;
     
     }
 
-    if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
+    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+
+    /*
+    if ( !DoesPlayerHaveClanPermission ( pPlayer , pPlayerData.iClan , "EditTag" ) ) {
     
         SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
         
         return false;
     
     }
+    */
     
-    if( !szParams ) {
+    if ( !szParams ) {
     
-        SendPlayerSyntaxMessage ( pPlayer , "/Kick <Player Name/ID>" );
+        SendPlayerSyntaxMessage ( pPlayer , "/ClanTag <Clan ID> <New Tag>" );
         
         return false;
     
     }
+
+    return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function DoesPlayerHaveClanPermission ( pPlayer , szClanFlag ) {
+
+    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
     
-    if ( !FindPlayer ( szParams ) ) {
+    if ( DoesPlayerHaveStaffPermission ( pPlayer , "ManageClans" ) ) {
     
-        SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
-        
-        return false;
+        return true;
     
     }
     
-    local pTarget = FindPlayer ( szParams );
+    if ( pPlayerData.iClan == pClanData.iDatabaseID ) {
     
-    SendAllAdminMessage ( pTarget.Name + " has been kicked by " + pPlayer.Name );
+        if ( HasBitFlag ( pPlayerData.iClanFlags , GetCoreTable ( ).BitFlags.ClanFlags [ szClanFlag ] ) ) {
+        
+            return true;
+        
+        }
+        
+        if ( HasBitFlag ( pPlayerData.iClanFlags , GetCoreTable ( ).BitFlags.ClanFlags [ "ClanOwner" ] ) ) {
+        
+            return true;
+        
+        }        
     
-    KickPlayer ( pTarget );
+    }
+    
+    return false;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function AreClansAllied ( pClan1Data , pClan2Data ) {
+
+    // -- We are only going to check for pClan1Data's allies. They can add another clan as an ally, but it doesnt have to be two ways.
+    // -- Meaning, clan 1 could consider clan 2 an ally, but clan 2 might not be the same for clan 1
+    
+    // -- Introduces a weakness though. If clan 1 leader allows clan 2 to use their stuff (vehicles and such), clan 2 might not have them
+    // -- ... as an ally, which keeps clan 2 vehicles protected while they can use clan 1's vehicles.
+    
+    foreach ( ii , iv in pClan1Data.pAlliances ) {
+    
+        if ( iv.iClan == pClan2Data.iDatabaseID ) { 
+            
+            return true;
+            
+        }
+    
+    }
+    
+    return false;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function SetClanOwner ( pPlayer , pClanData ) {
+
+    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    
+    pPlayerData.iClan = pClanData.iDatabaseID;
+    
+    foreach ( ii , iv in GetCoreTable ( ).BitFlags.ClanFlags ) {
+    
+        GiveClanFlag ( pPlayer , iv );
+    
+    }
+    
+    pClanData.iOwner = pPlayerData.iDatabaseID;
     
     return true;
 
@@ -172,290 +368,15 @@ function KickPlayerCommand ( pPlayer , szCommand , szParams ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function MutePlayerCommand ( pPlayer , szCommand , szParams ) {
+function AddClanAlliance ( pClan1Data , pClan2Data ) {
 
-    if ( bShowHelpOnly ) {
-        
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Mutes a player. Keeps them from using any chat." , [ "Mute" , "MutePlayer" ] , "This also blocks chat-related commands (ME, DO, etc)" );
-        
-        return false;
-    
-    }
-
-    if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
+    if ( AreClansAllied ( pClan1Data , pClan2Data ) ) {
         
         return false;
     
     }
     
-    if( !szParams ) {
-    
-        SendPlayerSyntaxMessage ( pPlayer , "/Mute <Player Name/ID>" );
-        
-        return false;
-    
-    }
-    
-    if ( !FindPlayer ( szParams ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
-        
-        return false;
-    
-    }
-    
-    local pTarget = FindPlayer ( szParams );
-    
-    SendAllAdminMessage ( pTarget.Name + " has been muted by " + pPlayer.Name );
-    
-    UnitedIslands.Players [ pTarget.ID ].bMuted = true;
-    
-    return true;
-
-}
-
-// -------------------------------------------------------------------------------------------------
-
-function UnmutePlayerCommand ( pPlayer , szCommand , szParams ) {
-
-    if ( bShowHelpOnly ) {
-        
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Unmutes a player so they can use chat again." , [ "Unmute" , "UnmutePlayer" ] , "" );
-        
-        return false;
-    
-    }
-
-    if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
-        
-        return false;
-    
-    }
-    
-    if( !szParams ) {
-    
-        SendPlayerSyntaxMessage ( pPlayer , "/Unmute <Player Name/ID>" );
-        
-        return false;
-    
-    }
-    
-    if ( !FindPlayer ( szParams ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
-        
-        return false;
-    
-    }
-    
-    local pTarget = FindPlayer ( szParams );
-    
-    SendAllAdminMessage ( pTarget.Name + " has been un-muted by " + pPlayer.Name );
-    
-    UnitedIslands.Players [ pTarget.ID ].bMuted = false;
-    
-    return true;
-
-}
-
-// -------------------------------------------------------------------------------------------------
-
-function FreezePlayerCommand ( pPlayer , szCommand , szParams ) {
-
-    if ( bShowHelpOnly ) {
-        
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Freezes a player so they can't move." , [ "Freeze" , "FreezePlayer" ] , "They can still look around with their mouse." );
-        
-        return false;
-    
-    }
-    
-    if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
-        
-        return false;
-    
-    }
-    
-    if( !szParams ) {
-    
-        SendPlayerSyntaxMessage ( pPlayer , "/Freeze <Player Name/ID>" );
-        
-        return false;
-    
-    }
-    
-    if ( !FindPlayer ( szParams ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
-        
-        return false;
-    
-    }
-    
-    local pTarget = FindPlayer ( szParams );
-    
-    Message ( UnitedIslands.Colours.Hex.BrightRed + "[ADMIN] " + UnitedIslands.Colours.Hex.White + pTarget.Name + " has been frozen by " + pPlayer.Name );
-    
-    UnitedIslands.Players [ pTarget.ID ].bFrozen = true;
-        
-    pTarget.Frozen = true;
-    
-    return true;
-
-}
-
-// -------------------------------------------------------------------------------------------------
-
-function UnfreezePlayerCommand ( pPlayer , szCommand , szParams ) {
-
-    if ( bShowHelpOnly ) {
-        
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Unfreezes a player so they can move again." , [ "Unfreeze" ] , "" );
-        
-        return false;
-    
-    }
-
-    if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
-        
-        return false;
-    
-    }
-    
-    if( !szParams ) {
-    
-        SendPlayerSyntaxMessage ( pPlayer , "/Unfreeze <Player Name/ID>" );
-        
-        return false;
-    
-    }
-    
-    if ( !FindPlayer ( szParams ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
-        
-        return false;
-    
-    }
-    
-    local pTarget = FindPlayer ( szParams );
-    
-    Message ( UnitedIslands.Colours.Hex.BrightRed + "[ADMIN] " + UnitedIslands.Colours.Hex.White + pTarget.Name + " has been un-frozen by " + pPlayer.Name );
-    
-    UnitedIslands.Players [ pTarget.ID ].bFrozen = false;
-        
-    pTarget.Frozen = false;
-    
-    return true;
-
-}
-
-// -------------------------------------------------------------------------------------------------
-
-function GotoPlayerCommand ( pPlayer , szCommand , szParams ) {
-
-    if ( bShowHelpOnly ) {
-        
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Teleports you to a player" , [ "Goto" , "GotoPlayer" ] , "You can provide offset X, Y, and Z." );
-        
-        return false;
-    
-    }
-
-    if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
-        
-        return false;
-    
-    }
-    
-    if( !szParams ) {
-    
-        SendPlayerSyntaxMessage ( pPlayer , "/Goto <Player Name/ID>" );
-        
-        return false;
-    
-    }
-    
-    if ( !FindPlayer ( szParams ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
-        
-        return false;
-    
-    }
-    
-    local pTarget = FindPlayer ( szParams );
-    
-    pPlayer.Pos = GetVectorBehindVector ( pTarget.Pos , pTarget.Angle , 3.0 );
-    
-    SendPlayerSuccessMessage ( pPlayer , "You have been teleported to player '" + pTarget.Name + "' (ID " + pTarget.ID + ")" );
-    
-    return true;
-
-}
-
-// -------------------------------------------------------------------------------------------------
-
-function GotoVehicleCommand ( pPlayer , szCommand , szParams ) {
-
-    if ( bShowHelpOnly ) {
-        
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Teleports you to a vehicle." , [ "GotoVeh" ] , "You can provide offset X, Y, and Z." );
-        
-        return false;
-    
-    }
-
-    if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
-        
-        return false;
-    
-    }
-    
-    if( !szParams ) {
-    
-        SendPlayerSyntaxMessage ( pPlayer , "/GotoVeh <Vehicle ID>" );
-        
-        return false;
-    
-    }
-    
-    if ( !IsNum ( szParams ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , "The vehicle ID must be a number!" );
-        
-        return false;   
-    
-    }
-    
-    szParams = szParams.tointeger ( );
-    
-    if ( !FindVehicle ( szParams ) ) {
-    
-        
-        SendPlayerErrorMessage ( pPlayer , "That vehicle does not exist!" );
-        
-        return false;
-    
-    }
-    
-    local pVehicle = FindVehicle ( szParams );
-    
-    pPlayer.Pos = GetVectorAboveVector ( pVehicle.Pos , 3.0 );
-    
-    SendPlayerSuccessMessage ( pPlayer , "You have been teleported to vehicle '" + GetVehicleName( pVehicle.Model ) + "' (ID " + pVehicle.ID + ")" );
+    pClan1Data.pAlliances.push ( pClan2Data.iDatabaseID );
     
     return true;
 
@@ -465,6 +386,6 @@ function GotoVehicleCommand ( pPlayer , szCommand , szParams ) {
 
 // -- THIS GOES LAST
 
-print ( "[Server.Moderation]: Script file loaded and ready." );
+print ( "[Server.Clan]: Script file loaded and ready." );
 
 // -------------------------------------------------------------------------------------------------
