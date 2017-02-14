@@ -463,6 +463,211 @@ function GotoVehicleCommand ( pPlayer , szCommand , szParams ) {
 
 // -------------------------------------------------------------------------------------------------
 
+function GivePlayerStaffFlagCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+    if( bShowHelpOnly ) {
+
+        SendPlayerCommandInfoMessage ( pPlayer , "Gives a staff flag to a player" , [ "GiveStaffFlag" ] , "" );
+
+        return false;
+
+    }
+
+    local pTarget;
+    local szFlagName;
+
+    if ( !szParams ) {
+
+        SendPlayerSyntaxMessage ( pPlayer , "/GiveStaffFlag <Player Name/ID> <Staff Flag Name>" );
+        SendPlayerInfoMessage ( pPlayer , "Use /StaffFlags for a list of staff flags." );
+
+        return false;
+
+    }
+
+    if ( NumTok ( szParams , " " ) != 2 ) {
+
+        SendPlayerSyntaxMessage ( pPlayer , "/GiveStaffFlag <Player Name/ID> <Staff Flag Name>" );
+        SendPlayerInfoMessage ( pPlayer , "Use /StaffFlags for a list of staff flags." );
+        
+        return false;
+
+    }
+
+    pTarget = FindPlayer ( GetTok ( szParams , " " , 1 ) );
+    szFlagName = GetTok ( szParams , " " , 2 );
+
+    if ( !pTarget ) {
+
+        SendPlayerErrorMessage ( pPlayer , "There is no player that matches '" + szFlagName + "'!" );
+
+        return false;
+
+    }
+
+    if ( !( szFlagName in GetRootTable ( ).BitFlags.StaffFlags ) ) {
+
+        SendPlayerErrorMessage ( pPlayer , "There is no staff flag called '" + szFlagName + "'!" );
+        SendPlayerInfoMessage ( pPlayer , "Use /StaffFlags for a list of staff flags." );
+
+        return false;
+
+    }
+
+    if ( szFlagName == "Scripter" ) {
+
+        if ( !DoesPlayerHaveStaffFlag ( pPlayer , "Scripter" ) ) {
+           
+           SendPlayerErrorMessage ( pPlayer , "You can't give " + pTarget.Name + " the 'Scripter' staff flag!" );
+
+           return false;
+
+        }
+
+    }    
+
+    if ( DoesPlayerHaveStaffFlag ( pTarget , "Scripter" ) ) {
+    
+        if ( !DoesPlayerHaveStaffFlag ( pPlayer , "Scripter" ) ) {
+           
+           SendPlayerErrorMessage ( pPlayer , "You can't modify " + pTarget.Name + "'s flags!" );
+
+           return false;
+           
+        }
+        
+
+        return false;
+
+    }    
+
+    if ( DoesPlayerHaveStaffFlag ( pPlayer , szFlagName ) ) {
+
+        SendPlayerErrorMessage ( pPlayer , pTarget.Name + " already has the '" + szFlagName + "' staff flag!" );
+
+        return false;
+
+    }
+
+    SendPlayerSuccessMessage ( pPlayer , "You have given " + pTarget.Name + " the '" + szFlagName + "' staff flag." );
+    SendPlayerAlertMessage ( pTarget , pPlayer.Name + " has given you the '" + szFlagName + "' staff flag." );
+
+    GiveStaffFlag ( pPlayer , szStaffFlag );
+
+    return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function TakePlayerStaffFlagCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+    if( bShowHelpOnly ) {
+
+        SendPlayerCommandInfoMessage ( pPlayer , "Takes a staff flag from a player" , [ "TakeStaffFlag" ] , "" );
+
+        return false;
+
+    }
+
+    local pTarget;
+    local szFlagName;
+
+    if ( !szParams ) {
+
+        SendPlayerSyntaxMessage ( pPlayer , "/TakeStaffFlag <Player Name/ID> <Staff Flag Name>" );
+        SendPlayerInfoMessage ( pPlayer , "Use /StaffFlags for a list of all staff flags." );
+        SendPlayerInfoMessage ( pPlayer , "Use /PlayerStaffFlags for a list of the player's staff flags." );
+
+        return false;
+
+    }
+
+    if ( NumTok ( szParams , " " ) != 2 ) {
+
+        SendPlayerSyntaxMessage ( pPlayer , "/TakeStaffFlag <Player Name/ID> <Staff Flag Name>" );
+        SendPlayerInfoMessage ( pPlayer , "Use /StaffFlags for a list of all staff flags." );
+        SendPlayerInfoMessage ( pPlayer , "Use /PlayerStaffFlags for a list of the player's staff flags." );
+        
+        return false;
+
+    }
+
+    pTarget = FindPlayer ( GetTok ( szParams , " " , 1 ) );
+    szFlagName = GetTok ( szParams , " " , 2 );
+
+    if ( !pTarget ) {
+
+        SendPlayerErrorMessage ( pPlayer , "There is no player that matches '" + szFlagName + "'!" );
+
+        return false;
+
+    }
+
+    if ( !( szFlagName in GetRootTable ( ).BitFlags.StaffFlags ) ) {
+
+        SendPlayerErrorMessage ( pPlayer , "There is no staff flag called '" + szFlagName + "'!" );
+        SendPlayerInfoMessage ( pPlayer , "Use /StaffFlags for a list of staff flags." );
+
+        return false;
+
+    }
+
+    if ( szFlagName == "Scripter" ) {
+
+        if ( !DoesPlayerHaveStaffFlag ( pPlayer , "Scripter" ) ) {
+           
+           SendPlayerErrorMessage ( pPlayer , "You can't take " + pTarget.Name + " the 'Scripter' staff flag!" );
+
+           return false;
+
+        }
+
+    }
+
+    if ( !DoesPlayerHaveStaffFlag ( pPlayer , szFlagName ) ) {
+
+        SendPlayerErrorMessage ( pPlayer , pTarget.Name + " doesn't have the '" + szFlagName + "' staff flag!" );
+        SendPlayerInfoMessage ( pPlayer , "Use /PlayerStaffFlags for a list of the player's staff flags." );
+
+        return false;
+
+    }
+
+    if ( DoesPlayerHaveStaffFlag ( pTarget , "Scripter" ) ) {
+    
+        if ( !DoesPlayerHaveStaffFlag ( pPlayer , "Scripter" ) ) {
+           
+           SendPlayerErrorMessage ( pPlayer , "You can't modify " + pTarget.Name + "'s flags!" );
+
+           return false;
+           
+        }
+        
+
+        return false;
+
+    }
+
+    SendPlayerSuccessMessage ( pPlayer , "You have taken the '" + szFlagName + "' staff flag from " + pTarget.Name );
+    SendPlayerAlertMessage ( pTarget , pPlayer.Name + " has taken the '" + szFlagName + "' staff flag away from you." );
+
+    TakeStaffFlag ( pPlayer , szStaffFlag );
+
+    return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function ListAllStaffFlagsCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+    return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
 // -- THIS GOES LAST
 
 print ( "[Server.Moderation]: Script file loaded and ready." );
