@@ -1,4 +1,4 @@
-<script file="Script Files/Server/Bit Flags.nut" client="0" />
+Dscript file="Script Files/Server/Bit Flags.nut" client="0" />
 <script file="Script Files/Server/Bugs.nut" client="0" />
 <script file="Script Files/Server/Business.nut" client="0" />
 <script file="Script Files/Server/Core.nut" client="0" />
@@ -23,3 +23,5 @@
 <script file="Script Files/Server/Utilities.nut" client="0" />
 <script file="Script Files/Server/Vehicle.nut" client="0" />
 
+<script file="Script Files/Client/Vehicle GUI.nut" client="1" />
+<script file="Script Files/Client/3D Labels.nut" client="1" />
