@@ -333,6 +333,30 @@ function InitHouseDataClass ( ) {
 
 // -------------------------------------------------------------------------------------------------
 
+function InitFireDataClass ( ) {
+
+    GetCoreTable ( ).Classes.FireData <- class {
+        
+        pPosition                     = ::GetCoreTable ( ).Utilities.pZeroVector;
+        pAttached                     = false;
+
+        iFireType                     = None;
+        iStart                        = 0;
+
+        iRadius                       = 0;
+
+        pFire                         = false;
+
+        constructor ( ) {
+
+        }
+
+    }
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
 // -- THIS GOES LAST
 
 print ( "[Server.Classes]: Script file loaded and ready." );
