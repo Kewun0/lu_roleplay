@@ -39,7 +39,7 @@ function KillDeathRatio ( iKills , iDeaths ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function GetVectorBehindVector ( pVector = Vector ( 0.0 , 0.0 , 0.0 ) , fAngle = 0.0 , fDistance = 0.0 ) {
+function GetVectorInFrontOfVector ( pVector = Vector ( 0.0 , 0.0 , 0.0 ) , fAngle = 0.0 , fDistance = 0.0 ) {
 
     fAngle = fAngle * PI / 180; 
     
@@ -75,7 +75,7 @@ function GetVectorInFrontOfPlayer ( pPlayer , fDistance = 0.0 ) {
 
 function GetVectorBehindPlayer ( pPlayer , fDistance = 0.0 ) {
 
-    return GetVectorBehindfVector ( pPlayer.Pos , pPlayer.Angle , fDistance );
+    return GetVectorBehindVector ( pPlayer.Pos , pPlayer.Angle , fDistance );
 
 }
 
@@ -91,7 +91,7 @@ function GetVectorInFrontOfVehicle ( pVehicle , fDistance = 0.0 ) {
 
 function GetVectorBehindVehicle ( pVehicle , fDistance = 0.0 ) {
 
-    return GetVectorBehindfVector ( pVehicle.Pos , pVehicle.Angle , fDistance );
+    return GetVectorBehindVector ( pVehicle.Pos , pVehicle.Angle , fDistance );
 
 }
 
@@ -527,7 +527,7 @@ function DoesPlayerHaveStaffPermission ( pPlayer , szPermission ) {
 
 function GetNumberOfRegisteredAccounts ( ) {
     
-    return ReadIniInteger ( "Scripts/LURP/Data/Index.ini" , "General" , "iAccountAmount" );
+    return ReadIniInteger ( GetCoreTable ( ).Utilities.szScriptsPath + "Data/Index.ini" , "General" , "iAccountAmount" );
 
 }
 
@@ -774,6 +774,39 @@ function ResetPlayerAnimation ( pPlayer ) {
     pPlayer.Pos = pPlayer.Pos;
     
     return true;
+    
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function GetTimeDifferenceDisplay ( iTimeOne , iTimeTwo ) {
+
+	local iTimeDifference = ( iTimeOne - iTimeTwo );
+	
+	iHours = floor ( iTimeDifference / 3600 );
+	iMinutes = floor ( iTimeDifference / 60 );
+    
+	if ( iHours == 1 ) {
+		
+		szHours = "1 hour";
+		
+	} else {
+		
+		szHours = iHours + " hours";
+	
+	}
+	
+	if ( iMinutes == 1 ) {
+		
+		szMinutes = "1 minute";
+		
+	} else {
+		
+		szMinutes = iMinutes + " minute";
+	
+	}
+	
+    return szHours + " and " + szMinutes;
     
 }
 
