@@ -19,7 +19,7 @@ function InitPlayerDataClass ( ) {
         
         pPlayer                     = false;
         
-        szFileString                = "Scripts/LURP/Data/Accounts.Ini";
+        szFileString                = GetCoreTable ( ).Utilities.szScriptsPath + "Data/Accounts.Ini";
         
         bCanSpawn                   = false;
         bCanUseCommands             = false;
@@ -261,7 +261,7 @@ function InitVehicleDataClass ( ) {
     
     GetCoreTable ( ).Classes.VehicleData <- class {
         
-        szFileString                = "Scripts/LURP/Data/Vehicles.ini";
+        szFileString                = GetCoreTable ( ).Utilities.szScriptsPath + "Data/Vehicles.ini";
         
         iDatabaseID                 = 0;
         iModel                      = 0;
