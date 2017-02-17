@@ -171,6 +171,8 @@ function InitUtilitiesValuesCoreTable ( ) {
     pUtilitiesValuesTable.pJobs                             <- { None = 0 , Police = 1 , Fire = 2 , Medical = 3 , Trash = 4 , Delivery = 5 };
     pUtilitiesValuesTable.WeekDays                          <- [ "Sunday" , "Monday" , "Tuesday" , "Wednesday" , "Thursday" , "Friday" , "Saturday" ];
     pUtilitiesValuesTable.Months                            <- [ "January" , "February" , "March" , "April" , "May" , "June" , "July" , "August" , "September" , "October" , "November" , "December" ];
+	
+	pUtilitiesValuesTable.szScriptsPath						<- "Scripts/lu_roleplay/";
 
     ::print ( "[Server.Core]: Core utility values table created" );
     
