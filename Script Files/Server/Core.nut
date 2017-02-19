@@ -10,8 +10,6 @@ function GetCoreTable ( ) {
 
 function InitCoreTable ( ) {
     
-    local pCoreTable                                       = { };
-    
     pCoreTable.Players                                     <- { };
     pCoreTable.Vehicles                                    <- { };
     pCoreTable.Houses                                      <- { };
@@ -30,7 +28,7 @@ function InitCoreTable ( ) {
     pCoreTable.Clans                                       <- { };
     
     print ( "[Server.Core]: Core table created" );
-
+	
     return pCoreTable;
     
 }
@@ -387,32 +385,39 @@ function InitJobsCoreTable ( ) {
 
     local pJobsTable = [
 
-        {   szName = "Police Officer"           , pPosition = Vector ( 1143.875 , -675.1875 , 14.97 )                             , pPickup = false       } , 
-        {   szName = "Police Officer"           , pPosition = Vector ( 340.25 , -1123.375 , 25.98 )                             , pPickup = false       } , 
-        {   szName = "Police Officer"           , pPosition = Vector ( -1253.0 , -138.1875 , 58.75 )                             , pPickup = false       } , 
-        {   szName = "Paramedic"           , pPosition = Vector ( 1144.25 , -596.875 , 14.97 )                             , pPickup = false       } , 
-        {   szName = "Paramedic"           , pPosition = Vector ( 183.5 , -17.75 , 16.21 )                             , pPickup = false       } , 
-        {   szName = "Paramedic"           , pPosition = Vector ( -1259.5 , -44.5 , 58.89 )                             , pPickup = false       } ,   
+        {   szName = "Police Officer"           , pPosition = Vector ( 1143.87 , -675.18 , 14.97 )              , pPickup = false } , 
+        {   szName = "Police Officer"           , pPosition = Vector ( 340.25 , -1123.37 , 25.98 )              , pPickup = false } , 
+        {   szName = "Police Officer"           , pPosition = Vector ( -1253.0 , -138.18 , 58.75 )              , pPickup = false } , 
+        {   szName = "Paramedic"           		, pPosition = Vector ( 1144.25 , -596.87 , 14.97 )              , pPickup = false } , 
+        {   szName = "Paramedic"           		, pPosition = Vector ( 183.5 , -17.75 , 16.21 )                 , pPickup = false } , 
+        {   szName = "Paramedic"           		, pPosition = Vector ( -1259.5 , -44.5 , 58.89 )                , pPickup = false } ,   
         
-        {   szName = "Firefighter"              , pPosition = Vector ( )                             , pPickup = false       } , 
-        {   szName = "Trash Collector"          , pPosition = Vector ( )                             , pPickup = false       } , 
-        {   szName = "Postal Worker"            , pPosition = Vector ( )                             , pPickup = false       } , 
-        {   szName = "Delivery Worker"          , pPosition = Vector ( )                             , pPickup = false       } , 
-        {   szName = "Taxi Driver"              , pPosition = Vector ( 1000.20 , -880.50 , 14.95)                             , pPickup = false       } , 
-        {   szName = "Bus Driver"               , pPosition = Vector ( 1310.20 , -1016.30 , 14.88 )                             , pPickup = false       } , 
-        {   szName = "Mechanic"                 , pPosition = Vector ( )                             , pPickup = false       } , 
+		/* 
+        {   szName = "Firefighter"              , pPosition = Vector ( )                             			, pPickup = false } , 
+        {   szName = "Trash Collector"          , pPosition = Vector ( )                             			, pPickup = false } , 
+        {   szName = "Postal Worker"            , pPosition = Vector ( )                             			, pPickup = false } , 
+        {   szName = "Delivery Worker"          , pPosition = Vector ( )                             			, pPickup = false } , 
+        {   szName = "Taxi Driver"              , pPosition = Vector ( 1000.20 , -880.50 , 14.95 )              , pPickup = false } , 
+        {   szName = "Bus Driver"               , pPosition = Vector ( 1310.20 , -1016.30 , 14.88 )             , pPickup = false } , 
+        {   szName = "Mechanic"                 , pPosition = Vector ( )                             			, pPickup = false } , 
+		*/
         
     ];
-    
+	
     ::print ( "[Server.Core]: Core job tables created" );
  
     return pJobsTable;
     
 }
 
+
+
 // -------------------------------------------------------------------------------------------------
 
 // -- THIS GOES LAST
+
+// -- Load up the core table before announcing script file is ready
+pCoreTable <- InitCoreTable ( );
 
 ::print ( "[Server.Core]: Script file loaded and ready." );
 
