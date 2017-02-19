@@ -1,20 +1,21 @@
 function AddPlayerCommandHandlers ( ) {
-
-    AddCommandHandler ( "setskin" , SetPlayerSkinCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
     
-    AddCommandHandler ( "login" , LoginCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "register" , RegisterCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "Login" , LoginCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "Register" , RegisterCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
         
     return true;
     
 }
 
+// -------------------------------------------------------------------------------------------------
+
 function SavePlayerToDatabase ( pPlayer ) {
     
-    local pPlayerData = UnitedIslands.Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     local pQuery = false;
-    local iNewConnectTime = pPlayerData.iConnectTime + ( time ( ) - pPlayerData.pSession.iConnectedTime );
-    
+    //local iNewConnectTime = pPlayerData.iConnectTime + ( time ( ) - pPlayerData.pSession.iConnectedTime );
+    local iNewConnectTime = 0;
+	
     local pPosition = ( ( pPlayer.Spawned ) ? pPlayer.Pos : pPlayerData.pPosition );
     local iAngle = ( ( pPlayer.Spawned ) ? pPlayer.Angle : pPlayerData.iAngle );
     
@@ -24,15 +25,15 @@ function SavePlayerToDatabase ( pPlayer ) {
         
         iDatabaseID = iDatabaseID + 1;
         
-        WriteIniInteger ( "Scripts/United Islands RPG/Data/Index.ini" , "General" , "iAccountAmount" , iDatabaseID );
+        WriteIniInteger ( "Scripts/lu_roleplay/Data/Index.ini" , "General" , "iAccountAmount" , iDatabaseID );
         
         pPlayerData.iDatabaseID = iDatabaseID;
         
-        pPlayerData.szFileString = "Scripts/United Islands RPG/Data/Accounts/" + iDatabaseID + ".ini";
+        pPlayerData.szFileString = "Scripts/lu_roleplay/Data/Accounts/" + iDatabaseID + ".ini";
         
         WriteIniInteger ( pPlayerData.szFileString , "General" , "iDatabaseID" , iDatabaseID.tointeger ( ) );
         
-        WriteIniInteger ( "Scripts/United Islands RPG/Data/Index.ini" , "Account Index" , pPlayer.Name , iDatabaseID.tointeger ( ) );
+        WriteIniInteger ( "Scripts/lu_roleplay/Data/Index.ini" , "Account Index" , pPlayer.Name , iDatabaseID.tointeger ( ) );
         
         pPosition = Vector ( -763.80 , -603.30 , 11.33 );
         iAngle = 268.556;
@@ -103,9 +104,9 @@ function SavePlayerToDatabase ( pPlayer ) {
 
 function IsPlayerAutoLUIDLoginEnabled ( pPlayer ) {
 
-    local pPlayerData = UnitedIslands.Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     
-    return ( HasBitFlag ( pPlayerData.iAccountSettings , UnitedIslands.BitFlags.AccountSettings.LUIDLogin ) );
+    return ( HasBitFlag ( pPlayerData.iAccountSettings , GetCoreTable ( ).BitFlags.AccountSettings.LUIDLogin ) );
     
 }
 
@@ -113,9 +114,9 @@ function IsPlayerAutoLUIDLoginEnabled ( pPlayer ) {
 
 function IsPlayerAutoIPLoginEnabled ( pPlayer ) {
     
-    local pPlayerData = UnitedIslands.Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     
-    return ( HasBitFlag ( pPlayerData.iAccountSettings , UnitedIslands.BitFlags.AccountSettings.IPLogin ) );
+    return ( HasBitFlag ( pPlayerData.iAccountSettings , GetCoreTable ( ).BitFlags.AccountSettings.IPLogin ) );
     
 }
 
@@ -123,9 +124,9 @@ function IsPlayerAutoIPLoginEnabled ( pPlayer ) {
 
 function IsPlayerTwoStepAuthEnabled ( pPlayer ) {
     
-    local pPlayerData = UnitedIslands.Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     
-    return ( HasBitFlag ( pPlayerData.iAccountSettings , UnitedIslands.BitFlags.AccountSettings.TwoStepAuth ) );
+    return ( HasBitFlag ( pPlayerData.iAccountSettings , GetCoreTable ( ).BitFlags.AccountSettings.TwoStepAuth ) );
 
 }
 
@@ -133,7 +134,7 @@ function IsPlayerTwoStepAuthEnabled ( pPlayer ) {
 
 function TogglePlayerAutoIPLogin ( pPlayer ) {
 
-    local pPlayerData = UnitedIslands.Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
 
     if ( IsAutoIPLoginEnabled( pPlayerData.iAccountSettings ) ) {
         
@@ -152,7 +153,7 @@ function TogglePlayerAutoIPLogin ( pPlayer ) {
 
 function TogglePlayerAutoLUIDLogin ( pPlayer ) {
     
-    local pPlayerData = UnitedIslands.Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
 
     if ( IsAutoLUIDLoginEnabled( pPlayerData.iAccountSettings ) ) {
         
@@ -178,11 +179,11 @@ function InitPlayer ( pPlayer ) {
     
     }
     
-    UnitedIslands.Players [ pPlayer.ID ] <- UnitedIslands.Classes.PlayerData ( pPlayer );
+    GetCoreTable ( ).Players [ pPlayer.ID ] <- GetCoreTable ( ).Classes.PlayerData ( pPlayer );
     
-    UnitedIslands.Players [ pPlayer.ID ].pPlayer = pPlayer;
+    GetPlayerData ( pPlayer ).pPlayer = pPlayer;
     
-    UnitedIslands.Players [ pPlayer.ID ].pSession = UnitedIslands.Classes.SessionData ( pPlayer );
+    // GetPlayerData ( pPlayer ).pSession = GetCoreTable ( ).Classes.SessionData ( pPlayer );
         
     SendWelcomeMessage ( pPlayer );
     
@@ -234,7 +235,15 @@ function LoadPlayerStaffNotesFromDatabase ( pPlayerData ) {
 
 function LoginCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
     
-    local pPlayerData = UnitedIslands.Players [ pPlayer.ID ];
+    if( bShowHelpOnly ) {
+
+        SendPlayerCommandInfoMessage ( pPlayer , "Allows you to login to your account" , [ "Login" ] , "" );
+
+        return false;
+
+    }	
+	
+    local pPlayerData = GetPlayerData ( pPlayer );
     
     // -- Let's make sure they aren't already logged in :)
     
@@ -313,7 +322,7 @@ function LoginCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false )
 
 function IsAccountWhitelistEnabled ( iAccountSettings ) {
 
-    if ( HasBitFlag ( iAccountSettings , UnitedIslands.BitFlags.AccountSettings.WhiteList ) ) {
+    if ( HasBitFlag ( iAccountSettings , GetCoreTable ( ).BitFlags.AccountSettings.WhiteList ) ) {
     
         return true
     
@@ -357,7 +366,15 @@ function SendAccountWhitelistAlert ( iAccountDatabaseID , szIPAddress , szLUID )
 
 function RegisterCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
     
-    local pPlayerData = UnitedIslands.Players [ pPlayer.ID ];
+    if( bShowHelpOnly ) {
+
+        SendPlayerCommandInfoMessage ( pPlayer , "Allows you to create an account" , [ "Register" ] , "" );
+
+        return false;
+
+    }	
+	
+    local pPlayerData = GetPlayerData ( pPlayer );
     
     if ( pPlayerData.bAuthenticated ) {
     
@@ -383,15 +400,15 @@ function RegisterCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fals
     
     }
     
-    if ( ( szParams.len ( ) < UnitedIslands.Security.iMinPasswordLen ) && ( szParams.len ( ) > UnitedIslands.Security.iMaxPasswordLen ) ) {
+    if ( ( szParams.len ( ) < GetCoreTable ( ).Security.iMinPasswordLen ) && ( szParams.len ( ) > GetCoreTable ( ).Security.iMaxPasswordLen ) ) {
     
-        SendPlayerErrorMessage ( pPlayer , "The password must be between " + UnitedIslands.Security.iMinPasswordLen + " and " + UnitedIslands.Security.iMaxPasswordLen + " characters" );
+        SendPlayerErrorMessage ( pPlayer , "The password must be between " + GetCoreTable ( ).Security.iMinPasswordLen + " and " + GetCoreTable ( ).Security.iMaxPasswordLen + " characters" );
         
         return false;
     
     }
     
-    if ( UnitedIslands.Security.bForcePasswordCaps ) {
+    if ( GetCoreTable ( ).Security.bForcePasswordCaps ) {
     
         if ( !DoesStringContainCaps ( szParams ) ) {
         
@@ -403,7 +420,7 @@ function RegisterCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fals
     
     }
     
-    if ( UnitedIslands.Security.bForcePasswordNumbers ) {
+    if ( GetCoreTable ( ).Security.bForcePasswordNumbers ) {
     
         if ( !DoesStringContainNumbers ( szParams ) ) {
         
@@ -415,7 +432,7 @@ function RegisterCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fals
     
     }
 
-    if ( UnitedIslands.Security.bForcePasswordSymbols ) {
+    if ( GetCoreTable ( ).Security.bForcePasswordSymbols ) {
     
         if ( !DoesStringContainSymbols ( szParams ) ) {
         
@@ -454,10 +471,10 @@ function LoadPlayerAfterRegister ( pPlayer ) {
 function PlayerRegistrationComplete ( pPlayer ) {
 
     MessagePlayer ( " " , pPlayer );
-    MessagePlayer ( "Your account is now ready to use. Please press left CTRL to spawn." , pPlayer , UnitedIslands.Colours.RGB.White );
+    MessagePlayer ( "Your account is now ready to use. Please press left CTRL to spawn." , pPlayer , GetCoreTable ( ).Colours.RGB.White );
     
-    UnitedIslands.Players [ pPlayer.ID ].bAuthenticated = true;
-    UnitedIslands.Players [ pPlayer.ID ].bCanSpawn = true;
+    GetPlayerData ( pPlayer ).bAuthenticated = true;
+    GetPlayerData ( pPlayer ).bCanSpawn = true;
 
 }
 
@@ -479,7 +496,7 @@ function SaltAccountPassword ( szPassword , szAccountName ) {
 
 function GetPlayerDatabaseID ( szName ) {
 
-    local iAccountID = ReadIniInteger ( "Scripts/United Islands RPG/Data/Index.ini" , "Account Index" , CreateSafeIniString ( szName ) );
+    local iAccountID = ReadIniInteger ( "Scripts/lu_roleplay/Data/Index.ini" , "Account Index" , CreateSafeIniString ( szName ) );
     
     if ( !iAccountID ) {
     
@@ -496,7 +513,7 @@ function GetPlayerDatabaseID ( szName ) {
 function LoadPlayerFromDatabase ( pPlayer ) {
 
     local szName                            = CreateSafeIniString ( pPlayer.Name );
-    local pPlayerData                       = UnitedIslands.Players [ pPlayer.ID ];
+    local pPlayerData                       = GetPlayerData ( pPlayer );
     
     pPlayerData.iDatabaseID                 = GetPlayerDatabaseID ( pPlayer.Name );
     
@@ -506,7 +523,7 @@ function LoadPlayerFromDatabase ( pPlayer ) {
     
     }
     
-    pPlayerData.szFileString                = "Scripts/United Islands RPG/Data/Accounts/" + pPlayerData.iDatabaseID + ".ini";
+    pPlayerData.szFileString                = "Scripts/lu_roleplay/Data/Accounts/" + pPlayerData.iDatabaseID + ".ini";
     
     pPlayerData.szName                      = ReadIniString ( pPlayerData.szFileString , "General" , "szName" );
     pPlayerData.szPassword                  = ReadIniString ( pPlayerData.szFileString , "General" , "szPassword" );
@@ -570,93 +587,10 @@ function LoadPlayerFromDatabase ( pPlayer ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function SetPlayerSkinCommand ( pPlayer , szCommand , szParams ) {
-
-    local szTargetParam = false;
-    local szSkinParam = false;
-
-    if( !DoesPlayerHaveStaffPermission ( pPlayer , "ManagePlayerStats" ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
-        
-        return false;
-    
-    }
-    
-    if( !szParams ) {
-    
-        SendPlayerSyntaxMessage ( pPlayer , "/setskin <player name/id> <skin id>" );
-        
-        return false;
-    
-    }
-    
-    if( NumTok ( szParams , " " ) != 2 ) {
-    
-        SendPlayerSyntaxMessage ( pPlayer , "/setskin <player name/id> <skin id>" );
-        
-        return false;
-    
-    }    
-    
-    szTargetParam = GetTok ( szParams , " " , 1 );
-    szSkinParam = GetTok ( szParams , " " , 2 );
-    
-    if ( !FindPlayer ( szTargetParam ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
-        
-        return false;
-    
-    }
-    
-    if ( !IsNum ( szSkinParam ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , "The skin ID must be a number!" );
-        
-        return false;    
-    
-    }
-    
-    szSkinParam = szSkinParam.tointeger ( );
-    
-    if ( !IsValidSkinID ( szSkinParam ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , "That skin ID is invalid!" );
-        
-        return false;    
-    
-    }
-    
-    local pTarget = FindPlayer ( szTargetParam );
-    
-    SendPlayerSuccessMessage ( pPlayer , "You set " + pTarget.Name + "'s skin to ID " + szSkinParam );
-    SendPlayerAlertMessage ( pTarget , pTarget.Name + " has set your skin to ID " + szSkinParam );
-    
-    SetPlayerSkin ( pTarget , szSkinParam );
-    
-    return true;
-
-}
-
-// -------------------------------------------------------------------------------------------------
-
 function SetPlayerSkin ( pPlayer , iSkinID ) {
-
-    if ( !IsNum ( iSkinID ) ) {
     
-        return false;
-    
-    }
-    
-    if ( !IsValidSkinID ( iSkinID ) ) {
-    
-        return false;
-    
-    }
-    
-    UnitedIslands.Players [ pPlayer.ID ].iSkin = iSkinID;
-    pPlayer.Skin = UnitedIslands.Players [ pPlayer.ID ].iSkin;
+    GetPlayerData ( pPlayer ).iSkin = iSkinID;
+    pPlayer.Skin = GetPlayerData ( pPlayer ).iSkin;
     
     return true;
 
@@ -672,8 +606,8 @@ function SetPlayerCash ( pPlayer , iCash ) {
     
     }
 
-    UnitedIslands.Players [ pPlayer.ID ].iCash = iCash;
-    pPlayer.Cash = UnitedIslands.Players [ pPlayer.ID ].iCash;
+    GetPlayerData ( pPlayer ).iCash = iCash;
+    pPlayer.Cash = GetPlayerData ( pPlayer ).iCash;
     
     return true;
 
@@ -689,8 +623,8 @@ function TakePlayerCash ( pPlayer , iCash ) {
     
     }
 
-    UnitedIslands.Players [ pPlayer.ID ].iCash = UnitedIslands.Players [ pPlayer.ID ].iCash - iCash;
-    pPlayer.Cash = UnitedIslands.Players [ pPlayer.ID ].iCash;
+    GetPlayerData ( pPlayer ).iCash = GetPlayerData ( pPlayer ).iCash - iCash;
+    pPlayer.Cash = GetPlayerData ( pPlayer ).iCash;
     
     return true;
 
@@ -706,11 +640,19 @@ function GivePlayerCash ( pPlayer , iCash ) {
     
     }
 
-    UnitedIslands.Players [ pPlayer.ID ].iCash = UnitedIslands.Players [ pPlayer.ID ].iCash + iCash;
-    pPlayer.Cash = UnitedIslands.Players [ pPlayer.ID ].iCash;
+    GetPlayerData ( pPlayer ).iCash = GetPlayerData ( pPlayer ).iCash + iCash;
+    pPlayer.Cash = GetPlayerData ( pPlayer ).iCash;
     
     return true;
 
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function GetPlayerData( pPlayer ) {
+
+	return GetCoreTable ( ).Players [ pPlayer.ID ];
+	
 }
 
 // -------------------------------------------------------------------------------------------------

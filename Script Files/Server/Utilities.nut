@@ -39,7 +39,7 @@ function KillDeathRatio ( iKills , iDeaths ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function GetVectorBehindVector ( pVector = Vector ( 0.0 , 0.0 , 0.0 ) , fAngle = 0.0 , fDistance = 0.0 ) {
+function GetVectorInFrontOfVector ( pVector = Vector ( 0.0 , 0.0 , 0.0 ) , fAngle = 0.0 , fDistance = 0.0 ) {
 
     fAngle = fAngle * PI / 180; 
     
@@ -75,7 +75,7 @@ function GetVectorInFrontOfPlayer ( pPlayer , fDistance = 0.0 ) {
 
 function GetVectorBehindPlayer ( pPlayer , fDistance = 0.0 ) {
 
-    return GetVectorBehindfVector ( pPlayer.Pos , pPlayer.Angle , fDistance );
+    return GetVectorBehindVector ( pPlayer.Pos , pPlayer.Angle , fDistance );
 
 }
 
@@ -91,7 +91,7 @@ function GetVectorInFrontOfVehicle ( pVehicle , fDistance = 0.0 ) {
 
 function GetVectorBehindVehicle ( pVehicle , fDistance = 0.0 ) {
 
-    return GetVectorBehindfVector ( pVehicle.Pos , pVehicle.Angle , fDistance );
+    return GetVectorBehindVector ( pVehicle.Pos , pVehicle.Angle , fDistance );
 
 }
 
@@ -261,7 +261,7 @@ function AddPickupToWorld ( pPosition , iModel , iPickupDataType , iPickupDataID
 
 function AttemptHiddenPackagePickup ( pPlayer , iHiddenPackageID ) {
 
-    pPlayer.Cash += GetCoreTable ( ).HiddenPackages [ iHiddenPackageID ].iCashWin;
+    pPlayer.Cash += GetCoreTable ( ).Locations.HiddenPackages [ iHiddenPackageID ].iCashWin;
 
     return true;
     
@@ -282,15 +282,15 @@ function CreateHiddenPackages ( ) {
         
         // -- Pick a random slot from the hidden packages array
         
-        iRandomPackageID = ceil( ( 1.0 * rand ( ) / RAND_MAX ) * ( GetCoreTable ( ).HiddenPackages.len( ) - 1 ) );
+        iRandomPackageID = ceil( ( 1.0 * rand ( ) / RAND_MAX ) * ( GetCoreTable ( ).Locations.HiddenPackages.len( ) - 1 ) );
         
         // -- See if the random package slot is already taken. If not, spawn a package and add 1 to the package count
         
-        if ( !GetCoreTable ( ).HiddenPackages [ iRandomPackageID ].pPickup ) {
+        if ( !GetCoreTable ( ).Locations.HiddenPackages [ iRandomPackageID ].pPickup ) {
             
-            pPickup = CreatePickup ( 1321 , GetCoreTable ( ).HiddenPackages [ iRandomPackageID ].pPosition );
+            pPickup = CreatePickup ( 1321 , GetCoreTable ( ).Locations.HiddenPackages [ iRandomPackageID ].pPosition );
             
-            GetCoreTable ( ).HiddenPackages [ iRandomPackageID ].pPickup <- pPickup;
+            GetCoreTable ( ).Locations.HiddenPackages [ iRandomPackageID ].pPickup <- pPickup;
             
             GetCoreTable ( ).Pickups [ pPickup.ID ].iPickupDataType <- 1;
             GetCoreTable ( ).Pickups [ pPickup.ID ].iPickupDataID <- iRandomPackageID;
@@ -443,7 +443,7 @@ function GetRemainingString ( szString , szDelimiter , iStartIndex ) {
 function DoesPlayerHaveVehicleKeys ( pPlayer , pVehicle ) {
     
     local pVehicleData = GetVehicleDataFromVehicle ( pVehicle );
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData( pPlayer );
 
     // -- If the player can admin-manage vehicles, they automatically have access to all of them.
     
@@ -503,7 +503,7 @@ function DoesPlayerHaveVehicleKeys ( pPlayer , pVehicle ) {
 function DoesPlayerHaveStaffPermission ( pPlayer , szPermission ) {
 
     local iBitFlag = GetCoreTable ( ).BitFlags.StaffFlags [ szPermission ];
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData( pPlayer );
     
     // -- If staff flags are -1, it's automatic override. Pretty much server-god.
     
@@ -527,7 +527,7 @@ function DoesPlayerHaveStaffPermission ( pPlayer , szPermission ) {
 
 function GetNumberOfRegisteredAccounts ( ) {
     
-    return ReadIniInteger ( "Scripts/LURP/Data/Index.ini" , "General" , "iAccountAmount" );
+    return ReadIniInteger ( GetCoreTable ( ).Utilities.szScriptsPath + "Data/Index.ini" , "General" , "iAccountAmount" );
 
 }
 
@@ -596,7 +596,7 @@ function AddStaffPermission ( pPlayer , szBitFlagName ) {
     
     }
     
-    GetCoreTable ( ).Players [ pPlayer.ID ].iStaffFlags = GetCoreTable ( ).Players [ pPlayer.ID ].iStaffFlags | GetCoreTable ( ).BitFlags.StaffFlags [ szBitFlagName ];
+    GetPlayerData( pPlayer ).iStaffFlags = GetPlayerData( pPlayer ).iStaffFlags | GetCoreTable ( ).BitFlags.StaffFlags [ szBitFlagName ];
     
     return true;
 
@@ -612,7 +612,7 @@ function RemoveStaffPermission ( pPlayer , szBitFlagName ) {
     
     }
     
-    GetCoreTable ( ).Players [ pPlayer.ID ].iStaffFlags = GetCoreTable ( ).Players [ pPlayer.ID ].iStaffFlags & ~GetCoreTable ( ).BitFlags.StaffFlags [ szBitFlagName ];
+    GetPlayerData( pPlayer ).iStaffFlags = GetPlayerData( pPlayer ).iStaffFlags & ~GetCoreTable ( ).BitFlags.StaffFlags [ szBitFlagName ];
     
     return true;
 
@@ -622,7 +622,7 @@ function RemoveStaffPermission ( pPlayer , szBitFlagName ) {
 
 function IsPlayerFireFighter ( pPlayer ) {
 
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData( pPlayer );
     
     if ( pPlayerData.iJob == GetCoreTable ( ).Utilities.Jobs.FireFighter ) {
     
@@ -638,7 +638,7 @@ function IsPlayerFireFighter ( pPlayer ) {
 
 function IsPlayerParamedic ( pPlayer ) {
 
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData( pPlayer );
     
     if ( pPlayerData.iJob == GetCoreTable ( ).Utilities.Jobs.Medical ) {
     
@@ -774,6 +774,39 @@ function ResetPlayerAnimation ( pPlayer ) {
     pPlayer.Pos = pPlayer.Pos;
     
     return true;
+    
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function GetTimeDifferenceDisplay ( iTimeOne , iTimeTwo ) {
+
+	local iTimeDifference = ( iTimeOne - iTimeTwo );
+	
+	iHours = floor ( iTimeDifference / 3600 );
+	iMinutes = floor ( iTimeDifference / 60 );
+    
+	if ( iHours == 1 ) {
+		
+		szHours = "1 hour";
+		
+	} else {
+		
+		szHours = iHours + " hours";
+	
+	}
+	
+	if ( iMinutes == 1 ) {
+		
+		szMinutes = "1 minute";
+		
+	} else {
+		
+		szMinutes = iMinutes + " minute";
+	
+	}
+	
+    return szHours + " and " + szMinutes;
     
 }
 

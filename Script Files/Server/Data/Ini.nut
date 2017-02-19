@@ -1,6 +1,6 @@
 function SavePlayerDataByField ( pPlayer , szFieldName , pData ) {
 
-    local pPlayerData = LURP.Players [ pPlayer.ID ];
+    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
 
     switch ( type ( pData ) ) {
     

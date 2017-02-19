@@ -10,6 +10,10 @@
 // - Unmute                                 UnmutePlayerCommand                             BasicModeration
 // - Freeze                                 FreezePlayerCommand                             BasicModeration
 // - Unfreeze                               UnfreezePlayerCommand                           BasicModeration
+// - Report									SubmitStaffReportCommand						None
+// - Reports								ListStaffReportsCommand							BasicModeration
+// - AcceptReport							AcceptStaffReportCommand						BasicModeration
+// - DenyReport								DenyStaffReportCommand							BasicModeration
 
 // -------------------------------------------------------------------------------------------------
 
@@ -25,20 +29,34 @@ function AddModerationCommandHandlers ( ) {
     
     AddCommandHandler ( "Goto" , GotoPlayerCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
     AddCommandHandler ( "GotoVeh" , GotoVehicleCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
-    AddCommandHandler ( "GotoVeh" , GotoBusinessCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
+    //AddCommandHandler ( "GotoVeh" , GotoBusinessCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
     AddCommandHandler ( "GotoHouse" , GotoHouseCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
-    
+	
+	AddCommandHandler ( "Report" , ForumStaffReportCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+	AddCommandHandler ( "Reports" , ListAllStaffReportCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
+	
+	AddCommandHandler ( "ResetReport" , ResetStaffReportCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageServer | GetCoreTable ( ).BitFlags.StaffFlags.ManageAdmins | GetCoreTable ( ).BitFlags.StaffFlags.Scripter );
+    AddCommandHandler ( "AcceptReport" , AcceptStaffReportCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
+	AddCommandHandler ( "DenyReport" , DenyStaffReportCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
+	AddCommandHandler ( "ForumReport" , ForumStaffReportCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
+	
+	AddCommandHandler ( "GiveStaffFlag" , GivePlayerStaffFlagCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageAdmins );
+	AddCommandHandler ( "TakeStaffFlag" , GivePlayerStaffFlagCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageAdmins );
+	AddCommandHandler ( "StaffFlags" , ListAllStaffFlagsCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageAdmins );
+	
+	AddCommandHandler ( "SetSkin" , SetPlayerSkinCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
+	
     return true;
 
 }
 
 // -------------------------------------------------------------------------------------------------
 
-function BanPlayerCommand ( pPlayer , szCommand , szParams ) {
+function BanPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
     if ( bShowHelpOnly ) {
         
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Bans a player from the server" , [ "ban" ] , "You must have the BasicModeration staff flag." );
+        SendPlayerCommandInfoMessage ( pPlayer , "Bans a player from the server" , [ "Ban" ] , "" );
         
         return false;
     
@@ -80,11 +98,11 @@ function BanPlayerCommand ( pPlayer , szCommand , szParams ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function TempBanPlayerCommand ( pPlayer , szCommand , szParams ) {
+function TempBanPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
     if ( bShowHelpOnly ) {
         
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Temporarily bans a player from the server" , [ "tempban" ] , "You must have the BasicModeration staff flag." );
+        SendPlayerCommandInfoMessage ( pPlayer , "Temporarily bans a player from the server" , [ "TempBan" ] , "" );
         
         return false;
     
@@ -126,11 +144,11 @@ function TempBanPlayerCommand ( pPlayer , szCommand , szParams ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function KickPlayerCommand ( pPlayer , szCommand , szParams ) {
+function KickPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
     if ( bShowHelpOnly ) {
         
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Kicks a player from the server" , [ "kick" ] , "You must have the BasicModeration staff flag." );
+        SendPlayerCommandInfoMessage ( pPlayer , "Kicks a player from the server" , [ "Kick" ] , "" );
         
         return false;
     
@@ -172,11 +190,11 @@ function KickPlayerCommand ( pPlayer , szCommand , szParams ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function MutePlayerCommand ( pPlayer , szCommand , szParams ) {
+function MutePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
     if ( bShowHelpOnly ) {
         
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Mutes a player. Keeps them from using any chat." , [ "Mute" , "MutePlayer" ] , "This also blocks chat-related commands (ME, DO, etc)" );
+        SendPlayerCommandInfoMessage ( pPlayer , "Mutes a player. Keeps them from using any chat." , [ "Mute" , "MutePlayer" ] , "This also blocks chat-related commands (ME, DO, etc)" );
         
         return false;
     
@@ -218,11 +236,11 @@ function MutePlayerCommand ( pPlayer , szCommand , szParams ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function UnmutePlayerCommand ( pPlayer , szCommand , szParams ) {
+function UnmutePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
     if ( bShowHelpOnly ) {
         
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Unmutes a player so they can use chat again." , [ "Unmute" , "UnmutePlayer" ] , "" );
+        SendPlayerCommandInfoMessage ( pPlayer , "Unmutes a player so they can use chat again." , [ "Unmute" , "UnmutePlayer" ] , "" );
         
         return false;
     
@@ -264,11 +282,11 @@ function UnmutePlayerCommand ( pPlayer , szCommand , szParams ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function FreezePlayerCommand ( pPlayer , szCommand , szParams ) {
+function FreezePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
     if ( bShowHelpOnly ) {
         
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Freezes a player so they can't move." , [ "Freeze" , "FreezePlayer" ] , "They can still look around with their mouse." );
+        SendPlayerCommandInfoMessage ( pPlayer , "Freezes a player so they can't move." , [ "Freeze" , "FreezePlayer" ] , "They can still look around with their mouse." );
         
         return false;
     
@@ -312,11 +330,11 @@ function FreezePlayerCommand ( pPlayer , szCommand , szParams ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function UnfreezePlayerCommand ( pPlayer , szCommand , szParams ) {
+function UnfreezePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
     if ( bShowHelpOnly ) {
         
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Unfreezes a player so they can move again." , [ "Unfreeze" ] , "" );
+        SendPlayerCommandInfoMessage ( pPlayer , "Unfreezes a player so they can move again." , [ "Unfreeze" ] , "" );
         
         return false;
     
@@ -360,11 +378,11 @@ function UnfreezePlayerCommand ( pPlayer , szCommand , szParams ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function GotoPlayerCommand ( pPlayer , szCommand , szParams ) {
+function GotoPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
     if ( bShowHelpOnly ) {
         
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Teleports you to a player" , [ "Goto" , "GotoPlayer" ] , "You can provide offset X, Y, and Z." );
+        SendPlayerCommandInfoMessage ( pPlayer , "Teleports you to a player" , [ "Goto" , "GotoPlayer" ] , "You can provide offset X, Y, and Z." );
         
         return false;
     
@@ -406,11 +424,11 @@ function GotoPlayerCommand ( pPlayer , szCommand , szParams ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function GotoVehicleCommand ( pPlayer , szCommand , szParams ) {
+function GotoVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
     if ( bShowHelpOnly ) {
         
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Teleports you to a vehicle." , [ "GotoVeh" ] , "You can provide offset X, Y, and Z." );
+        SendPlayerCommandInfoMessage ( pPlayer , "Teleports you to a vehicle." , [ "GotoVeh" ] , "You can provide offset X, Y, and Z." );
         
         return false;
     
@@ -552,7 +570,7 @@ function GivePlayerStaffFlagCommand ( pPlayer , szCommand , szParams , bShowHelp
     SendPlayerSuccessMessage ( pPlayer , "You have given " + pTarget.Name + " the '" + szFlagName + "' staff flag." );
     SendPlayerAlertMessage ( pTarget , pPlayer.Name + " has given you the '" + szFlagName + "' staff flag." );
 
-    GiveStaffFlag ( pPlayer , szStaffFlag );
+    AddStaffPermission ( pPlayer , szStaffFlag );
 
     return true;
 
@@ -652,7 +670,7 @@ function TakePlayerStaffFlagCommand ( pPlayer , szCommand , szParams , bShowHelp
     SendPlayerSuccessMessage ( pPlayer , "You have taken the '" + szFlagName + "' staff flag from " + pTarget.Name );
     SendPlayerAlertMessage ( pTarget , pPlayer.Name + " has taken the '" + szFlagName + "' staff flag away from you." );
 
-    TakeStaffFlag ( pPlayer , szStaffFlag );
+    RemoveStaffPermission ( pPlayer , szStaffFlag );
 
     return true;
 
@@ -662,7 +680,535 @@ function TakePlayerStaffFlagCommand ( pPlayer , szCommand , szParams , bShowHelp
 
 function ListAllStaffFlagsCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
+    if( bShowHelpOnly ) {
+
+        SendPlayerCommandInfoMessage ( pPlayer , "Shows a list of all staff flags." , [ "StaffFlags" ] , "" );
+
+        return false;
+
+    }
+	
+	foreach ( ii , iv in GetCoreTable ( ).BitFlags.StaffFlags ) {
+	
+		if ( HasBitFlag ( pPlayerData.StaffFlags , iv ) ) {
+		
+			SendPlayerNormalMessage ( pPlayer , GetCoreTable ( ).Colours.Hex.Lime + ii );
+		
+		} else {
+		
+			SendPlayerNormalMessage ( pPlayer , GetCoreTable ( ).Colours.Hex.BrightRed + ii );
+		
+		}
+	
+	}
+	
     return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function SubmitStaffReportCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+    if( bShowHelpOnly ) {
+
+        SendPlayerCommandInfoMessage ( pPlayer , "Reports a player or message to admins" , [ "Report" ] , "" );
+
+        return false;
+
+    }
+
+	if ( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/Report <Message>" );
+		
+		return false;
+	
+	}
+	
+	if ( !CanPlayerSubmitStaffReport ( pPlayer ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "You cannot submit a report right now!" );
+		
+		return false;
+	
+	}
+	
+	SubmitStaffReport ( pPlayer , szParams );
+	
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function ListAllStaffReportsCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
+
+    if( bShowHelpOnly ) {
+
+        SendPlayerCommandInfoMessage ( pPlayer , "Shows all unhandled staff reports" , [ "Reports" ] , "" );
+
+        return false;
+
+    }
+
+	if ( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/Reports" );
+		//SendPlayerNormalMessage ( pPlayer , "Leaving the extra part out will show all unhandled reports." );
+		
+		return false;
+	
+	}
+	
+	local pStaffReports = GetAllUnhandledStaffReports ( );
+	
+	foreach ( ii , iv in pStaffReports ) {
+	
+		if ( iv.iResponseType == GetCoreTable ( ).Utilities.StaffReportResponse.None ) {
+		
+			SendPlayerNormalMessage ( pPlayer , "== STAFF REPORTS ===============================" );
+			SendPlayerNormalMessage ( iv.iReportID + ": (From " + iv.szReporterName + ") " + iv.szMessage + " (sent " + GetTimeDifferenceDisplay ( time ( ) , iv.iTime ) + " ago)" );
+			SendPlayerNormalMessage ( pPlayer , "================================================" );
+		
+		}
+	
+	}
+	
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function AcceptStaffReportCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
+
+    if( bShowHelpOnly ) {
+
+        SendPlayerCommandInfoMessage ( pPlayer , "Accepts a report submitted by a player" , [ "AcceptReport" , "AR" ] , "" );
+
+        return false;
+
+    }
+
+	if ( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/AcceptReport <Report ID>" );
+		
+		return false;
+	
+	}
+	
+	if ( !IsNum ( szParams ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The Report ID must be a number!" );
+		
+		return false;
+	
+	}
+	
+	local pStaffReport = GetStaffReportByID ( szParams.tointeger ( ) );
+	
+	if ( !pStaffReport ) {
+		
+		SendPlayerErrorMessage ( pPlayer , "There is no report with that ID!" );
+		
+		return false;
+		
+	}
+	
+	if ( IsStaffReportAlreadyHandled ( pPlayer , pStaffReport ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "That report is already being handled!" );
+		
+		if ( DoesPlayerHaveStaffFlag ( pPlayer , "ManageAdmins" ) || DoesPlayerHaveStaffFlag ( pPlayer , "Scripter" ) || DoesPlayerHaveStaffFlag ( pPlayer , "ManageServer" ) ) {
+			
+			SendPlayerAlertMessage ( pPlayer , "You can reset the report with /ResetReport" );
+			
+			return false;
+		
+		}
+		
+		return false;
+	
+	}
+	
+	AcceptStaffReport ( pPlayer , pStaffReport );
+	
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function DenyStaffReportCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
+
+    if( bShowHelpOnly ) {
+
+        SendPlayerCommandInfoMessage ( pPlayer , "Denies a report submitted by a player" , [ "DenyReport" , "DR" ] , "" );
+
+        return false;
+
+    }
+
+	if ( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/DenyReport <Report ID>" );
+		
+		return false;
+	
+	}
+	
+	if ( !IsNum ( szParams ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The Report ID must be a number!" );
+		
+		return false;
+	
+	}
+	
+	local pStaffReport = GetStaffReportByID ( szParams.tointeger ( ) );
+	
+	if ( !pStaffReport ) {
+		
+		SendPlayerErrorMessage ( pPlayer , "There is no report with that ID!" );
+		
+		return false;
+		
+	}
+	
+	if ( IsStaffReportAlreadyHandled ( pPlayer , pStaffReport ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "That report is already handled!" );
+		
+		if ( DoesPlayerHaveStaffFlag ( pPlayer , "ManageAdmins" ) || DoesPlayerHaveStaffFlag ( pPlayer , "Scripter" ) || DoesPlayerHaveStaffFlag ( pPlayer , "ManageServer" ) ) {
+			
+			SendPlayerAlertMessage ( pPlayer , "You can reset the report with /ResetReport" );
+			
+			return false;
+		
+		}
+		
+		return false;
+	
+	}
+	
+	DenyStaffReport ( pPlayer , pStaffReport );
+	
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function ForumStaffReportCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
+
+    if( bShowHelpOnly ) {
+
+        SendPlayerCommandInfoMessage ( pPlayer , "Sets a report as needing to be put on forum" , [ "ForumReport" ] , "" );
+
+        return false;
+
+    }
+
+	if ( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/ForumReport <Report ID>" );
+		
+		return false;
+	
+	}
+	
+	if ( !IsNum ( szParams ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The Report ID must be a number!" );
+		
+		return false;
+	
+	}
+	
+	local pStaffReport = GetStaffReportByID ( szParams.tointeger ( ) );
+	
+	if ( !pStaffReport ) {
+		
+		SendPlayerErrorMessage ( pPlayer , "There is no report with that ID!" );
+		
+		return false;
+		
+	}
+	
+	if ( IsStaffReportAlreadyHandled ( pPlayer , pStaffReport ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "That report is already handled!" );
+		
+		if ( DoesPlayerHaveStaffFlag ( pPlayer , "ManageAdmins" ) || DoesPlayerHaveStaffFlag ( pPlayer , "Scripter" ) || DoesPlayerHaveStaffFlag ( pPlayer , "ManageServer" ) ) {
+			
+			SendPlayerAlertMessage ( pPlayer , "You can reset the report with /ResetReport" );
+			
+			return false;
+		
+		}
+		
+		return false;
+	
+	}
+	
+	SetAsForumStaffReport ( pPlayer , pStaffReport );
+	
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function ResetStaffReportCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
+
+    if( bShowHelpOnly ) {
+
+        SendPlayerCommandInfoMessage ( pPlayer , "Resets a handled staff report to handle it again" , [ "ResetReport" ] , "" );
+
+        return false;
+
+    }
+
+	if ( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/ResetReport <Report ID>" );
+		
+		return false;
+	
+	}
+	
+	if ( !IsNum ( szParams ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The Report ID must be a number!" );
+		
+		return false;
+	
+	}
+	
+	local pStaffReport = GetStaffReportByID ( szParams.tointeger ( ) );
+	
+	if ( !pStaffReport ) {
+		
+		SendPlayerErrorMessage ( pPlayer , "There is no report with that ID!" );
+		
+		return false;
+		
+	}
+	
+	if ( !IsStaffReportAlreadyHandled ( pPlayer , pStaffReport ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "That report has not been handled! No need to reset it!" );
+		
+		return false;
+	
+	}
+	
+	OverrideStaffReport ( pPlayer , pStaffReport );
+	
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function SubmitStaffReport ( pPlayer , szMessage ) {
+
+	local pStaffReport = GetCoreTable ( ).Classes.StaffReports ( );
+	
+	pStaffReport.iTime = time ( );
+	pStaffReport.szReporterName = pPlayer.Name;
+	pStaffReport.szMessage = szMessage;
+
+	GetCoreTable ( ).StaffReports.push ( pStaffReport );
+
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function AcceptStaffReport ( pPlayer , pStaffReport ) {
+
+	pStaffReport.iResponseType = GetCoreTable ( ).Utilities.StaffReportResponse.Accepted;
+	
+	pStaffReport.iResponseTime = time ( );
+	pStaffReport.pResponseAdmin = pPlayer;
+	
+	SendPlayerSuccessMessage ( pPlayer , "You have accepted " + pStaffReport.pReporter.Name + "'s report (ID: " + pReportData.iReportID + ")" );
+	SendPlayerAlertMessage ( pStaffReport.pReporter , pPlayer.Name + " has accepted your report." );
+
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function DenyStaffReport ( pPlayer , pStaffReport ) {
+
+	pStaffReport.iResponseType = GetCoreTable ( ).Utilities.StaffReportResponse.Denied;
+	
+	pStaffReport.iResponseTime = time ( );
+	pStaffReport.pResponseAdmin = pPlayer;
+	
+	SendPlayerSuccessMessage ( pPlayer , "You have denied " + pStaffReport.pReporter.Name + "'s report (ID: " + pReportData.iReportID + ")" );
+	SendPlayerAlertMessage ( pStaffReport.pReporter , pPlayer.Name + " has denied your report." );
+
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function SetAsForumStaffReport ( pPlayer , pStaffReport ) {
+
+	pStaffReport.iResponseType = GetCoreTable ( ).Utilities.StaffReportResponse.Denied;
+	
+	pStaffReport.iResponseTime = time ( );
+	pStaffReport.pResponseAdmin = pPlayer;
+	
+	SendPlayerSuccessMessage ( pPlayer , "You have set " + pStaffReport.pReporter.Name + "'s as needing to be posted on forum. (ID: " + pReportData.iReportID + ")" );
+	SendPlayerAlertMessage ( pStaffReport.pReporter , pPlayer.Name + " has set your report as needing to post on the forum." );
+
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function ResetStaffReport ( pPlayer , pStaffReport ) {
+
+	pStaffReport.iResponseType = GetCoreTable ( ).Utilities.StaffReportResponse.Denied;
+	
+	pStaffReport.iResponseTime = time ( );
+	pStaffReport.pResponseAdmin = pPlayer;
+	
+	SendPlayerSuccessMessage ( pPlayer , "You have reset " + pStaffReport.pReporter.Name + "'s report (ID: " + pReportData.iReportID + ")" );
+	SendPlayerAlertMessage ( pPlayer , "The report has now been set as unhandled." );
+
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function GetStaffReportByID ( iStaffReportID ) {
+
+	if ( !( iStaffReportID in GetAllStaffReports ( ) ) ) {
+	
+		return GetAllStaffReports ( ) [ iStaffReportID ]; 
+	
+	}
+
+	return false;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function GetAllStaffReports ( ) {
+
+	return GetCoreTable ( ).StaffReports;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function GetAllUnhandledStaffReports ( ) {
+
+	local pTempReports = [ ];
+
+	foreach ( ii , iv in GetAllStaffReports ( ) ) {
+	
+		if ( iv.iResponseType == GetCoreTable ( ).Utilities.StaffReportResponse.None ) {
+		
+			pTempReports.push ( iv );
+		
+		}
+	
+	}
+	
+	return pTempReports;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function SetPlayerSkinCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+    if( bShowHelpOnly ) {
+
+        SendPlayerCommandInfoMessage ( pPlayer , "Sets a player's skin" , [ "SetSkin" ] , "" );
+
+        return false;
+
+    }
+
+    local szTargetParam = false;
+    local szSkinParam = false;
+    
+    if( !szParams ) {
+    
+        SendPlayerSyntaxMessage ( pPlayer , "/SetSkin <Player Name/ID> <Skin ID>" );
+        
+        return false;
+    
+    }
+    
+    if( NumTok ( szParams , " " ) != 2 ) {
+    
+        SendPlayerSyntaxMessage ( pPlayer , "/setskin <Player Name/ID> <Skin ID>" );
+        
+        return false;
+    
+    }    
+    
+    szTargetParam = GetTok ( szParams , " " , 1 );
+    szSkinParam = GetTok ( szParams , " " , 2 );
+    
+    if ( !FindPlayer ( szTargetParam ) ) {
+    
+        SendPlayerErrorMessage ( pPlayer , "That player is not connected!" );
+        
+        return false;
+    
+    }
+    
+    if ( !IsNum ( szSkinParam ) ) {
+    
+        SendPlayerErrorMessage ( pPlayer , "The skin ID must be a number!" );
+        
+        return false;    
+    
+    }
+    
+    szSkinParam = szSkinParam.tointeger ( );
+    
+    if ( !IsValidSkinID ( szSkinParam ) ) {
+    
+        SendPlayerErrorMessage ( pPlayer , "That skin ID is invalid!" );
+        
+        return false;    
+    
+    }
+    
+    local pTarget = FindPlayer ( szTargetParam );
+    
+    SendPlayerSuccessMessage ( pPlayer , "You set " + pTarget.Name + "'s skin to ID " + szSkinParam );
+    SendPlayerAlertMessage ( pTarget , pTarget.Name + " has set your skin to ID " + szSkinParam );
+    
+    SetPlayerSkin ( pTarget , szSkinParam );
+    
+    return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function CanPlayerSubmitStaffReport ( pPlayer ) {
+
+	return true;
 
 }
 
@@ -673,3 +1219,5 @@ function ListAllStaffFlagsCommand ( pPlayer , szCommand , szParams , bShowHelpOn
 print ( "[Server.Moderation]: Script file loaded and ready." );
 
 // -------------------------------------------------------------------------------------------------
+
+

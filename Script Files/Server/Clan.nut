@@ -50,7 +50,7 @@ function LoadClansFromDatabase ( ) {
 
 function GetNumberOfClans ( ) {
 
-    return ReadIniInteger ( "Scripts/LURP/Data/Index.ini" , "General" , "iClanAmount" );
+    return ReadIniInteger ( GetCoreTable ( ).Utilities.szScriptsPath + "Data/Index.ini" , "General" , "iClanAmount" );
 
 }
 

@@ -1,13 +1,17 @@
-function InitAllClasses ( ) {
+function InitClassesCoreTable ( ) {
 
-    ::InitPlayerDataClass ( );
-    ::InitBusinessDataClass ( );
-    ::InitSessionDataClass ( );
-    ::InitHouseDataClass ( );
-    ::InitClanDataClass ( );
-    ::InitCrimeDataClasses ( );
+	local pClassesCoreTable = { };
+	
+    pClassesCoreTable.PlayerData <- ::InitPlayerDataClass ( );
+    pClassesCoreTable.BusinessData <- ::InitBusinessDataClass ( );
+    pClassesCoreTable.SessionData <- ::InitSessionDataClass ( );
+    pClassesCoreTable.HouseData <- ::InitHouseDataClass ( );
+    pClassesCoreTable.ClanData <- ::InitClanDataClass ( );
+    pClassesCoreTable.CrimeData <- ::InitCrimeDataClass ( );
+	pClassesCoreTable.SessionData <- ::InitFireDataClass ( );
+	pClassesCoreTable.VehicleData <- ::InitVehicleDataClass ( );
 
-    return true;
+    return pClassesCoreTable;
     
 }
 
@@ -15,11 +19,11 @@ function InitAllClasses ( ) {
 
 function InitPlayerDataClass ( ) {
 
-    GetCoreTable ( ).Classes.PlayerData <- class {
+    return class {
         
         pPlayer                     = false;
         
-        szFileString                = "Scripts/LURP/Data/Accounts.Ini";
+        szFileString                = "";
         
         bCanSpawn                   = false;
         bCanUseCommands             = false;
@@ -31,6 +35,7 @@ function InitPlayerDataClass ( ) {
         iLastSession                = 0;
         
         szConnectToken              = 0;
+		iConnectTime 				= 0;
         
         iRegisteredTimestamp        = 0;
         iLastLoginTimestamp         = 0;
@@ -113,7 +118,7 @@ function InitPlayerDataClass ( ) {
         bTazed                      = false;
         bCuffed                     = false;
         
-        pAntiCheatPosition          = ::GetCoreTable ( ).Utilities.pZeroVector;
+        pAntiCheatPosition          = ::Vector ( 0.0 , 0.0 , 0.0 );
         
         pCrimes                     = [ ];
         
@@ -130,8 +135,6 @@ function InitPlayerDataClass ( ) {
         }
         
     };
-
-    return true;
     
 }
 
@@ -139,7 +142,7 @@ function InitPlayerDataClass ( ) {
 
 function InitSessionDataClass ( ) {
     
-    GetCoreTable ( ).Classes.SessionData <- class {
+    return class {
         
         iConnectedTime              = 0;
         iDisconnectedTime           = 0;
@@ -172,7 +175,7 @@ function InitSessionDataClass ( ) {
 
 function InitCrimeDataClass ( ) {
 
-    GetCoreTable ( ).Classes.CrimeData <- class {
+    return class {
 
         iCrimeID                    = 0;
         iSuspectAccountID           = 0;
@@ -202,7 +205,7 @@ function InitCrimeDataClass ( ) {
 
 function InitClanDataClass ( ) {
     
-    GetCoreTable ( ).Classes.ClanData <- class {
+    return class {
 
         iDatabaseID                 = 0;
         szName                      = "";
@@ -230,7 +233,7 @@ function InitClanDataClass ( ) {
 
 function InitBusinessDataClass ( ) {
 
-    GetCoreTable ( ).Classes.BusinessData <- class {
+    return class {
         
         iDatabaseID                 = 0;
         szName                      = "";
@@ -243,7 +246,7 @@ function InitBusinessDataClass ( ) {
         
         pPickup                     = false;
 
-        pPosition                   = ::GetCoreTable ( ).Utilities.pZeroVector;
+        pPosition                   = ::Vector ( 0.0 , 0.0 , 0.0 );
         
         constructor ( ) {
             
@@ -259,9 +262,9 @@ function InitBusinessDataClass ( ) {
 
 function InitVehicleDataClass ( ) {
     
-    GetCoreTable ( ).Classes.VehicleData <- class {
+    return class {
         
-        szFileString                = "Scripts/LURP/Data/Vehicles.ini";
+        szFileString                = "";
         
         iDatabaseID                 = 0;
         iModel                      = 0;
@@ -271,8 +274,8 @@ function InitVehicleDataClass ( ) {
         pColour1                    = { r = 0 , g = 0 , b = 0 };
         pColour2                    = { r = 0 , g = 0 , b = 0 };
         
-        pPosition                   = ::GetCoreTable ( ).Utilities.pZeroVector;
-        pRotation                   = ::GetCoreTable ( ).Utilities.pZeroVector;
+        pPosition                   = ::Vector ( 0.0 , 0.0 , 0.0 );
+        pRotation                   = ::Vector ( 0.0 , 0.0 , 0.0 );
         fAngle                      = 0.0;
         
         iOwnerType                  = 0;
@@ -307,7 +310,7 @@ function InitVehicleDataClass ( ) {
 
 function InitHouseDataClass ( ) {
 
-    GetCoreTable ( ).Classes.HouseData <- class {
+    return class {
         
         iDatabaseID                 = 0;
         bLocked                     = true;
@@ -319,7 +322,7 @@ function InitHouseDataClass ( ) {
         
         pPickup                     = false;
         
-        pPosition                   = ::GetCoreTable ( ).Utilities.pZeroVector;
+        pPosition                   = ::Vector ( 0.0 , 0.0 , 0.0 );
         
         constructor ( ) {
             
@@ -335,12 +338,12 @@ function InitHouseDataClass ( ) {
 
 function InitFireDataClass ( ) {
 
-    GetCoreTable ( ).Classes.FireData <- class {
+   return class {
         
-        pPosition                     = ::GetCoreTable ( ).Utilities.pZeroVector;
+        pPosition                     = ::Vector ( 0.0 , 0.0 , 0.0 );
         pAttached                     = false;
 
-        iFireType                     = None;
+        iFireType                     = 0;
         iStart                        = 0;
 
         iRadius                       = 0;

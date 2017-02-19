@@ -2,11 +2,13 @@ function CreateBitwiseTable ( szTableKeys ) {
     
     local iBitVal = 0;
     local pBitTable = { };
-
+	local iIncVal = 1;
+	
     foreach ( ii , iv in szTableKeys ) {
     
         pBitTable [ iv ] <- iBitVal;
-        iBitVal = 1 << iBitVal;
+        iBitVal = 1 << iIncVal;
+		iIncVal++;
         
     }
 
@@ -33,7 +35,7 @@ function HasBitFlag ( iCheckThis , iCheckFor ) {
 function CreateBitwiseTables ( ) {
     
     GetCoreTable ( ).BitFlags.AccountSettings <- CreateBitwiseTable ( [ "None" , "LUIDLogin" , "IPLogin" , "TwoStepAuth" , "WhiteList" , "LoginAlert" ] );
-    GetCoreTable ( ).BitFlags.StaffFlags <- CreateBitwiseTable ( [ "None" , "BasicModeration" , "ManagePlayerStats" , "ManageBans" , "ManageVehicles" , "ManageHouses" , "ManageBusinesses" , "ManageClans" , "Scripter" ] );
+    GetCoreTable ( ).BitFlags.StaffFlags <- CreateBitwiseTable ( [ "None" , "BasicModeration" , "ManagePlayerStats" , "ManageBans" , "ManageVehicles" , "ManageHouses" , "ManageBusinesses" , "ManageClans" , "Scripter" , "ManageServer" , "ManageAdmins" ] );
     GetCoreTable ( ).BitFlags.Licenses <- CreateBitwiseTable ( [ "None" , "DrivingLicense" , "BoatingLicense" , "PilotsLicense" , "TaxiLicense" , "WeaponsLicense" ] );    
     GetCoreTable ( ).BitFlags.ClanFlags <- CreateBitwiseTable ( [ "None" , "AddMember" , "RemoveMember" , "ClaimTurf" , "GiveTurf" , "StoreInSafe" , "TakeFromSafe" , "EditTag" , "EditName" , "ManageVehicles" , "ManageTurfs" , "ManageAlliances" , "Owner" ] );
     

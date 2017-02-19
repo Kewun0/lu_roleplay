@@ -8,7 +8,7 @@ function LoadHousesFromDatabase ( ) {
     
     for ( local i = 1 ; i <= iHousesCount ; i++ ) {
     
-        pHouseData = UnitedIslands.Classes.HouseData ( );
+        pHouseData = GetCoreTable ( ).Classes.HouseData ( );
         
         pHousesData.push ( pHousesData );
     
@@ -34,9 +34,9 @@ function CreateHousePickups ( ) {
     
     local pPickup = false;
     
-    foreach ( ii , iv in UnitedIslands.Houses ) {
+    foreach ( ii , iv in GetCoreTable ( ).Houses ) {
         
-        UnitedIslands.Houses [ ii ].pPickup = AddPickupToWorld ( iv.pPosition , 1384 , UnitedIslands.Utilities.pPickupDataType.House , ii )
+        UnitedIslands.Houses [ ii ].pPickup = AddPickupToWorld ( iv.pPosition , 1384 , GetCoreTable ( ).Utilities.pPickupDataType.House , ii )
         
     }
     
