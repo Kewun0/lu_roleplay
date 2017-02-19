@@ -68,6 +68,7 @@ function InitServerStartupDelayed ( ) {
     
 // -------------------------------------------------------------------------------------------------
 
+/* 
 function LoadAllScriptFiles ( ) {
 
     dofile ( GetCoreTable ( ).Utilities.szScriptsPath + "Script Files/Server/Core.nut" , true );
@@ -95,6 +96,7 @@ function LoadAllScriptFiles ( ) {
     return true;
     
 }
+*/
 
 // -------------------------------------------------------------------------------------------------
 
