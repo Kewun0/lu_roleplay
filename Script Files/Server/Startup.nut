@@ -11,18 +11,7 @@ function InitServerStartup ( ) {
     
 }
 
-// -------------------------------------------------------------------------------------------------
 
-function InitServerModules ( ) {
-
-    print ( "[Server.Startup]: Initializing module 'lu_hashing' ... Result: " + LoadModule ( "lu_hashing" ) );
-    print ( "[Server.Startup]: Initializing module 'lu_mysql' ... Result: " + LoadModule ( "lu_mysql" ) );
-    
-    return true;
-
-}
-
-// -------------------------------------------------------------------------------------------------
 
 function InitServerScriptCore ( ) {
 
@@ -35,36 +24,7 @@ function InitServerScriptCore ( ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function InitServerProcessingThreads ( ) {
 
-    LoadVehicleThread <- newthread ( LoadVehicleFromDatabase );
-    SaveVehicleThread <- newthread ( SaveVehicleToDatabase );
-
-    return true;
-    
-}
-
-// -------------------------------------------------------------------------------------------------
-
-function InitServerStartupDelayed ( ) {
-
-    print ( "[Server.Startup]: Initiating server startup ... " );
-    
-    // InitServerScriptCore ( );
-    // InitServerProcessingThreads ( );
-    
-    CreateHiddenPackages ( );
-    CreateBusinessPickups ( );
-    CreateHousePickups ( );
-    CreateJobPickups ( );
-    CreateVehicles ( );
-    AddAllCommandHandlers ( );
-    
-    print ( "[Server.Startup]: Server started and ready for connections!" );    
-
-    return true;
-    
-}
     
 // -------------------------------------------------------------------------------------------------
 
