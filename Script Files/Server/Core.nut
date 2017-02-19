@@ -2,7 +2,7 @@
 
 function GetCoreTable ( ) {
 
-    return pCoreTable;
+    return ::pCoreTable;
 
 }
 
@@ -10,26 +10,32 @@ function GetCoreTable ( ) {
 
 function InitCoreTable ( ) {
     
-    pCoreTable.Players                                     <- { };
-    pCoreTable.Vehicles                                    <- { };
-    pCoreTable.Houses                                      <- { };
-    pCoreTable.Businesses                                  <- { };
-    pCoreTable.Fires                                       <- { };
-    pCoreTable.Commands                                    <- { };
-    pCoreTable.Pickups                                     <- array ( MAX_PICKUPS , { iPickupDataType = 0 , iPickupDataID = -1 } );
-    pCoreTable.Locations                                   <- InitLocationsCoreTable ( );
-    pCoreTable.Colours                                     <- InitColoursCoreTable ( );
-    pCoreTable.Utilities                                   <- InitUtilitiesCoreTable ( );
-    pCoreTable.Database                                    <- InitDatabaseCoreTable ( );
-    pCoreTable.Weapons                                     <- InitWeaponsCoreTable ( );
-    pCoreTable.BitFlags                                    <- InitBitFlagsCoreTable ( );
-    pCoreTable.Security                                    <- InitSecurityCoreTable ( );
-    pCoreTable.Classes                                     <- InitClassesCoreTable ( );
-    pCoreTable.Clans                                       <- { };
+	local pTempCoreTable									   =  { };
+	
+    pTempCoreTable.Players                                     <- { };
+    pTempCoreTable.Vehicles                                    <- { }; // ::LoadVehiclesFromDatabase ( );
+    pTempCoreTable.Houses                                      <- { };
+    pTempCoreTable.Businesses                                  <- { };
+    pTempCoreTable.Fires                                       <- { };
+    pTempCoreTable.Commands                                    <- { };
+    pTempCoreTable.Pickups                                     <- array ( MAX_PICKUPS , { iPickupDataType = 0 , iPickupDataID = -1 } );
+    pTempCoreTable.Locations                                   <- ::InitLocationsCoreTable ( );
+    pTempCoreTable.Colours                                     <- ::InitColoursCoreTable ( );
+    pTempCoreTable.Utilities                                   <- ::InitUtilitiesCoreTable ( );
+    pTempCoreTable.Database                                    <- ::InitDatabaseCoreTable ( );
+    pTempCoreTable.Weapons                                     <- ::InitWeaponDataCoreTable ( );
+    pTempCoreTable.BitFlags                                    <- ::InitBitFlagCoreTable ( );
+    pTempCoreTable.Security                                    <- ::InitSecurityCoreTable ( );
+    pTempCoreTable.Classes                                     <- ::InitClassesCoreTable ( );
+	pTempCoreTable.Locale 									   <- ::InitLocaleGlobalTable ( );
+    pTempCoreTable.Clans                                       <- { };
+	pTempCoreTable.Threads									   <- ::InitServerProcessingThreads ( );
+	
+	pTempCoreTable.VehicleToData							   <- array ( MAX_VEHICLES , false );
     
     print ( "[Server.Core]: Core table created" );
 	
-    return pCoreTable;
+    return pTempCoreTable;
     
 }
 
@@ -104,8 +110,10 @@ function InitColoursCoreTable ( ) {
     pByTypeColoursTable.InfoMessageMessage           <- pHexColoursTable.White;
     pByTypeColoursTable.InfoMessageHeader            <- pHexColoursTable.LightPurple;
     pByTypeColoursTable.InfoMessageMessage           <- pHexColoursTable.White;
-    pByTypeColoursTable.CommandHeader                <- pHexColoursTable.MediumPurple;    
-    
+    pByTypeColoursTable.CommandHeader                <- pHexColoursTable.LightPurple;  
+	pByTypeColoursTable.CommandInfoHeader            <- pHexColoursTable.LightPurple; 	
+    pByTypeColoursTable.CommandInfoMessage           <- pHexColoursTable.LightGrey;
+	
     pAllColoursTable.Hex <- pHexColoursTable;
     pAllColoursTable.RGB <- pRGBColoursTable;
     pAllColoursTable.ByType <- pByTypeColoursTable;
@@ -118,7 +126,7 @@ function InitColoursCoreTable ( ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function InitDatabaseConfigurationCoreTable ( ) {
+function InitDatabaseCoreTable ( ) {
 
     local pDatabaseConfigurationTable = { };
     
@@ -146,7 +154,7 @@ function InitEntityToDataCoreTables ( ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function InitUtilitiesValuesCoreTable ( ) {
+function InitUtilitiesCoreTable ( ) {
 
     local pUtilitiesValuesTable = { };
 
@@ -221,7 +229,7 @@ function InitBitFlagCoreTable ( ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function InitSecurityValuesCoreTable ( ) {
+function InitSecurityCoreTable ( ) {
     
     local pSecurityValuesTable = { };
 
@@ -250,7 +258,7 @@ function InitSecurityValuesCoreTable ( ) {
 
 function InitLocationsCoreTable ( ) {
     
-    local StandardLocationsTable = { };
+    local pLocationsTable = { };
     
     pLocationsTable.Hospitals <- [ 
         
@@ -375,7 +383,7 @@ function InitLocationsCoreTable ( ) {
     
     ::print ( "[Server.Core]: Core standard locations tables created" );
     
-    return pStandardLocationsTable;
+    return pLocationsTable;
 
 }
 
@@ -410,14 +418,54 @@ function InitJobsCoreTable ( ) {
     
 }
 
+// -------------------------------------------------------------------------------------------------
 
+function InitServerModules ( ) {
+
+    print ( "[Server.Startup]: Initializing module 'lu_hashing' ... Result: " + LoadModule ( "lu_hashing" ) );
+    print ( "[Server.Startup]: Initializing module 'lu_ini' ... Result: " + LoadModule ( "lu_ini" ) );
+    
+    return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function InitServerProcessingThreads ( ) {
+
+	print ( "[Server.Startup]: Initiating server processing threads ... " );
+
+	local pThreadTable = { };
+	
+    pThreadTable.LoadVehicleThread <- ::newthread ( LoadVehicleFromDatabase );
+    pThreadTable.SaveVehicleThread <- ::newthread ( SaveVehicleToDatabase );
+
+    return pThreadTable;
+    
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function InitGameEntities ( ) {
+
+	::print ( "[Server.Startup]: Initiating game entities ... " );
+    
+	::CreateBitwiseTables ( );
+    ::CreateHiddenPackages ( );
+    ::CreateBusinessPickups ( );
+    ::CreateHousePickups ( );
+    ::CreateJobPickups ( );
+    ::CreateVehicles ( );
+	
+    ::AddAllCommandHandlers ( );
+
+    return true;
+    
+}
 
 // -------------------------------------------------------------------------------------------------
 
 // -- THIS GOES LAST
-
-// -- Load up the core table before announcing script file is ready
-pCoreTable <- InitCoreTable ( );
 
 ::print ( "[Server.Core]: Script file loaded and ready." );
 
