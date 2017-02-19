@@ -8,6 +8,7 @@ function LoadAllScriptFiles ( ) {
 	dofile ( szScriptsPath + "Script Files/Server/Business.nut" , true );
 	dofile ( szScriptsPath + "Script Files/Server/Chat.nut" , true );
 	dofile ( szScriptsPath + "Script Files/Server/Clan.nut" , true );
+	dofile ( szScriptsPath + "Script Files/Server/Classes.nut" , true );
 	dofile ( szScriptsPath + "Script Files/Server/Command.nut" , true );
 	dofile ( szScriptsPath + "Script Files/Server/Configuration.nut" , true );
 	dofile ( szScriptsPath + "Script Files/Server/Database.nut" , true );
@@ -21,6 +22,7 @@ function LoadAllScriptFiles ( ) {
 	dofile ( szScriptsPath + "Script Files/Server/Police.nut" , true );
 	dofile ( szScriptsPath + "Script Files/Server/Scripter.nut" , true );
 	dofile ( szScriptsPath + "Script Files/Server/Security.nut" , true );
+	dofile ( szScriptsPath + "Script Files/Server/Server Events.nut" , true );
 	dofile ( szScriptsPath + "Script Files/Server/Utilities.nut" , true );
 	dofile ( szScriptsPath + "Script Files/Server/Vehicle.nut" , true );
 	
@@ -28,6 +30,13 @@ function LoadAllScriptFiles ( ) {
 
 function onScriptLoad ( ) {
 	
-	LoadAllScriptFiles ( );
+	::LoadAllScriptFiles ( );
+	::InitServerModules ( );
+	
+	pCoreTable <- ::InitCoreTable ( );
+	
+	pCoreTable.Vehicles <- ::LoadVehiclesFromDatabase ( );
+	
+	InitGameEntities ( );
 
 }
