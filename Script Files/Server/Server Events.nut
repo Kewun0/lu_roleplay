@@ -1,12 +1,14 @@
 function onScriptLoad ( ) {
 
+	CallFunc ( "lu_roleplay/Server.nut" , "InitCoreTable" );
+
 }
 
 // -------------------------------------------------------------------------------------------------
 
 function onServerStart ( ) {
 
-    CallFunc ( "LURP/Script Files/Server/Server Events.nut" , "InitAllGlobalTables" );
+    
 
 }
 
