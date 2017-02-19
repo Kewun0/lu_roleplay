@@ -29,13 +29,22 @@ function AddModerationCommandHandlers ( ) {
     
     AddCommandHandler ( "Goto" , GotoPlayerCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
     AddCommandHandler ( "GotoVeh" , GotoVehicleCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
-    AddCommandHandler ( "GotoVeh" , GotoBusinessCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
+    //AddCommandHandler ( "GotoVeh" , GotoBusinessCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
     AddCommandHandler ( "GotoHouse" , GotoHouseCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
+	
+	AddCommandHandler ( "Report" , ForumStaffReportCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+	AddCommandHandler ( "Reports" , ListAllStaffReportCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
 	
 	AddCommandHandler ( "ResetReport" , ResetStaffReportCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageServer | GetCoreTable ( ).BitFlags.StaffFlags.ManageAdmins | GetCoreTable ( ).BitFlags.StaffFlags.Scripter );
     AddCommandHandler ( "AcceptReport" , AcceptStaffReportCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
 	AddCommandHandler ( "DenyReport" , DenyStaffReportCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
 	AddCommandHandler ( "ForumReport" , ForumStaffReportCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
+	
+	AddCommandHandler ( "GiveStaffFlag" , GivePlayerStaffFlagCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageAdmins );
+	AddCommandHandler ( "TakeStaffFlag" , GivePlayerStaffFlagCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageAdmins );
+	AddCommandHandler ( "StaffFlags" , ListAllStaffFlagsCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageAdmins );
+	
+	AddCommandHandler ( "SetSkin" , SetPlayerSkinCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
 	
     return true;
 
@@ -43,11 +52,11 @@ function AddModerationCommandHandlers ( ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function BanPlayerCommand ( pPlayer , szCommand , szParams ) {
+function BanPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
     if ( bShowHelpOnly ) {
         
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Bans a player from the server" , [ "Ban" ] , "You must have the BasicModeration staff flag." );
+        SendPlayerCommandInfoMessage ( pPlayer , "Bans a player from the server" , [ "Ban" ] , "" );
         
         return false;
     
@@ -89,11 +98,11 @@ function BanPlayerCommand ( pPlayer , szCommand , szParams ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function TempBanPlayerCommand ( pPlayer , szCommand , szParams ) {
+function TempBanPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
     if ( bShowHelpOnly ) {
         
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Temporarily bans a player from the server" , [ "TempBan" ] , "You must have the BasicModeration staff flag." );
+        SendPlayerCommandInfoMessage ( pPlayer , "Temporarily bans a player from the server" , [ "TempBan" ] , "" );
         
         return false;
     
@@ -135,11 +144,11 @@ function TempBanPlayerCommand ( pPlayer , szCommand , szParams ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function KickPlayerCommand ( pPlayer , szCommand , szParams ) {
+function KickPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
     if ( bShowHelpOnly ) {
         
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Kicks a player from the server" , [ "Kick" ] , "You must have the BasicModeration staff flag." );
+        SendPlayerCommandInfoMessage ( pPlayer , "Kicks a player from the server" , [ "Kick" ] , "" );
         
         return false;
     
@@ -181,11 +190,11 @@ function KickPlayerCommand ( pPlayer , szCommand , szParams ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function MutePlayerCommand ( pPlayer , szCommand , szParams ) {
+function MutePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
     if ( bShowHelpOnly ) {
         
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Mutes a player. Keeps them from using any chat." , [ "Mute" , "MutePlayer" ] , "This also blocks chat-related commands (ME, DO, etc)" );
+        SendPlayerCommandInfoMessage ( pPlayer , "Mutes a player. Keeps them from using any chat." , [ "Mute" , "MutePlayer" ] , "This also blocks chat-related commands (ME, DO, etc)" );
         
         return false;
     
@@ -227,11 +236,11 @@ function MutePlayerCommand ( pPlayer , szCommand , szParams ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function UnmutePlayerCommand ( pPlayer , szCommand , szParams ) {
+function UnmutePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
     if ( bShowHelpOnly ) {
         
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Unmutes a player so they can use chat again." , [ "Unmute" , "UnmutePlayer" ] , "" );
+        SendPlayerCommandInfoMessage ( pPlayer , "Unmutes a player so they can use chat again." , [ "Unmute" , "UnmutePlayer" ] , "" );
         
         return false;
     
@@ -273,11 +282,11 @@ function UnmutePlayerCommand ( pPlayer , szCommand , szParams ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function FreezePlayerCommand ( pPlayer , szCommand , szParams ) {
+function FreezePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
     if ( bShowHelpOnly ) {
         
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Freezes a player so they can't move." , [ "Freeze" , "FreezePlayer" ] , "They can still look around with their mouse." );
+        SendPlayerCommandInfoMessage ( pPlayer , "Freezes a player so they can't move." , [ "Freeze" , "FreezePlayer" ] , "They can still look around with their mouse." );
         
         return false;
     
@@ -321,11 +330,11 @@ function FreezePlayerCommand ( pPlayer , szCommand , szParams ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function UnfreezePlayerCommand ( pPlayer , szCommand , szParams ) {
+function UnfreezePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
     if ( bShowHelpOnly ) {
         
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Unfreezes a player so they can move again." , [ "Unfreeze" ] , "" );
+        SendPlayerCommandInfoMessage ( pPlayer , "Unfreezes a player so they can move again." , [ "Unfreeze" ] , "" );
         
         return false;
     
@@ -369,11 +378,11 @@ function UnfreezePlayerCommand ( pPlayer , szCommand , szParams ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function GotoPlayerCommand ( pPlayer , szCommand , szParams ) {
+function GotoPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
     if ( bShowHelpOnly ) {
         
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Teleports you to a player" , [ "Goto" , "GotoPlayer" ] , "You can provide offset X, Y, and Z." );
+        SendPlayerCommandInfoMessage ( pPlayer , "Teleports you to a player" , [ "Goto" , "GotoPlayer" ] , "You can provide offset X, Y, and Z." );
         
         return false;
     
@@ -415,11 +424,11 @@ function GotoPlayerCommand ( pPlayer , szCommand , szParams ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function GotoVehicleCommand ( pPlayer , szCommand , szParams ) {
+function GotoVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
     if ( bShowHelpOnly ) {
         
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Teleports you to a vehicle." , [ "GotoVeh" ] , "You can provide offset X, Y, and Z." );
+        SendPlayerCommandInfoMessage ( pPlayer , "Teleports you to a vehicle." , [ "GotoVeh" ] , "You can provide offset X, Y, and Z." );
         
         return false;
     
@@ -699,7 +708,7 @@ function ListAllStaffFlagsCommand ( pPlayer , szCommand , szParams , bShowHelpOn
 
 // -------------------------------------------------------------------------------------------------
 
-function SubmitStaffReportCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
+function SubmitStaffReportCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
     if( bShowHelpOnly ) {
 
@@ -892,7 +901,7 @@ function DenyStaffReportCommand ( pPlayer , szCommand , szParams , bShowHelpOnly
 
 // -------------------------------------------------------------------------------------------------
 
-function SetAsForumStaffReportCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
+function ForumStaffReportCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
 
     if( bShowHelpOnly ) {
 
@@ -1126,8 +1135,89 @@ function GetAllUnhandledStaffReports ( ) {
 
 // -------------------------------------------------------------------------------------------------
 
+function SetPlayerSkinCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+    if( bShowHelpOnly ) {
+
+        SendPlayerCommandInfoMessage ( pPlayer , "Sets a player's skin" , [ "SetSkin" ] , "" );
+
+        return false;
+
+    }
+
+    local szTargetParam = false;
+    local szSkinParam = false;
+    
+    if( !szParams ) {
+    
+        SendPlayerSyntaxMessage ( pPlayer , "/SetSkin <Player Name/ID> <Skin ID>" );
+        
+        return false;
+    
+    }
+    
+    if( NumTok ( szParams , " " ) != 2 ) {
+    
+        SendPlayerSyntaxMessage ( pPlayer , "/setskin <Player Name/ID> <Skin ID>" );
+        
+        return false;
+    
+    }    
+    
+    szTargetParam = GetTok ( szParams , " " , 1 );
+    szSkinParam = GetTok ( szParams , " " , 2 );
+    
+    if ( !FindPlayer ( szTargetParam ) ) {
+    
+        SendPlayerErrorMessage ( pPlayer , "That player is not connected!" );
+        
+        return false;
+    
+    }
+    
+    if ( !IsNum ( szSkinParam ) ) {
+    
+        SendPlayerErrorMessage ( pPlayer , "The skin ID must be a number!" );
+        
+        return false;    
+    
+    }
+    
+    szSkinParam = szSkinParam.tointeger ( );
+    
+    if ( !IsValidSkinID ( szSkinParam ) ) {
+    
+        SendPlayerErrorMessage ( pPlayer , "That skin ID is invalid!" );
+        
+        return false;    
+    
+    }
+    
+    local pTarget = FindPlayer ( szTargetParam );
+    
+    SendPlayerSuccessMessage ( pPlayer , "You set " + pTarget.Name + "'s skin to ID " + szSkinParam );
+    SendPlayerAlertMessage ( pTarget , pTarget.Name + " has set your skin to ID " + szSkinParam );
+    
+    SetPlayerSkin ( pTarget , szSkinParam );
+    
+    return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function CanPlayerSubmitStaffReport ( pPlayer ) {
+
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
 // -- THIS GOES LAST
 
 print ( "[Server.Moderation]: Script file loaded and ready." );
 
 // -------------------------------------------------------------------------------------------------
+
+
