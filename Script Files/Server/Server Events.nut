@@ -172,7 +172,7 @@ function onPlayerCommand ( pPlayer , szCommand , szParams ) {
 
     print ( "- Player '" + pPlayer.Name + "' (ID " + pPlayer.ID + ") tried command. String: /" + szCommand + " " + szParams );
 
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     
     if( !IsCommandAllowedBeforeAuthentication ( szCommand ) ) {
         
@@ -196,17 +196,21 @@ function onPlayerCommand ( pPlayer , szCommand , szParams ) {
     
     if ( DoesCommandHandlerExist ( szCommand.tolower ( ) ) ) {
 
-        if ( !HasBitFlag ( pPlayerData.iStaffFlags , GetCoreTable ( ).Commands.rawget ( szCommand.tolower ( ) ).iStaffFlags ) ) {
-        
-            SendPlayerErrorMessage ( pPlayer , "You don't have permission to use this command!" );
-            
-            print ( "- Player '" + pPlayer.Name + "' (ID " + pPlayer.ID + ") failed to use command. Reason: Does not have required staff flags - String: /" + szCommand + " " + szParams );
-            
-            return true;
-        
-        }
+		if ( GetCoreTable ( ).Commands.rawget ( szCommand.tolower ( ) ).iStaffFlags != 0 ) {
+			
+			if ( !HasBitFlag ( pPlayerData.iStaffFlags , GetCoreTable ( ).Commands.rawget ( szCommand.tolower ( ) ).iStaffFlags ) ) {
+			
+				SendPlayerErrorMessage ( pPlayer , "You don't have permission to use this command!" );
+				
+				print ( "- Player '" + pPlayer.Name + "' (ID " + pPlayer.ID + ") failed to use command. Reason: Does not have required staff flags - String: /" + szCommand + " " + szParams );
+				
+				return true;
+			
+			}
+		
+		}
     
-        if ( !GetCoreTable ( ).Commands.rawget ( szCommand.tolower ( ) ).pEnabled ) {
+        if ( !GetCoreTable ( ).Commands.rawget ( szCommand.tolower ( ) ).bEnabled ) {
         
             SendPlayerErrorMessage ( pPlayer , "The " + szCommand + " command is disabled. Reason: " + szCommand.tolower ( ).szDisableReason );
             
@@ -220,7 +224,7 @@ function onPlayerCommand ( pPlayer , szCommand , szParams ) {
         
     }
 
-    SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "Unknown Command" ) + " " + szCommand );
+    SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "UnknownCommand" ) + " - /" + szCommand );
     
     return true;
     
