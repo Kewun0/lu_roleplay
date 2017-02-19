@@ -8,11 +8,12 @@ function AddCommandHandler ( szCommand , szListener , iStaffFlags ) {
     
     local pCommandData = { };
 
-    pCommandData.szCommand = szCommand.tolower ( );
-    pCommandData.iStaffFlags = iStaffFlags;
-    pCommandData.bEnabled = true;
+    pCommandData.szCommand <- szCommand.tolower ( );
+    pCommandData.iStaffFlags <- iStaffFlags;
+    pCommandData.bEnabled <- true;
+	pCommandData.pListener <- szListener;
     
-    GetCoreTable ( ).Commands.rawset ( szCommand , pCommandData );
+    GetCoreTable ( ).Commands.rawset ( szCommand.tolower ( ) , pCommandData );
 
     return true;
     
@@ -47,8 +48,8 @@ function DoesCommandHandlerExist ( szCommand ) {
 
 function AddAllCommandHandlers ( ) {
 
-    AddCommandHandler ( "Login" , PlayerLoginCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "Register" , PlayerRegisterCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    //AddCommandHandler ( "Login" , PlayerLoginCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    //AddCommandHandler ( "Register" , PlayerRegisterCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
 
     AddCommandHandler ( "Shout" , AreaShoutCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
     AddCommandHandler ( "S" , AreaShoutCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
@@ -63,6 +64,8 @@ function AddAllCommandHandlers ( ) {
     
     AddCommandHandler ( "Bug" , SubmitBugCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
     AddCommandHandler ( "Idea" , SubmitIdeaCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+	
+	AddCommandHandler ( "Help" , HelpCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
     
     // AddCommandHandler ( "tazer" , ToggleTazerCommand );
     
@@ -70,6 +73,7 @@ function AddAllCommandHandlers ( ) {
     AddPlayerCommandHandlers ( );
     AddScripterCommandHandlers ( );
     AddClanCommandHandlers ( );
+	AddModerationCommandHandlers ( );
     
 }
 
