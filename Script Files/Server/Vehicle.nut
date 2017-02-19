@@ -70,7 +70,7 @@ function LoadVehiclesFromDatabase ( ) {
     
         for ( local i = 1 ; i <= iVehiclesCount ; i++ ) {
         
-           pVehicleData = LoadVehicleThread.call ( i );
+           pVehicleData = ::CallLoadVehicleThread ( i );
            
            pVehiclesData.push ( pVehicleData );
         
@@ -88,10 +88,18 @@ function LoadVehiclesFromDatabase ( ) {
 
 // -------------------------------------------------------------------------------------------------
 
+function CallLoadVehicleThread ( iDatabaseID ) {
+
+	return ::GetCoreTable( ).Threads.LoadVehicleThread.call ( iDatabaseID );
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
 function SaveVehicleToDatabase ( pVehicle ) {
     
-    local iVehicleDataID = ::UnitedIslands.VehicleToData [ pVehicle.ID ];
-    local pVehicleData = ::UnitedIslands.Vehicles [ iVehicleDataID ];
+    local iVehicleDataID = ::GetCoreTable( ).VehicleToData [ pVehicle.ID ];
+    local pVehicleData = ::GetCoreTable( ).Vehicles [ iVehicleDataID ];
     local pQuery = false;
     
     // -- Check to see if the vehicle is already in the database. A vehicle that isn't, will have an iDatabaseID of 0
@@ -99,7 +107,7 @@ function SaveVehicleToDatabase ( pVehicle ) {
     
     if ( pVehicleData.iDatabaseID != 0 ) {
         
-        pVehicleData.szFileString = "Scripts/United Islands RPG/Data/Vehicles/" + pVehicleData.iDatabaseID + ".ini";
+        pVehicleData.szFileString = "Scripts/lu_roleplay/Data/Vehicles/" + pVehicleData.iDatabaseID + ".ini";
     
         ::WriteIniInteger ( pVehicleData.szFileString , "General" , "iModel" , pVehicleData.iModel );
         ::WriteIniInteger ( pVehicleData.szFileString , "General" , "iColour1Red" , pVehicleData.pColour1.r );
@@ -135,11 +143,19 @@ function SaveVehicleToDatabase ( pVehicle ) {
 
 function SaveAllVehiclesToDatabase ( ) {
 
-    foreach ( ii , iv in UnitedIslands.Vehicles ) {
+    foreach ( ii , iv in GetCoreTable( ).Vehicles ) {
     
-        SaveVehicleThread.call ( iv.pVehicle );
+        CallSaveVehicleThread ( iv.pVehicle );
     
     }
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function CallSaveVehicleThread ( pVehicle ) {
+	
+	::GetCoreTable( ).Threads.SaveVehicleThread.call ( pVehicle );
 
 }
 
@@ -149,9 +165,9 @@ function CreateVehicles ( ) {
 
     local pVehicle = false;
 
-    if ( UnitedIslands.Vehicles.len ( ) > 0 ) {
+    if ( GetCoreTable ( ).Vehicles.len ( ) > 0 ) {
     
-        foreach ( ii , iv in UnitedIslands.Vehicles ) {
+        foreach ( ii , iv in GetCoreTable ( ).Vehicles ) {
             
             pVehicle = CreateVehicle ( iv.iModel , Vector ( iv.pPosition.x , iv.pPosition.y , iv.pPosition.z ) , iv.fAngle );
             
@@ -164,7 +180,7 @@ function CreateVehicles ( ) {
             
             iv.pVehicle = pVehicle;
             
-            UnitedIslands.VehicleToData [ pVehicle.ID ] = ii;
+            GetCoreTable ( ).VehicleToData [ pVehicle.ID ] = ii;
             
             print ( "[ServerStart]: Vehicle " + pVehicle.ID + " Spawned (" + GetVehicleName ( iv.iModel ) + " - " + ii + ")" );
             
@@ -172,7 +188,7 @@ function CreateVehicles ( ) {
     
     }
     
-    print ( "[ServerStart]: " + UnitedIslands.Vehicles.len ( ) + " vehicles spawned" );
+    print ( "[ServerStart]: " + GetCoreTable ( ).Vehicles.len ( ) + " vehicles spawned" );
     
     return true;
    
@@ -658,8 +674,8 @@ function VehicleSirenCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = 
 function SetVehicleLightState ( pVehicle , bLightState ) {
 
     local iLightState = ( ( !bLightState ) ? LIGHTSTATE_OFF : LIGHTSTATE_ON );
-    local pVehicleDataID = UnitedIslands.VehicleToData [ pVehicle.ID ];
-    local pVehicleData = UnitedIslands.Vehicles [ pVehicleDataID ];
+    local pVehicleDataID = GetCoreTable( ).VehicleToData [ pVehicle.ID ];
+    local pVehicleData = GetCoreTable( ).Vehicles [ pVehicleDataID ];
     
     pVehicle.LightState = iLightState;
     
@@ -671,8 +687,8 @@ function SetVehicleLightState ( pVehicle , bLightState ) {
 
 function SetVehicleDoorLockState ( pVehicle , bLockState ) {
 
-    local pVehicleDataID = UnitedIslands.VehicleToData [ pVehicle.ID ];
-    local pVehicleData = UnitedIslands.Vehicles [ pVehicleDataID ];
+    local pVehicleDataID = GetCoreTable( ).VehicleToData [ pVehicle.ID ];
+    local pVehicleData = GetCoreTable( ).Vehicles [ pVehicleDataID ];
     
     pVehicle.Locked = bLockState;
     
@@ -684,8 +700,8 @@ function SetVehicleDoorLockState ( pVehicle , bLockState ) {
 
 function SetVehicleEngineState ( pVehicle , bEngineState ) {
 
-    local pVehicleDataID = UnitedIslands.VehicleToData [ pVehicle.ID ];
-    local pVehicleData = UnitedIslands.Vehicles [ pVehicleDataID ];
+    local pVehicleDataID = GetCoreTable( ).VehicleToData [ pVehicle.ID ];
+    local pVehicleData = GetCoreTable( ).Vehicles [ pVehicleDataID ];
     
     pVehicle.SetEngineState ( bEngineState );
     
@@ -699,7 +715,7 @@ function SetVehicleEngineState ( pVehicle , bEngineState ) {
 
 function SetVehicleSirenState ( pVehicle , bSirenState ) {
 
-    //local pVehicleData = UnitedIslands.VehicleToData [ pVehicle.ID ];
+    //local pVehicleData = GetCoreTable( ).VehicleToData [ pVehicle.ID ];
     
     pVehicle.Siren = bSirenState;
     
@@ -711,7 +727,7 @@ function SetVehicleSirenState ( pVehicle , bSirenState ) {
 
 function SetVehicleSirenLightState ( pVehicle , bSirenLightState ) {
 
-    //local pVehicleData = UnitedIslands.VehicleToData [ pVehicle.ID ];
+    //local pVehicleData = GetCoreTable( ).VehicleToData [ pVehicle.ID ];
     
     pVehicle.SirenLight = bSirenLightState;
     
@@ -723,7 +739,7 @@ function SetVehicleSirenLightState ( pVehicle , bSirenLightState ) {
 
 function SetVehicleTaxiLightState ( pVehicle , bTaxiLightState ) {
 
-    //local pVehicleData = UnitedIslands.VehicleToData [ pVehicle.ID ];
+    //local pVehicleData = GetCoreTable( ).VehicleToData [ pVehicle.ID ];
     
     pVehicle.TaxiLight = bTaxiLightState;
     
@@ -735,7 +751,7 @@ function SetVehicleTaxiLightState ( pVehicle , bTaxiLightState ) {
 
 function GetNumberOfVehicles ( ) {
 
-    return ReadIniInteger ( "Scripts/United Islands RPG/Data/Index.ini" , "General" , "iVehicleAmount" );
+    return ReadIniInteger ( "Scripts/lu_roleplay/Data/Index.ini" , "General" , "iVehicleAmount" );
 
 }
 
@@ -745,11 +761,11 @@ function LoadVehicleFromDatabase ( iDatabaseID ) {
 
     local pVehicleData = false;
 
-    pVehicleData = ::UnitedIslands.Classes.VehicleData ( );
+    pVehicleData = GetCoreTable( ).Classes.VehicleData ( );
     
     pVehicleData.iDatabaseID = iDatabaseID;
     
-    pVehicleData.szFileString =  "Scripts/United Islands RPG/Data/Vehicles/" + pVehicleData.iDatabaseID +".ini";
+    pVehicleData.szFileString =  "Scripts/lu_roleplay/Data/Vehicles/" + pVehicleData.iDatabaseID +".ini";
     
     pVehicleData.iModel = ::ReadIniInteger ( pVehicleData.szFileString , "General" , "iModel" );
     pVehicleData.pColour1 = { r = ::ReadIniInteger ( pVehicleData.szFileString , "General" , "iColour1Red" ) , g = ::ReadIniInteger ( pVehicleData.szFileString , "General" , "iColour1Green" ) , b = ::ReadIniInteger ( pVehicleData.szFileString , "General", "iColour1Blue" ) };
@@ -803,8 +819,8 @@ function SetVehicleRentPriceCommand ( pPlayer , szCommand , szParams , bShowHelp
     
     }
     
-    iVehicleDataID = UnitedIslands.VehicleToData [ pPlayer.Vehicle.ID ];
-    pVehicleData = UnitedIslands.Vehicles [ iVehicleDataID ];
+    iVehicleDataID = GetCoreTable( ).VehicleToData [ pPlayer.Vehicle.ID ];
+    pVehicleData = GetCoreTable( ).Vehicles [ iVehicleDataID ];
     
     pVehicleData.iRentPrice = szParams.tointeger ( );
     
@@ -846,8 +862,8 @@ function SetVehicleBuyPriceCommand ( pPlayer , szCommand , szParams , bShowHelpO
     
     }
     
-    iVehicleDataID = UnitedIslands.VehicleToData [ pPlayer.Vehicle.ID ];
-    pVehicleData = UnitedIslands.Vehicles [ iVehicleDataID ];
+    iVehicleDataID = GetCoreTable( ).VehicleToData [ pPlayer.Vehicle.ID ];
+    pVehicleData = GetCoreTable( ).Vehicles [ iVehicleDataID ];
     
     pVehicleData.iBuyPrice = szParams.tointeger ( );
     
@@ -878,7 +894,7 @@ function RentVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = f
     }
     
     local pVehicleData = GetVehicleDataFromVehicle ( pPlayer.Vehicle );
-    local pPlayerData = UnitedIslands.Players [ pPlayer.ID ];
+    local pPlayerData = GetCoreTable( ).Players [ pPlayer.ID ];
     
     if ( pVehicleData.iRentPrice == 0 ) {
     
@@ -917,7 +933,7 @@ function RentVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = f
 
 function StopRentVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-    local pPlayerData = UnitedIslands.Players [ pPlayer.ID ];
+    local pPlayerData = GetCoreTable( ).Players [ pPlayer.ID ];
 
     if ( !pPlayerData.pRentingVehicle ) {
     
@@ -944,7 +960,7 @@ function StopRentVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly
 
 function ResetRentedVehicle ( pPlayer ) {
 
-    local pPlayerData = UnitedIslands.Players [ pPlayer.ID ];
+    local pPlayerData = GetCoreTable( ).Players [ pPlayer.ID ];
     
     if ( !pPlayerData.pRentingVehicle ) {
     
@@ -979,7 +995,7 @@ function ResetRentedVehicle ( pPlayer ) {
 function SetVehicleRenter ( pVehicle , pPlayer ) {
 
     local pVehicleData = GetVehicleDataFromVehicle ( pVehicle );
-    local pPlayerData = UnitedIslands.Players [ pPlayer.ID ];
+    local pPlayerData = GetCoreTable( ).Players [ pPlayer.ID ];
     
     if ( !pVehicleData ) {
     
@@ -996,7 +1012,7 @@ function SetVehicleRenter ( pVehicle , pPlayer ) {
 
 function GetVehicleDataFromVehicle ( pVehicle ) {
 
-    local pVehicleDataID = UnitedIslands.VehicleToData [ pVehicle.ID ];
+    local pVehicleDataID = GetCoreTable( ).VehicleToData [ pVehicle.ID ];
     
     if ( pVehicleDataID == -1 ) {
     
@@ -1005,7 +1021,7 @@ function GetVehicleDataFromVehicle ( pVehicle ) {
     }
     
     
-    local pVehicleData = UnitedIslands.Vehicles [ pVehicleDataID ];
+    local pVehicleData = GetCoreTable( ).Vehicles [ pVehicleDataID ];
     
     if ( !pVehicleData ) {
     
@@ -1099,7 +1115,7 @@ function RespawnVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly 
 
 function RespawnAllVehiclesCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-    foreach ( ii , iv in UnitedIslands.Vehicles ) {
+    foreach ( ii , iv in GetCoreTable( ).Vehicles ) {
     
         if ( iv.pVehicle ) {
         
@@ -1109,8 +1125,29 @@ function RespawnAllVehiclesCommand ( pPlayer , szCommand , szParams , bShowHelpO
     
     }
     
-    SendAllAdminMessage ( GetPlayerLocaleMessage ( pPlayer , "AllVehiclesRespawned" ) );
-    SendPlayerSuccessMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "AllVehiclesRespawned" ) );
+    SendAllAdminMessage ( "All vehicles have been respawned by " + pPlayer.Name );
+    SendPlayerSuccessMessage ( pPlayer , "All vehicles have been respawned!" );
+
+    return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function ExplodeAllVehiclesCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+    foreach ( ii , iv in GetCoreTable( ).Vehicles ) {
+    
+        if ( iv.pVehicle ) {
+        
+            iv.pVehicle.Explode ( pPlayer );
+        
+        }
+    
+    }
+    
+    SendAllAdminMessage ( "All vehicles have been exploded by " + pPlayer.Name );
+    SendPlayerSuccessMessage ( pPlayer , "All vehicles have been exploded!" );
 
     return true;
 
