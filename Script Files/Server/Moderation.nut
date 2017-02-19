@@ -687,7 +687,7 @@ function ListAllStaffFlagsCommand ( pPlayer , szCommand , szParams , bShowHelpOn
 		
 		} else {
 		
-			SendPlayerNormalMessage ( pPlayer , 
+			SendPlayerNormalMessage ( pPlayer , GetCoreTable ( ).Colours.Hex.BrightRed + ii );
 		
 		}
 	
@@ -808,7 +808,7 @@ function AcceptStaffReportCommand ( pPlayer , szCommand , szParams , bShowHelpOn
 		
 	}
 	
-	if ( IsStaffReportAlreadyHandled ( pPlayer , pStaffReport ) {
+	if ( IsStaffReportAlreadyHandled ( pPlayer , pStaffReport ) ) {
 	
 		SendPlayerErrorMessage ( pPlayer , "That report is already being handled!" );
 		
@@ -868,7 +868,7 @@ function DenyStaffReportCommand ( pPlayer , szCommand , szParams , bShowHelpOnly
 		
 	}
 	
-	if ( IsStaffReportAlreadyHandled ( pPlayer , pStaffReport ) {
+	if ( IsStaffReportAlreadyHandled ( pPlayer , pStaffReport ) ) {
 	
 		SendPlayerErrorMessage ( pPlayer , "That report is already handled!" );
 		
@@ -928,7 +928,7 @@ function SetAsForumStaffReportCommand ( pPlayer , szCommand , szParams , bShowHe
 		
 	}
 	
-	if ( IsStaffReportAlreadyHandled ( pPlayer , pStaffReport ) {
+	if ( IsStaffReportAlreadyHandled ( pPlayer , pStaffReport ) ) {
 	
 		SendPlayerErrorMessage ( pPlayer , "That report is already handled!" );
 		
@@ -988,7 +988,7 @@ function ResetStaffReportCommand ( pPlayer , szCommand , szParams , bShowHelpOnl
 		
 	}
 	
-	if ( !IsStaffReportAlreadyHandled ( pPlayer , pStaffReport ) {
+	if ( !IsStaffReportAlreadyHandled ( pPlayer , pStaffReport ) ) {
 	
 		SendPlayerErrorMessage ( pPlayer , "That report has not been handled! No need to reset it!" );
 		
