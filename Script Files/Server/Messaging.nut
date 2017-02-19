@@ -113,6 +113,14 @@ function SendIsRegisteredWelcomeOnConnect ( pPlayer ) {
 
 function AreaTalkCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
+    if( bShowHelpOnly ) {
+
+        SendPlayerCommandInfoMessage ( pPlayer , "Talks to nearby players." , [ "Talk" , "Local" , "L" ] , "" );
+
+        return false;
+
+    }	
+
     local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
     
     if ( pPlayerData.bMuted ) {
@@ -140,6 +148,14 @@ function AreaTalkCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fals
 // -------------------------------------------------------------------------------------------------
 
 function AreaShoutCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+    if( bShowHelpOnly ) {
+
+        SendPlayerCommandInfoMessage ( pPlayer , "Shouts to nearby players" , [ "Shout" , "S" ] , "" );
+
+        return false;
+
+    }	
 
     local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
     
@@ -169,6 +185,14 @@ function AreaShoutCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fal
 
 function PrivateMessageCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
+    if( bShowHelpOnly ) {
+
+        SendPlayerCommandInfoMessage ( pPlayer , "Sends a private message to another player" , [ "PM" , "MSG" ] , "" );
+
+        return false;
+
+    }	
+
     local szMessage = "";
     local pReceiver = false;
 
@@ -182,9 +206,9 @@ function PrivateMessageCommand ( pPlayer , szCommand , szParams , bShowHelpOnly 
     
     }
     
-    if ( ( szParams == "" ) || ( NumTok ( szParams , " " ) < 2 ) ) {
+    if ( !szParams || ( szParams == "" ) || ( NumTok ( szParams , " " ) < 2 ) ) {
     
-        SendPlayerSyntaxMessage ( pPlayer , "/pm <name/id> <message>" );
+        SendPlayerSyntaxMessage ( pPlayer , "/PM <Player Name/ID> <Message>" );
         
         return false;
     
@@ -289,13 +313,21 @@ function SendWelcomeMessage ( pPlayer ) {
 
 function HelpCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
     
+    if( bShowHelpOnly ) {
+
+        SendPlayerCommandInfoMessage ( pPlayer , "Shows help information" , [ "Help" ] , "" );
+
+        return false;
+
+    }		
+	
     local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
     local szCategory = "";
     
     if ( !szParams ) {
         
         SendPlayerSyntaxMessage ( pPlayer , "/Help <Category>" );
-        MessagePlayer ( GetCoreTable ( ).Colours.Hex.White + "Help Categories: " + GetCoreTable ( ).Colours.Hex.LightGrey + "Account, Command, Vehicle, Job, Chat, Rules, Website" , GetCoreTable ( ).Colours.RGB.White );
+        MessagePlayer ( GetCoreTable ( ).Colours.Hex.White + "Help Categories: " + GetCoreTable ( ).Colours.Hex.LightGrey + "Account, Command, Vehicle, Job, Chat, Rules, Website" , pPlayer , GetCoreTable ( ).Colours.RGB.White );
         
         return false;
         
@@ -360,9 +392,9 @@ function HelpCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) 
     
         if ( NumTok ( szParams , " " ) == 2 ) {
         
-            szCommandParam = GetTok ( szParams , " " , 2 );
+            local szCommandParam = GetTok ( szParams , " " , 2 );
             
-            if ( !DoesCommandHandlerExist ( szCommandParam ) ) {
+            if ( !DoesCommandHandlerExist ( szCommandParam.tolower ( ) ) ) {
             
                 SendPlayerErrorMessage ( pPlayer , "Command not found!" );
             
@@ -370,7 +402,7 @@ function HelpCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) 
           
             }
             
-            GetCoreTable ( ).Commands.rawget ( szCommand.tolower ( ) ) [ "pListener" ] ( pPlayer , szCommand , szParams , true );
+            GetCoreTable ( ).Commands.rawget ( szCommandParam.tolower ( ) ) [ "pListener" ] ( pPlayer , szCommandParam.tolower ( ) , false , true );
         
         } else {
         
@@ -388,10 +420,10 @@ function HelpCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) 
 
 // -------------------------------------------------------------------------------------------------
 
-function SendPlayerCommandInfoMessage ( pPlayer , szCommand , szDescription , pAliases , szExtraInfo ) {
+function SendPlayerCommandInfoMessage ( pPlayer , szDescription , pAliases , szExtraInfo ) {
 
     local szAliases = "None";
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     
     if ( !DoesCommandHandlerExist ( szCommand ) ) {
     
@@ -401,8 +433,10 @@ function SendPlayerCommandInfoMessage ( pPlayer , szCommand , szDescription , pA
         
     }
     
-    local pCommandData = GetCoreTable ( ).Commands.rawin ( szCommand.tolower ( ) );
+    local pCommandData = GetCoreTable ( ).Commands [ szCommand.tolower ( ) ];
 
+	MessagePlayer ( "== COMMAND INFO ====================================" , pPlayer , GetCoreTable ( ).Colours.RGB.Lime );
+	
     MessagePlayer ( GetCoreTable ( ).Colours.ByType.CommandInfoHeader + GetPlayerLocaleMessage ( pPlayer , "CommandInfoHeader" ) + ": " + GetCoreTable ( ).Colours.ByType.CommandInfoMessage + szDescription , pPlayer , GetCoreTable ( ).Colours.RGB.White );
     
     if ( pAliases.len ( ) > 0 ) {
@@ -411,7 +445,15 @@ function SendPlayerCommandInfoMessage ( pPlayer , szCommand , szDescription , pA
         
         foreach ( ii , iv in pAliases ) {
         
-            szAliases = szAliases + iv;
+			if ( szAliases.len ( ) == 0 ) {
+            
+				szAliases = "/" + iv.tolower ( );
+			
+			} else {
+			
+				szAliases = szAliases + ", /" + iv.tolower ( );
+			
+			}
         
         }
     
@@ -419,15 +461,15 @@ function SendPlayerCommandInfoMessage ( pPlayer , szCommand , szDescription , pA
     
     MessagePlayer ( GetCoreTable ( ).Colours.ByType.CommandInfoHeader + GetPlayerLocaleMessage ( pPlayer , "CommandAliasesHeader" ) + ": " + GetCoreTable ( ).Colours.ByType.CommandInfoMessage + szAliases , pPlayer , GetCoreTable ( ).Colours.RGB.White );
     
-    if ( szExtraInfo ) {
+    if ( szExtraInfo != "" ) {
     
         MessagePlayer ( GetCoreTable ( ).Colours.ByType.CommandInfoHeader + GetPlayerLocaleMessage ( pPlayer , "CommandExtraInfoHeader" ) + ": " + GetCoreTable ( ).Colours.ByType.CommandInfoMessage + szExtraInfo , pPlayer , GetCoreTable ( ).Colours.RGB.White );
     
     }
     
-    if ( HasBitFlag ( pPlayerData.iStaffFlags , pCommandData.iStaffFlags ) ) {
+    if ( pCommandData.iStaffFlags != 0 && !HasBitFlag ( pPlayerData.iStaffFlags , pCommandData.iStaffFlags ) ) {
     
-        SendPlayerAlertMessage ( pPlayer , "You do not have permission to use this command." );
+        SendPlayerAlertMessage ( pPlayer , "You can't use this command." );
     
     }
     
