@@ -11,6 +11,10 @@ function InitLocaleGlobalTable ( ) {
             AlertMessageHeader = "ALERT" ,
             AdminAnnounceHeader = "ADMIN" , 
             
+			CommandInfoHeader = "USAGE" , 
+			CommandAliasesHeader = "ALIAS" ,
+			CommandExtraInfoHeader = "EXTRA" ,
+			
             RandomHints = [
 
                 "You can check your stats at any time with /stats" , 
@@ -24,6 +28,7 @@ function InitLocaleGlobalTable ( ) {
             ] ,
             
             NoCommandPermission = "You do not have permission to use this command!" ,
+			UnknownCommand = "Unknown command!" ,
             MustBeNumber = "The %s must be a number!" , 
             MustBeBetween = "The %s must be between %d and %d characters" ,
             CommandSpamWait = "You must wait %d seconds before using another command." ,
@@ -110,6 +115,11 @@ function InitLocaleGlobalTable ( ) {
             LoginFailed = "You entered an invalid password. You have %d login attempts remaining." , 
             LoginAttemptsRemaining = "You have %d login attempts remaining." , 
             
+			AllVehiclesExploded = "All vehicles exploded by %s",
+			AllVehiclesRespawned = "All vehicles exploded by %s",
+			AllVehiclesLocked = "All vehicles locked by %s",
+			AllVehiclesUnlocked = "All vehicles unlocked by %s",
+			
             LastItem = false 
             
         }
@@ -124,7 +134,7 @@ function InitLocaleGlobalTable ( ) {
 
 function GetPlayerLocaleMessage ( pPlayer , szMessageType ) {
 
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ]
+    local pPlayerData = GetPlayerData ( pPlayer );
 
     return GetCoreTable ( ).Locale [ pPlayerData.iLocale ] [ szMessageType ];
     
@@ -134,7 +144,7 @@ function GetPlayerLocaleMessage ( pPlayer , szMessageType ) {
 
 function GetPlayerGroupedLocaleMessage ( pPlayer , szGroup ) {
 
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     local pMessages = [ ];
 
     foreach ( ii , iv in GetCoreTable ( ).Locale [ pPlayerData.iLocale ] [ szGroup ] ) {
