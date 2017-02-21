@@ -30,6 +30,7 @@ function InitCoreTable ( ) {
 	pTempCoreTable.Locale 									   <- ::InitLocaleGlobalTable ( );
     pTempCoreTable.Clans                                       <- { };
 	pTempCoreTable.Threads									   <- ::InitServerProcessingThreads ( );
+	pTempCoreTable.Jobs										   <- ::InitJobsCoreTable ( );
 	
 	pTempCoreTable.VehicleToData							   <- array ( MAX_VEHICLES , false );
     
@@ -275,6 +276,16 @@ function InitLocationsCoreTable ( ) {
         {   pPosition = Vector ( -1253.0 , -138.1875 , 58.75 )        , fAngle = 90.0         , szName = "Shoreside Vale"       }
         
     ];
+	
+    pLocationsTable.FireStations <- [ 
+        
+        {   pPosition = Vector ( 1103.70 , -52.45 , 7.49 )       	  , fAngle = 90.0         , szName = "Portland"             } , 
+        {   pPosition = Vector ( -78.48 , -436.80 , 16.17 )           , fAngle = 180.0        , szName = "Staunton Island"      } , 
+        {   pPosition = Vector (-1202.10 , -14.67 , 53.20 )           , fAngle = 180.0         , szName = "Shoreside Vale"       }
+        
+    ];	
+	
+	
     
     pLocationsTable.HiddenPackages <- [
         
@@ -393,21 +404,26 @@ function InitJobsCoreTable ( ) {
 
     local pJobsTable = [
 
-        {   szName = "Police Officer"           , pPosition = Vector ( 1143.87 , -675.18 , 14.97 )              , pPickup = false } , 
-        {   szName = "Police Officer"           , pPosition = Vector ( 340.25 , -1123.37 , 25.98 )              , pPickup = false } , 
-        {   szName = "Police Officer"           , pPosition = Vector ( -1253.0 , -138.18 , 58.75 )              , pPickup = false } , 
-        {   szName = "Paramedic"           		, pPosition = Vector ( 1144.25 , -596.87 , 14.97 )              , pPickup = false } , 
-        {   szName = "Paramedic"           		, pPosition = Vector ( 183.5 , -17.75 , 16.21 )                 , pPickup = false } , 
-        {   szName = "Paramedic"           		, pPosition = Vector ( -1259.5 , -44.5 , 58.89 )                , pPickup = false } ,   
-        
-		/* 
-        {   szName = "Firefighter"              , pPosition = Vector ( )                             			, pPickup = false } , 
-        {   szName = "Trash Collector"          , pPosition = Vector ( )                             			, pPickup = false } , 
-        {   szName = "Postal Worker"            , pPosition = Vector ( )                             			, pPickup = false } , 
-        {   szName = "Delivery Worker"          , pPosition = Vector ( )                             			, pPickup = false } , 
-        {   szName = "Taxi Driver"              , pPosition = Vector ( 1000.20 , -880.50 , 14.95 )              , pPickup = false } , 
-        {   szName = "Bus Driver"               , pPosition = Vector ( 1310.20 , -1016.30 , 14.88 )             , pPickup = false } , 
-        {   szName = "Mechanic"                 , pPosition = Vector ( )                             			, pPickup = false } , 
+        {   szName = "Police Officer"           , pPosition = ::Vector ( 1143.87 , -675.18 , 14.97 )              , pPickup = false , pMapBlip = false , iJobType = 2 } , 
+        //{   szName = "Police Officer"           , pPosition = ::Vector ( 340.25 , -1123.37 , 25.98 )              , pPickup = false , pMapBlip = false , iJobType = 2 } , 
+        //{   szName = "Police Officer"           , pPosition = ::Vector ( -1253.0 , -138.18 , 58.75 )              , pPickup = false , pMapBlip = false , iJobType = 2 } , 
+       
+	    {   szName = "Paramedic"           		, pPosition = ::Vector ( 1144.25 , -596.87 , 14.97 )              , pPickup = false , pMapBlip = false , iJobType = 3 } , 
+        //{   szName = "Paramedic"           		, pPosition = ::Vector ( 183.5 , -17.75 , 16.21 )                 , pPickup = false , pMapBlip = false , iJobType = 3 } , 
+        //{   szName = "Paramedic"           		, pPosition = ::Vector ( -1259.5 , -44.5 , 58.89 )                , pPickup = false , pMapBlip = false , iJobType = 3 } , 
+		
+        {   szName = "Firefighter"          	, pPosition = ::Vector ( 1103.70 , -52.45 , 7.49 )                , pPickup = false , pMapBlip = false , iJobType = 2 } , 
+		//{   szName = "Firefighter"          	, pPosition = ::Vector ( -78.48 , -436.80 , 16.17 )               , pPickup = false , pMapBlip = false , iJobType = 2 } , 
+		//{   szName = "Firefighter"         	 	, pPosition = ::Vector (-1202.10 , -14.67 , 53.20 )               , pPickup = false , pMapBlip = false , iJobType = 2 } , 
+		
+		{   szName = "Trash Collector"          , pPosition = ::Vector ( 1121.8 , 27.8 , 1.99 )                   , pPickup = false , pMapBlip = false , iJobType = 4 }
+		
+		/*
+        {   szName = "Postal Worker"            , pPosition = Vector ( )                             			, pPickup = false , pMapBlip = false } , 
+        {   szName = "Delivery Worker"          , pPosition = Vector ( )                             			, pPickup = false , pMapBlip = false } , 
+        {   szName = "Taxi Driver"              , pPosition = Vector ( 1000.20 , -880.50 , 14.95 )              , pPickup = false , pMapBlip = false } , 
+        {   szName = "Bus Driver"               , pPosition = Vector ( 1310.20 , -1016.30 , 14.88 )             , pPickup = false , pMapBlip = false } , 
+        {   szName = "Mechanic"                 , pPosition = Vector ( )                             			, pPickup = false , pMapBlip = false , iJobType = GetCoreTable ( ).Utilities.pJobs.Mechanic } , 
 		*/
         
     ];
@@ -451,10 +467,10 @@ function InitGameEntities ( ) {
 	::print ( "[Server.Startup]: Initiating game entities ... " );
     
 	::CreateBitwiseTables ( );
-    ::CreateHiddenPackages ( );
+    // ::CreateHiddenPackages ( );
     ::CreateBusinessPickups ( );
     ::CreateHousePickups ( );
-    ::CreateJobPickups ( );
+    ::CreateJobPickupsAndBlips ( );
     ::CreateVehicles ( );
 	
     ::AddAllCommandHandlers ( );
