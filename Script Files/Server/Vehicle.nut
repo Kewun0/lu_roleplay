@@ -175,7 +175,7 @@ function CreateVehicles ( ) {
             pVehicle.RGBColour2 = Colour ( iv.pColour2.r , iv.pColour2.g , iv.pColour2.b );
             
             pVehicle.Locked = iv.bLocked;
-            pVehicle.LightState = ( ( iv.bLightState == false ) ? LIGHTSTATE_OFF : LIGHTSTATE_ON );
+            pVehicle.LightState = !( pVehicle.LightState );
             pVehicle.SetEngineState ( false );
             
             iv.pVehicle = pVehicle;
@@ -673,7 +673,7 @@ function VehicleSirenCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = 
 
 function SetVehicleLightState ( pVehicle , bLightState ) {
 
-    local iLightState = ( ( !bLightState ) ? LIGHTSTATE_OFF : LIGHTSTATE_ON );
+    local iLightState = bLightState;
     local pVehicleDataID = GetCoreTable( ).VehicleToData [ pVehicle.ID ];
     local pVehicleData = GetCoreTable( ).Vehicles [ pVehicleDataID ];
     
@@ -1125,7 +1125,7 @@ function RespawnAllVehiclesCommand ( pPlayer , szCommand , szParams , bShowHelpO
     
     }
     
-    SendAllAdminMessage ( "All vehicles have been respawned by " + pPlayer.Name );
+    SendAdminMessageToAll ( "All vehicles have been respawned by " + pPlayer.Name );
     SendPlayerSuccessMessage ( pPlayer , "All vehicles have been respawned!" );
 
     return true;
@@ -1146,7 +1146,7 @@ function ExplodeAllVehiclesCommand ( pPlayer , szCommand , szParams , bShowHelpO
     
     }
     
-    SendAllAdminMessage ( "All vehicles have been exploded by " + pPlayer.Name );
+    SendAdminMessageToAll ( "All vehicles have been exploded by " + pPlayer.Name );
     SendPlayerSuccessMessage ( pPlayer , "All vehicles have been exploded!" );
 
     return true;

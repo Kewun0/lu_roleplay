@@ -25,7 +25,7 @@ function SendPlayerErrorMessage ( pPlayer , szMessage ) {
 
 function SendAdminMessageToAll ( pPlayer , szMessage ) {
 
-    Message ( GetCoreTable ( ).Colours.ByType.AdminAnnounceHeader + GetPlayerLocaleMessage ( pPlayer , "AdminAnnounceHeader" ) + ": " + GetCoreTable ( ).Colours.ByType.AdminAnnounceMessage + szMessage , GetCoreTable ( ).Colours.RGB.White );
+    Message ( GetCoreTable ( ).Colours.ByType.AdminAnnounceHeader + "ADMIN: " + GetCoreTable ( ).Colours.ByType.AdminAnnounceMessage + szMessage , GetCoreTable ( ).Colours.RGB.White );
     
     return true;
 
