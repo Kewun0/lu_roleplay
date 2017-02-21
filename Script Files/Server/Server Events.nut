@@ -234,7 +234,25 @@ function onPlayerCommand ( pPlayer , szCommand , szParams ) {
 
 function onPlayerChat ( pPlayer , szText ) {
 
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
+	
+	if ( !pPlayerData.bAuthenticated ) {
+	
+		return 0;
+		
+	}
+	
+	if ( !pPlayerData.bCanUseCommands ) {
+	
+		return 0;
+		
+	}	
+	
+	if ( !pPlayerData.bCanSpawn ) {
+	
+		return 0;
+		
+	}	
     
     if ( pPlayerData.bMuted ) {
     
