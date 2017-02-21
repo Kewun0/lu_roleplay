@@ -2,7 +2,12 @@ function AddPlayerCommandHandlers ( ) {
     
     AddCommandHandler ( "Login" , LoginCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
     AddCommandHandler ( "Register" , RegisterCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-        
+       
+	AddCommandHandler ( "IPLogin" , ToggleIPLoginCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+	AddCommandHandler ( "LUIDLogin" , ToggleLUIDLoginCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+	
+	AddCommandHandler ( "ChangePass" , ChangePasswordCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+	
     return true;
     
 }
@@ -11,13 +16,16 @@ function AddPlayerCommandHandlers ( ) {
 
 function SavePlayerToDatabase ( pPlayer ) {
     
-    local pPlayerData = GetPlayerData ( pPlayer );
-    local pQuery = false;
+	local pPlayerData = GetPlayerData ( pPlayer );
+	
     //local iNewConnectTime = pPlayerData.iConnectTime + ( time ( ) - pPlayerData.pSession.iConnectedTime );
-    local iNewConnectTime = 0;
+    
+	local iNewConnectTime = 0;
 	
     local pPosition = ( ( pPlayer.Spawned ) ? pPlayer.Pos : pPlayerData.pPosition );
     local iAngle = ( ( pPlayer.Spawned ) ? pPlayer.Angle : pPlayerData.iAngle );
+	local szIP = "";
+	local szLUID = "";
     
     if ( pPlayerData.iDatabaseID == 0 ) {
     
@@ -39,6 +47,13 @@ function SavePlayerToDatabase ( pPlayer ) {
         iAngle = 268.556;
     
     }
+	
+	if ( pPlayerData.bAuthenticated ) {
+	
+		szIP = pPlayer.IP;
+		szLUID = pPlayer.LUID;
+	
+	}
     
     pPlayerData.iDatabaseID = pPlayerData.iDatabaseID;
             
@@ -46,6 +61,8 @@ function SavePlayerToDatabase ( pPlayer ) {
     WriteIniString ( pPlayerData.szFileString , "General" , "szPassword" , pPlayerData.szPassword );
 
     WriteIniInteger ( pPlayerData.szFileString , "General" , "iLastSession" , pPlayerData.iLastSession );
+	WriteIniString ( pPlayerData.szFileString , "General" , "szLastIP" , szIP );
+	WriteIniString ( pPlayerData.szFileString , "General" , "szLastLUID" , szLUID );
 
     WriteIniInteger ( pPlayerData.szFileString , "General" , "iRegisteredTimestamp" , pPlayerData.iRegisteredTimestamp.tointeger ( ) );
     WriteIniInteger ( pPlayerData.szFileString , "General" , "ilastLoginTimestamp" , pPlayerData.iLastLoginTimestamp.tointeger ( ) );
@@ -136,16 +153,21 @@ function TogglePlayerAutoIPLogin ( pPlayer ) {
 
     local pPlayerData = GetPlayerData ( pPlayer );
 
-    if ( IsAutoIPLoginEnabled( pPlayerData.iAccountSettings ) ) {
+    if ( IsPlayerAutoIPLoginEnabled( pPlayer ) ) {
         
-        pPlayerData.iAccountSettings <- pPlayerData.iAccountSettings & ~pPlayerData.iAccountSettings.AutoIPLogin
+        pPlayerData.iAccountSettings = pPlayerData.iAccountSettings & ~GetCoreTable ( ).BitFlags.AccountSettings.IPLogin;
+		
+		return false;
     
     } else {
     
-        pPlayerData.iAccountSettings <- pPlayerData.iAccountSettings | pPlayerData.iAccountSettings.AutoIPLogin
+        pPlayerData.iAccountSettings = pPlayerData.iAccountSettings | GetCoreTable ( ).BitFlags.AccountSettings.IPLogin;
+		
+		return true;
         
     }
-    return true;
+    
+	return false;
     
 }
 
@@ -155,17 +177,21 @@ function TogglePlayerAutoLUIDLogin ( pPlayer ) {
     
     local pPlayerData = GetPlayerData ( pPlayer );
 
-    if ( IsAutoLUIDLoginEnabled( pPlayerData.iAccountSettings ) ) {
+    if ( IsPlayerAutoLUIDLoginEnabled( pPlayer ) ) {
         
-        pPlayerData.iAccountSettings <- pPlayerData.iAccountSettings & ~pPlayerData.iAccountSettings.AutoLUIDLogin
+        pPlayerData.iAccountSettings = pPlayerData.iAccountSettings & ~GetCoreTable ( ).BitFlags.AccountSettings.LUIDLogin;
+		
+		return false;
     
     } else {
     
-        pPlayerData.iAccountSettings <- pPlayerData.iAccountSettings | pPlayerData.iAccountSettings.AutoLUIDLogin
+        pPlayerData.iAccountSettings = pPlayerData.iAccountSettings | GetCoreTable ( ).BitFlags.AccountSettings.LUIDLogin;
         
+		return true;
+		
     }
     
-    return true;
+    return false;
     
 }
 
@@ -320,6 +346,64 @@ function LoginCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false )
 
 // -------------------------------------------------------------------------------------------------
 
+function ChangePasswordCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+    
+    if( bShowHelpOnly ) {
+
+        SendPlayerCommandInfoMessage ( pPlayer , "Allows you to change your password" , [ "Password" ] , "" );
+
+        return false;
+
+    }	
+	
+    local pPlayerData = GetPlayerData ( pPlayer );
+    
+    if ( !pPlayerData.bAuthenticated ) {
+    
+        SendPlayerErrorMessage ( pPlayer , "You are not logged in!" );
+    
+        return false;
+        
+    }
+	
+	if ( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/ChangePass <Old Password> <New Password>" );
+	
+		return false;
+	
+	}
+	
+	if ( NumTok ( szParams , " " ) != 2 ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/ChangePass <Old Password> <New Password>" );
+		
+		return false;
+	
+	}
+	
+	local szOldPassword = GetTok ( szParams , " " , 1 );
+	local szNewPassword = GetTok ( szParams , " " , 2 );
+	local szSaltedOldPassword = SaltAccountPassword ( szOldPassword , pPlayer.Name );
+	local szSaltedNewPassword = SaltAccountPassword ( szNewPassword , pPlayer.Name );
+	
+	if ( szSaltedOldPassword != pPlayerData.szPassword ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "You entered the wrong password!" );
+		
+		return false;
+	
+	}
+    
+	pPlayerData.szPassword = szSaltedNewPassword;
+	SavePlayerToDatabase ( pPlayer );
+	
+    return true;
+    
+}
+
+// -------------------------------------------------------------------------------------------------
+
 function IsAccountWhitelistEnabled ( iAccountSettings ) {
 
     if ( HasBitFlag ( iAccountSettings , GetCoreTable ( ).BitFlags.AccountSettings.WhiteList ) ) {
@@ -336,9 +420,15 @@ function IsAccountWhitelistEnabled ( iAccountSettings ) {
 
 // -- Needs finished
 
-function IsIPAllowedToUseAccount ( iAccountDatabaseID , szIPAddress ) {
+function IsIPAllowedToUseAccount ( pPlayerData, szIPAddress ) {
     
-    return true;
+	if ( pPlayerData.szLastIP == szIPAddress ) {
+		
+		return true;
+		
+	}
+	
+    return false;
 
 }
 
@@ -346,9 +436,13 @@ function IsIPAllowedToUseAccount ( iAccountDatabaseID , szIPAddress ) {
 
 // -- Needs finished
 
-function IsLUIDAllowedToUseAccount ( iAccountDatabaseID , szIPAddress ) {
+function IsLUIDAllowedToUseAccount ( pPlayerData , szLUID ) {
 
-    return true;
+	if ( pPlayerData.szLastLUID == szLUID ) {
+		
+		return true;
+		
+	}
 
 }
 
@@ -528,7 +622,9 @@ function LoadPlayerFromDatabase ( pPlayer ) {
     pPlayerData.szName                      = ReadIniString ( pPlayerData.szFileString , "General" , "szName" );
     pPlayerData.szPassword                  = ReadIniString ( pPlayerData.szFileString , "General" , "szPassword" );
     
-    pPlayerData.iLastSession                = ReadIniInteger ( pPlayerData.szFileString , "General" , "szLastSession" );
+    pPlayerData.iLastSession                = ReadIniInteger ( pPlayerData.szFileString , "General" , "iLastSession" );
+	pPlayerData.szLastIP                    = ReadIniString ( pPlayerData.szFileString , "General" , "szLastIP" );
+	pPlayerData.szLastLUID                  = ReadIniString ( pPlayerData.szFileString , "General" , "szLastLUID" );
     
     pPlayerData.iRegisteredTimestamp        = ReadIniInteger ( pPlayerData.szFileString , "General" , "iRegisteredTimestamp" );
     pPlayerData.iLastLoginTimestamp         = ReadIniInteger ( pPlayerData.szFileString , "General" , "ilastLoginTimestamp" );
@@ -653,6 +749,83 @@ function GetPlayerData( pPlayer ) {
 
 	return GetCoreTable ( ).Players [ pPlayer.ID ];
 	
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function ToggleIPLoginCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+    
+    if( bShowHelpOnly ) {
+
+        SendPlayerCommandInfoMessage ( pPlayer , "Toggles ON/OFF automatic login by IP." , [ "IPLogin" ] , "Only uses your last IP to automatically login" );
+
+        return false;
+
+    }	
+	
+    local pPlayerData = GetPlayerData ( pPlayer );
+    
+    if ( !pPlayerData.bAuthenticated ) {
+    
+        SendPlayerErrorMessage ( pPlayer , "You are not logged in!" );
+    
+        return false;
+        
+    }
+    
+	local bIPLoginState = TogglePlayerAutoIPLogin ( pPlayer );
+	
+	if ( bIPLoginState ) {
+	
+		SendPlayerAlertMessage ( pPlayer , "You will now be logged in by your IP." );
+	
+	} else {
+	
+		SendPlayerAlertMessage ( pPlayer , "You will not be logged in by your IP." );
+	
+	}
+    
+    return true;
+    
+}
+
+// -------------------------------------------------------------------------------------------------
+
+
+function ToggleLUIDLoginCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+    
+    if( bShowHelpOnly ) {
+
+        SendPlayerCommandInfoMessage ( pPlayer , "Toggles ON/OFF automatic login by LUID." , [ "LUIDLogin" ] , "Only uses your last LUID to automatically login" );
+
+        return false;
+
+    }	
+	
+    local pPlayerData = GetPlayerData ( pPlayer );
+    
+    if ( !pPlayerData.bAuthenticated ) {
+    
+        SendPlayerErrorMessage ( pPlayer , "You are not logged in!" );
+    
+        return false;
+        
+    }
+    
+	local bLUIDLoginState = TogglePlayerAutoLUIDLogin ( pPlayer );
+	
+	if ( bLUIDLoginState ) {
+	
+		SendPlayerAlertMessage ( pPlayer , "You will now be logged in by your LUID." );
+	
+	} else {
+	
+		SendPlayerAlertMessage ( pPlayer , "You will not be logged in by your LUID." );
+	
+	}
+    
+    return true;
+    
 }
 
 // -------------------------------------------------------------------------------------------------
