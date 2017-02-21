@@ -61,9 +61,6 @@ function AddAllCommandHandlers ( ) {
     AddCommandHandler ( "PM" , PrivateMessageCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
     AddCommandHandler ( "MSG" , PrivateMessageCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
     AddCommandHandler ( "Send" , PrivateMessageCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    
-    AddCommandHandler ( "Bug" , SubmitBugCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "Idea" , SubmitIdeaCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
 	
 	AddCommandHandler ( "Help" , HelpCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
     
