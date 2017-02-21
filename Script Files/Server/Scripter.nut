@@ -13,8 +13,12 @@
 
 function AddScripterCommandHandlers ( ) {
 
-    AddCommandHandler ( "se" , ExecuteCodeCommand , GetCoreTable ( ).BitFlags.StaffFlags.Scripter );
-    AddCommandHandler ( "sr" , ExecuteReturnCodeCommand , GetCoreTable ( ).BitFlags.StaffFlags.Scripter );
+    AddCommandHandler ( "SE" , ExecuteCodeCommand , GetCoreTable ( ).BitFlags.StaffFlags.Scripter );
+    AddCommandHandler ( "SR" , ExecuteReturnCodeCommand , GetCoreTable ( ).BitFlags.StaffFlags.Scripter );
+	
+	AddCommandHandler ( "Bug" , SubmitBugCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+	AddCommandHandler ( "Idea" , SubmitIdeaCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+	AddCommandHandler ( "Position" , SubmitPositionCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );	
     
     return true;
 
@@ -139,6 +143,155 @@ function onConsoleInput ( szCommand , szParams ) {
     
     }
 
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function SubmitBugCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+    if( bShowHelpOnly ) {
+
+        SendPlayerCommandInfoMessage ( pPlayer , "Reporrts a bug to the scripters" , [ "Bug" ] , "" );
+
+        return false;
+
+    }		
+
+    local iBugCount = ReadIniInteger ( "Bugs.ini" , "General" , "iBugCount" );
+    local pPlayerData = GetPlayerData ( pPlayer );
+    
+    iBugCount++;
+    
+    WriteIniInteger ( "Bugs.ini" , "General" , "iBugCount" , iBugCount );
+    
+    local szSafeIniString = CreateSafeIniString ( szParams );
+    
+    WriteIniString ( "Bugs.ini" , "Bug " + iBugCount , "szMessage" , szSafeIniString );
+    WriteIniString ( "Bugs.ini" , "Bug " + iBugCount , "szAddedBy" , pPlayer.Name );
+    WriteIniString ( "Bugs.ini" , "Bug " + iBugCount , "szTimestamp" , ParseDateForDisplay ( time( ) ) );
+    WriteIniInteger ( "Bugs.ini" , "Bug " + iBugCount , "iScriptVersion" , GetCoreTable ( ).Utilities.iScriptVersion );
+    
+    return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function SubmitIdeaCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+    if( bShowHelpOnly ) {
+
+        SendPlayerCommandInfoMessage ( pPlayer , "Sends an idea to the scripters" , [ "Idea" ] , "" );
+
+        return false;
+
+    }		
+
+    local iIdeaCount = ReadIniInteger ( "Ideas.ini" , "General" , "iIdeaCount" );
+    local pPlayerData = GetPlayerData ( pPlayer );
+    
+    iIdeaCount++;
+    
+    WriteIniInteger ( "Ideas.ini" , "General" , "iIdeaCount" , iIdeaCount );
+    
+    local szSafeIniString = CreateSafeIniString ( szParams );
+    
+    WriteIniString ( "Ideas.ini" , "Idea " + iIdeaCount , "szMessage" , szSafeIniString );
+    WriteIniString ( "Ideas.ini" , "Idea " + iIdeaCount , "szAddedBy" , pPlayer.Name );
+    WriteIniString ( "Ideas.ini" , "Idea " + iIdeaCount , "szTimestamp" , ParseDateForDisplay ( time( ) ) );
+    WriteIniInteger ( "Ideas.ini" , "Idea " + iIdeaCount , "iScriptVersion" , GetCoreTable ( ).Utilities.iScriptVersion );
+    
+    return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function SubmitPositionCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+    if( bShowHelpOnly ) {
+
+        SendPlayerCommandInfoMessage ( pPlayer , "Saves a position for reference" , [ "Position" ] , "" );
+
+        return false;
+
+    }		
+
+    local iPositionCount = ReadIniInteger ( "Positions.ini" , "General" , "iPositionCount" );
+    local pPlayerData = GetPlayerData ( pPlayer );
+    
+    iPositionCount++;
+    
+    WriteIniInteger ( "Positions.ini" , "General" , "iPositionCount" , iPositionCount );
+    
+    local szSafeIniString = CreateSafeIniString ( szParams );
+	
+	local szPosition = pPlayer.Pos.x + " , " + pPlayer.Pos.y + " , " + pPlayer.Pos.z;
+    
+    WriteIniString ( "Positions.ini" , "Position " + iPositionCount , "szMessage" , szSafeIniString );
+	WriteIniString ( "Positions.ini" , "Position " + iPositionCount , "szPosition" , szPosition );
+    WriteIniString ( "Positions.ini" , "Position " + iPositionCount , "szAddedBy" , pPlayer.Name );
+    WriteIniString ( "Positions.ini" , "Position " + iPositionCount , "szTimestamp" , ParseDateForDisplay ( time( ) ) );
+    WriteIniInteger ( "Positions.ini" , "Position " + iPositionCount , "iScriptVersion" , GetCoreTable ( ).Utilities.iScriptVersion );
+    
+    return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function AddFunctionAliasCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+    if ( bShowHelpOnly ) {
+        
+        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Adds a function alias" , [ "FuncAlias" ] , "" );
+        
+        return false;
+    
+    }
+    
+    if ( !szParams ) {
+    
+        SendPlayerSyntaxMessage ( pPlayer , "/FuncAlias <Function> <Alias>" );
+        
+        return false;
+    
+    }
+	
+	if ( NumTok ( pPlayer , " " ) != 2 ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/FuncAlias <Function> <Alias>" );
+		
+		return false;
+	
+	}
+	
+	local szFunction = GetTok ( pPlayer , " " , 1 );
+	local pFunction = getroottable ( ).rawget ( szFunction );
+	local szAlias = GetTok ( pPlayer , " " , 2 );
+	
+	if ( type ( pFunction ) != "function" ) {
+		
+		SendPlayerErrorMessage ( pPlayer , "The function " + szFunction + " does not exist!" );
+		
+		return false;
+		
+	}
+	
+	if ( getroottable ( ).rawin ( szAlias ) ) {
+		
+		SendPlayerErrorMessage ( pPlayer , "The function " + szAlias + " could not be created!" );
+		
+		return false;
+		
+	}
+	
+	getroottable ( ).rawset ( szAlias , pFunction );
+    
+    SendPlayerSuccessMessage ( pPlayer , "Function alias added! ( " + szFunction + " as " + szAlias + " ) " );
+    
+    return true;
+    
 }
 
 // -------------------------------------------------------------------------------------------------

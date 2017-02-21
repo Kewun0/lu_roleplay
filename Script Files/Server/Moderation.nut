@@ -33,7 +33,7 @@ function AddModerationCommandHandlers ( ) {
     AddCommandHandler ( "GotoHouse" , GotoHouseCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
 	
 	AddCommandHandler ( "Report" , ForumStaffReportCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-	AddCommandHandler ( "Reports" , ListAllStaffReportCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
+	AddCommandHandler ( "Reports" , ListAllStaffReportsCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
 	
 	AddCommandHandler ( "ResetReport" , ResetStaffReportCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageServer | GetCoreTable ( ).BitFlags.StaffFlags.ManageAdmins | GetCoreTable ( ).BitFlags.StaffFlags.Scripter );
     AddCommandHandler ( "AcceptReport" , AcceptStaffReportCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );

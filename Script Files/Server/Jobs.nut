@@ -14,24 +14,20 @@ function ShowJobInformationToPlayer ( pPlayer , pJobData ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function CreateJobPickups ( ) {
+function CreateJobPickupsAndBlips ( ) {
     
     local pPickups = [ ];
     
-    // Police Officer
-    AddPickupToWorld ( GetCoreTable ( ).Locations.PoliceStations [ 0 ].pPosition , 1383 , GetCoreTable ( ).Utilities.pPickupDataType.Job , GetCoreTable ( ).Utilities.pJobs.Police );
-    AddPickupToWorld ( GetCoreTable ( ).Locations.PoliceStations [ 1 ].pPosition , 1383 , GetCoreTable ( ).Utilities.pPickupDataType.Job , GetCoreTable ( ).Utilities.pJobs.Police );
-    AddPickupToWorld ( GetCoreTable ( ).Locations.PoliceStations [ 2 ].pPosition , 1383 , GetCoreTable ( ).Utilities.pPickupDataType.Job , GetCoreTable ( ).Utilities.pJobs.Police );
-    
-    // Fire Fighter
-    // AddPickupToWorld ( GetCoreTable ( ).Locations.FireStations [ 0 ].pPosition , 1361 , GetCoreTable ( ).Utilities.pPickupDataType.Job , GetCoreTable ( ).Utilities.pJobs.Fire );
-    // AddPickupToWorld ( GetCoreTable ( ).Locations.FireStations [ 1 ].pPosition , 1361 , GetCoreTable ( ).Utilities.pPickupDataType.Job , GetCoreTable ( ).Utilities.pJobs.Fire );
-    // AddPickupToWorld ( GetCoreTable ( ).Locations.FireStations [ 2 ].pPosition , 1361 , GetCoreTable ( ).Utilities.pPickupDataType.Job , GetCoreTable ( ).Utilities.pJobs.Fire );
-
-    // Paramedic
-    AddPickupToWorld ( GetCoreTable ( ).Locations.Hospitals [ 0 ].pPosition , 1361 , GetCoreTable ( ).Utilities.pPickupDataType.Job , GetCoreTable ( ).Utilities.pJobs.Medical );
-    AddPickupToWorld ( GetCoreTable ( ).Locations.Hospitals [ 1 ].pPosition , 1361 , GetCoreTable ( ).Utilities.pPickupDataType.Job , GetCoreTable ( ).Utilities.pJobs.Medical );
-    AddPickupToWorld ( GetCoreTable ( ).Locations.Hospitals [ 2 ].pPosition , 1361 , GetCoreTable ( ).Utilities.pPickupDataType.Job , GetCoreTable ( ).Utilities.pJobs.Medical );
+	
+	foreach ( ii , iv in GetCoreTable ( ).Jobs ) {
+		
+		iv.pPickup = AddPickupToWorld ( iv.pPosition , 1361 , GetCoreTable ( ).Utilities.pPickupDataType.Job , iv.iJobType );
+		iv.pMapBlip = CreateBlip ( BLIP_NONE , iv.pPosition );
+		iv.pMapBlip.Size = 2;
+		iv.pMapBlip.DisplayType = BLIPTYPE_BLIPONLY;
+		iv.pMapBlip.Colour = 1;
+	
+	}
     
     print ( "[ServerStart]: Job pickups created" );
     
