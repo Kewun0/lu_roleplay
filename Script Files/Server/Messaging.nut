@@ -76,21 +76,40 @@ function SendPlayerSuccessMessage ( pPlayer , szMessage ) {
 function SendIsRegisteredWelcomeOnConnect ( pPlayer ) {
     
     local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
-    
-    /*
-    if ( IsAutoIPLoginEnabled( pPlayerData.iAccountSettings ) {
+	
+    if ( IsPlayerAutoIPLoginEnabled ( pPlayer ) ) {
         
         if ( IsIPAllowedToUseAccount ( pPlayerData , pPlayer.IP ) ) {
             
             MessagePlayer ( "Welcome back, " + pPlayer.Name + ". You have been automatically logged in with your IP!" , pPlayer , GetCoreTable ( ).Colours.RGB.Yellow );   
             MessagePlayer ( "Please use left CTRL to join the game." , pPlayer , GetCoreTable ( ).Colours.RGB.Yellow ); 
             
+			pPlayerData.bAuthenticated = true;
+			pPlayerData.bCanSpawn = true;
+			pPlayerData.bCanUseCommands = true;
+
             return true;
             
         }
         
     }
-    */
+	
+    if ( IsPlayerAutoLUIDLoginEnabled ( pPlayer ) ) {
+        
+        if ( IsLUIDAllowedToUseAccount ( pPlayerData , pPlayer.LUID ) ) {
+            
+            MessagePlayer ( "Welcome back, " + pPlayer.Name + ". You have been logged in with your LUID!" , pPlayer , GetCoreTable ( ).Colours.RGB.Yellow );   
+            MessagePlayer ( "Please use left CTRL to join the game." , pPlayer , GetCoreTable ( ).Colours.RGB.Yellow ); 
+            
+			pPlayerData.bAuthenticated = true;
+			pPlayerData.bCanSpawn = true;
+			pPlayerData.bCanUseCommands = true;
+            
+            return true;
+            
+        }
+        
+    }	
     
     if ( pPlayerData.iDatabaseID.tointeger ( ) == 0 ) {
         
