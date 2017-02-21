@@ -33,6 +33,8 @@ function InitPlayerDataClass ( ) {
         szPassword                  = "";
         
         iLastSession                = 0;
+		szLastIP 					= "";
+		szLastLUID					= "";
         
         szConnectToken              = 0;
 		iConnectTime 				= 0;
