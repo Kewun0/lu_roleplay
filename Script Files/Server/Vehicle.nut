@@ -894,7 +894,7 @@ function RentVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = f
     }
     
     local pVehicleData = GetVehicleDataFromVehicle ( pPlayer.Vehicle );
-    local pPlayerData = GetCoreTable( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     
     if ( pVehicleData.iRentPrice == 0 ) {
     
@@ -933,7 +933,7 @@ function RentVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = f
 
 function StopRentVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-    local pPlayerData = GetCoreTable( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
 
     if ( !pPlayerData.pRentingVehicle ) {
     
@@ -960,7 +960,7 @@ function StopRentVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly
 
 function ResetRentedVehicle ( pPlayer ) {
 
-    local pPlayerData = GetCoreTable( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     
     if ( !pPlayerData.pRentingVehicle ) {
     
@@ -995,7 +995,7 @@ function ResetRentedVehicle ( pPlayer ) {
 function SetVehicleRenter ( pVehicle , pPlayer ) {
 
     local pVehicleData = GetVehicleDataFromVehicle ( pVehicle );
-    local pPlayerData = GetCoreTable( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     
     if ( !pVehicleData ) {
     
@@ -1018,10 +1018,9 @@ function GetVehicleDataFromVehicle ( pVehicle ) {
     
         return false;
     
-    }
+    }    
     
-    
-    local pVehicleData = GetCoreTable( ).Vehicles [ pVehicleDataID ];
+    local pVehicleData = GetVehicleData ( pVehicle )
     
     if ( !pVehicleData ) {
     

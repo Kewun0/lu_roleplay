@@ -59,7 +59,7 @@ function onPlayerPart ( pPlayer , iReason ) {
     // -- Make sure this goes last in the function. Once it's gone, we can't use it!
  
     
-    GetCoreTable ( ).Players [ pPlayer.ID ] <- null;
+    GetPlayerData ( pPlayer ) <- null;
 
     return true;
     
@@ -69,10 +69,10 @@ function onPlayerPart ( pPlayer , iReason ) {
 
 function onPlayerDeath ( pPlayer , iReason ) {
 
-    GetCoreTable ( ).Players [ pPlayer.ID ].iDeaths ++;
-    GetCoreTable ( ).Players [ pPlayer.ID ].bDead = true;
+    GetPlayerData ( pPlayer ).iDeaths ++;
+    GetPlayerData ( pPlayer ).bDead = true;
     
-    GetCoreTable ( ).Players [ pPlayer.ID ].pPosition = GetClosestHospital ( pPlayer.Pos );
+    GetPlayerData ( pPlayer ).pPosition = GetClosestHospital ( pPlayer.Pos );
     
     print ( "- Player '" + pPlayer.Name + "' (ID " + pPlayer.ID + ") died. Reason: " + iReason );
 
@@ -86,7 +86,7 @@ function onPlayerEnteredVehicle ( pPlayer , pVehicle , iSeatID ) {
 
     local iVehicleDataID = GetCoreTable ( ).VehicleToData [ pVehicle.ID ];
     local pVehicleData = GetCoreTable ( ).Vehicles [ iVehicleDataID ];
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
 
     // -- Let's make sure they didn't just enter a locked vehicle.
     
@@ -141,7 +141,7 @@ function onPlayerEnteredVehicle ( pPlayer , pVehicle , iSeatID ) {
 
 function onPlayerSpawn ( pPlayer , iSpawnClass ) {
 
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     
     if ( !pPlayerData.bCanSpawn ) {
     
@@ -272,7 +272,7 @@ function onPlayerChat ( pPlayer , szText ) {
 
 function onPlayerAction ( pPlayer , szText ) {
 
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     
     if ( pPlayerData.bMuted ) {
     

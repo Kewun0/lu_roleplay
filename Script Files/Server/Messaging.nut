@@ -75,7 +75,7 @@ function SendPlayerSuccessMessage ( pPlayer , szMessage ) {
 
 function SendIsRegisteredWelcomeOnConnect ( pPlayer ) {
     
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
 	
     if ( IsPlayerAutoIPLoginEnabled ( pPlayer ) ) {
         
@@ -140,7 +140,7 @@ function AreaTalkCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fals
 
     }	
 
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     
     if ( pPlayerData.bMuted ) {
     
@@ -176,7 +176,7 @@ function AreaShoutCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fal
 
     }	
 
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     
     if ( pPlayerData.bMuted ) {
     
@@ -215,7 +215,7 @@ function PrivateMessageCommand ( pPlayer , szCommand , szParams , bShowHelpOnly 
     local szMessage = "";
     local pReceiver = false;
 
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     
     if ( pPlayerData.bMuted ) {
     
@@ -340,7 +340,7 @@ function HelpCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) 
 
     }		
 	
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     local szCategory = "";
     
     if ( !szParams ) {

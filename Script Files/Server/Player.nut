@@ -205,7 +205,7 @@ function InitPlayer ( pPlayer ) {
     
     }
     
-    GetCoreTable ( ).Players [ pPlayer.ID ] <- GetCoreTable ( ).Classes.PlayerData ( pPlayer );
+    GetPlayerData ( pPlayer ) <- GetCoreTable ( ).Classes.PlayerData ( pPlayer );
     
     GetPlayerData ( pPlayer ).pPlayer = pPlayer;
     
@@ -747,7 +747,7 @@ function GivePlayerCash ( pPlayer , iCash ) {
 
 function GetPlayerData( pPlayer ) {
 
-	return GetCoreTable ( ).Players [ pPlayer.ID ];
+	return GetPlayerData ( pPlayer );
 	
 }
 

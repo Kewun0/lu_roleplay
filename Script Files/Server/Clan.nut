@@ -178,7 +178,7 @@ function SetClanOwnerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) 
     
     }
 
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     
     if ( !szParams ) {
     
@@ -266,7 +266,7 @@ function SetClanTagCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
     
     }
 
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
 
     /*
     if ( !DoesPlayerHaveClanPermission ( pPlayer , pPlayerData.iClan , "EditTag" ) ) {
@@ -294,7 +294,7 @@ function SetClanTagCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
 
 function DoesPlayerHaveClanPermission ( pPlayer , szClanFlag ) {
 
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     
     if ( DoesPlayerHaveStaffPermission ( pPlayer , "ManageClans" ) ) {
     
@@ -350,7 +350,7 @@ function AreClansAllied ( pClan1Data , pClan2Data ) {
 
 function SetClanOwner ( pPlayer , pClanData ) {
 
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     
     pPlayerData.iClan = pClanData.iDatabaseID;
     
