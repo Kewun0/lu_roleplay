@@ -19,32 +19,32 @@
 
 function AddModerationCommandHandlers ( ) {
 
-    AddCommandHandler ( "Kick" , KickPlayerCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
-    AddCommandHandler ( "Ban" , BanPlayerCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration);
-    AddCommandHandler ( "TempBan" , TempBanPlayerCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
-    AddCommandHandler ( "Mute" , MutePlayerCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
-    AddCommandHandler ( "Unmute" , UnmutePlayerCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
-    AddCommandHandler ( "Freeze" , FreezePlayerCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
-    AddCommandHandler ( "Unfreeze" , UnfreezePlayerCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
+    AddCommandHandler ( "Kick" , KickPlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
+    AddCommandHandler ( "Ban" , BanPlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
+    AddCommandHandler ( "TempBan" , TempBanPlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
+    AddCommandHandler ( "Mute" , MutePlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
+    AddCommandHandler ( "Unmute" , UnmutePlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
+    AddCommandHandler ( "Freeze" , FreezePlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
+    AddCommandHandler ( "Unfreeze" , UnfreezePlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
     
-    AddCommandHandler ( "Goto" , GotoPlayerCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
-    AddCommandHandler ( "GotoVeh" , GotoVehicleCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
-    //AddCommandHandler ( "GotoVeh" , GotoBusinessCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
-    AddCommandHandler ( "GotoHouse" , GotoHouseCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
+    AddCommandHandler ( "Goto" , GotoPlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
+    AddCommandHandler ( "GotoVeh" , GotoVehicleCommand , GetStaffFlagValue ( "BasicModeration" ) );
+    //AddCommandHandler ( "GotoVeh" , GotoBusinessCommand , GetStaffFlagValue ( "BasicModeration" ) );
+    AddCommandHandler ( "GotoHouse" , GotoHouseCommand , GetStaffFlagValue ( "BasicModeration" ) );
 	
-	AddCommandHandler ( "Report" , ForumStaffReportCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-	AddCommandHandler ( "Reports" , ListAllStaffReportsCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
+	AddCommandHandler ( "Report" , ForumStaffReportCommand , GetStaffFlagValue ( "None" ) );
+	AddCommandHandler ( "Reports" , ListAllStaffReportsCommand , GetStaffFlagValue ( "BasicModeration" ) );
 	
-	AddCommandHandler ( "ResetReport" , ResetStaffReportCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageServer | GetCoreTable ( ).BitFlags.StaffFlags.ManageAdmins | GetCoreTable ( ).BitFlags.StaffFlags.Scripter );
-    AddCommandHandler ( "AcceptReport" , AcceptStaffReportCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
-	AddCommandHandler ( "DenyReport" , DenyStaffReportCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
-	AddCommandHandler ( "ForumReport" , ForumStaffReportCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
+	AddCommandHandler ( "ResetReport" , ResetStaffReportCommand , GetStaffFlagValue ( "ManageServer" ) | GetStaffFlagValue ( "ManageAdmins" ) | GetStaffFlagValue ( "Scripter" ) );
+    AddCommandHandler ( "AcceptReport" , AcceptStaffReportCommand , GetStaffFlagValue ( "BasicModeration" ) );
+	AddCommandHandler ( "DenyReport" , DenyStaffReportCommand , GetStaffFlagValue ( "BasicModeration" ) );
+	AddCommandHandler ( "ForumReport" , ForumStaffReportCommand , GetStaffFlagValue ( "BasicModeration" ) );
 	
-	AddCommandHandler ( "GiveStaffFlag" , GivePlayerStaffFlagCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageAdmins );
-	AddCommandHandler ( "TakeStaffFlag" , GivePlayerStaffFlagCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageAdmins );
-	AddCommandHandler ( "StaffFlags" , ListAllStaffFlagsCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageAdmins );
+	AddCommandHandler ( "GiveStaffFlag" , GivePlayerStaffFlagCommand , GetStaffFlagValue ( "ManageAdmins" ) );
+	AddCommandHandler ( "TakeStaffFlag" , GivePlayerStaffFlagCommand , GetStaffFlagValue ( "ManageAdmins" ) );
+	AddCommandHandler ( "StaffFlags" , ListAllStaffFlagsCommand , GetStaffFlagValue ( "ManageAdmins" ) );
 	
-	AddCommandHandler ( "SetSkin" , SetPlayerSkinCommand , GetCoreTable ( ).BitFlags.StaffFlags.BasicModeration );
+	AddCommandHandler ( "SetSkin" , SetPlayerSkinCommand , GetStaffFlagValue ( "BasicModeration" ) );
 	
     return true;
 

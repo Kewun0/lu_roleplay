@@ -6,6 +6,14 @@ function AnticheatCheckPlayers ( ) {
 
 // -------------------------------------------------------------------------------------------------
 
+function AnticheatCheckPlayers ( ) {
+
+    return;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
 // -- THIS GOES LAST
 
 print ( "[Server.Security]: Script file loaded and ready." );

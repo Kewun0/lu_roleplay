@@ -1,21 +1,34 @@
 function AddBusinessCommandHandlers ( ) {
 
-	AddCommandHandler ( "AddBiz" , CreateBusinessCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageBusinesses );
-	AddCommandHandler ( "DelBiz" , DeleteBusinessCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageBusinesses );
-	AddCommandHandler ( "SetBizOwner" , SetBusinessOwnerCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageBusinesses );
-	AddCommandHandler ( "SetBizName" , SetBusinessNameCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageBusinesses );
-	AddCommandHandler ( "LockBiz" , LockBusinessCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-	AddCommandHandler ( "UnlockBiz" , UnlockBusinessCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-	AddCommandHandler ( "GiveBizFlag" , GiveBusinessFlagCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageBusinesses );
-	AddCommandHandler ( "TakeBizFlag" , TakeBusinessFlagCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageBusinesses );
-	AddCommandHandler ( "GiveBizSellFlag" , GiveBusinessSellFlagCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageBusinesses );
-	AddCommandHandler ( "TakeBizSellFlag" , TakeBusinessSellFlagCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageBusinesses );
+	AddCommandHandler ( "Buy" , BuyFromBusinessCommand , GetStaffFlagValue ( "ManageBusinesses" ) );
+	AddCommandHandler ( "AddBiz" , CreateBusinessCommand , GetStaffFlagValue ( "ManageBusinesses" ) );
+	AddCommandHandler ( "DelBiz" , DeleteBusinessCommand , GetStaffFlagValue ( "ManageBusinesses" ) );
+	AddCommandHandler ( "SetBizOwner" , SetBusinessOwnerCommand , GetStaffFlagValue ( "ManageBusinesses" ) );
+	AddCommandHandler ( "SetBizName" , SetBusinessNameCommand , GetStaffFlagValue ( "ManageBusinesses" ) );
+	AddCommandHandler ( "LockBiz" , LockBusinessCommand , GetStaffFlagValue ( "ManageBusinesses" ) );
+	AddCommandHandler ( "UnlockBiz" , UnlockBusinessCommand , GetStaffFlagValue ( "ManageBusinesses" ) );
+	AddCommandHandler ( "GiveBizFlag" , GiveBusinessFlagCommand , GetStaffFlagValue ( "ManageBusinesses" ) );
+	AddCommandHandler ( "TakeBizFlag" , TakeBusinessFlagCommand , GetStaffFlagValue ( "ManageBusinesses" ) );
+	AddCommandHandler ( "GiveBizSellFlag" , GiveBusinessSellFlagCommand , GetStaffFlagValue ( "ManageBusinesses" ) );
+	AddCommandHandler ( "TakeBizSellFlag" , TakeBusinessSellFlagCommand , GetStaffFlagValue ( "ManageBusinesses" ) );
 
 }
 
 // -------------------------------------------------------------------------------------------------
 
 function CreateBusinessPickups ( ) {
+
+	
+
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function BuyFromBusinessPickups ( ) {
+
+	
 
 	return true;
 

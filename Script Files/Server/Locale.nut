@@ -120,6 +120,8 @@ function InitLocaleGlobalTable ( ) {
 			AllVehiclesLocked = "All vehicles locked by %s",
 			AllVehiclesUnlocked = "All vehicles unlocked by %s",
 			
+			TakeJobSuccessful = "You now have the %s job! Use /Help Job for info." );
+			
             LastItem = false 
             
         }

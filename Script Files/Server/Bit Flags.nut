@@ -47,6 +47,20 @@ function CreateBitwiseTables ( ) {
 
 // -------------------------------------------------------------------------------------------------
 
+function GetStaffFlagValue ( szStaffFlagName ) {
+
+	if ( GetCoreTable ( ) [ "BitFlags" ] [ "StaffFlags" ].rawin ( szStaffFlagName ) ) {
+		
+		return GetCoreTable ( ) [ "BitFlags" ] [ "StaffFlags" ] [ szStaffFlagName ];
+	
+	}
+	
+	return 0;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
 // -- THIS GOES LAST
 
 print ( "[Server.BitFlags]: Script file loaded and ready." );

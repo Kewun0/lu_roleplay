@@ -14,11 +14,11 @@
 
 function AddClanCommandHandlers ( ) {
 
-    AddCommandHandler ( "NewClan" , NewClanCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageClans );
-    AddCommandHandler ( "ReloadClans" , ReloadClansCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageClans );
-    AddCommandHandler ( "TakeTurf" , TakeTurfCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "GiveTurf" , GiveTurfCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "ClanOwner" , SetClanOwnerCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageClans );
+    AddCommandHandler ( "NewClan" , NewClanCommand , GetStaffFlagValue ( "ManageClans" ) );
+    AddCommandHandler ( "ReloadClans" , ReloadClansCommand , GetStaffFlagValue ( "ManageClans" ) );
+    AddCommandHandler ( "TakeTurf" , TakeTurfCommand , GetStaffFlagValue ( "None" ) );
+    AddCommandHandler ( "GiveTurf" , GiveTurfCommand , GetStaffFlagValue ( "None" ) );
+    AddCommandHandler ( "ClanOwner" , SetClanOwnerCommand , GetStaffFlagValue ( "ManageClans" ) );
 
 }
 
@@ -178,7 +178,7 @@ function SetClanOwnerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) 
     
     }
 
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     
     if ( !szParams ) {
     
@@ -266,7 +266,7 @@ function SetClanTagCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
     
     }
 
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
 
     /*
     if ( !DoesPlayerHaveClanPermission ( pPlayer , pPlayerData.iClan , "EditTag" ) ) {
@@ -294,7 +294,7 @@ function SetClanTagCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
 
 function DoesPlayerHaveClanPermission ( pPlayer , szClanFlag ) {
 
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     
     if ( DoesPlayerHaveStaffPermission ( pPlayer , "ManageClans" ) ) {
     
@@ -350,7 +350,7 @@ function AreClansAllied ( pClan1Data , pClan2Data ) {
 
 function SetClanOwner ( pPlayer , pClanData ) {
 
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     
     pPlayerData.iClan = pClanData.iDatabaseID;
     

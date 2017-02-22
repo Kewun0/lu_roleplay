@@ -27,30 +27,30 @@
 
 function AddVehicleCommandHandlers ( ) {
 
-    AddCommandHandler ( "AddVeh" , CreateVehicleCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageVehicles );
-    AddCommandHandler ( "DelVeh" , DeleteVehicleCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageVehicles );
-    AddCommandHandler ( "RentVehicle" , RentVehicleCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "StopRent" , StopRentVehicleCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "VehEngine" , VehicleEngineCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "Engine" , VehicleEngineCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "Lock" , VehicleLockCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "VehLock" , VehicleLockCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "Lights" , VehicleLightsCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "VehLights" , VehicleLightsCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "Siren" , VehicleSirenCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "VehSiren" , VehicleSirenCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "SirenLight" , VehicleSirenLightCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "VehSirenLight" , VehicleSirenLightCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "TaxiLight" , VehicleTaxiLightCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "VehTaxiLight" , VehicleTaxiLightCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "RentPrice" , SetVehicleRentPriceCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageVehicles );
-    AddCommandHandler ( "BuyPrice" , SetVehicleBuyPriceCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageVehicles );
-    AddCommandHandler ( "RespawnAll" , RespawnAllVehiclesCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageVehicles );
-    AddCommandHandler ( "ExplodeAll" , ExplodeAllVehiclesCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageVehicles );
-    AddCommandHandler ( "VehOwner" , SetVehicleOwnerCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageVehicles );
-    AddCommandHandler ( "VehColour" , SetVehicleColourCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageVehicles );
-    AddCommandHandler ( "VehFuel" , SetVehicleFuelCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageVehicles );
-    AddCommandHandler ( "VehHealth" , SetVehicleHealthCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageVehicles );
+    AddCommandHandler ( "AddVeh" , CreateVehicleCommand , GetStaffFlagValue ( "ManageVehicles" ) );
+    AddCommandHandler ( "DelVeh" , DeleteVehicleCommand , GetStaffFlagValue ( "ManageVehicles" ) );
+    AddCommandHandler ( "RentVehicle" , RentVehicleCommand , GetStaffFlagValue ( "None" ) );
+    AddCommandHandler ( "StopRent" , StopRentVehicleCommand , GetStaffFlagValue ( "None" ) );
+    AddCommandHandler ( "VehEngine" , VehicleEngineCommand , GetStaffFlagValue ( "None" ) );
+    AddCommandHandler ( "Engine" , VehicleEngineCommand , GetStaffFlagValue ( "None" ) );
+    AddCommandHandler ( "Lock" , VehicleLockCommand , GetStaffFlagValue ( "None" ) );
+    AddCommandHandler ( "VehLock" , VehicleLockCommand , GetStaffFlagValue ( "None" ) );
+    AddCommandHandler ( "Lights" , VehicleLightsCommand , GetStaffFlagValue ( "None" ) );
+    AddCommandHandler ( "VehLights" , VehicleLightsCommand , GetStaffFlagValue ( "None" ) );
+    AddCommandHandler ( "Siren" , VehicleSirenCommand , GetStaffFlagValue ( "None" ) );
+    AddCommandHandler ( "VehSiren" , VehicleSirenCommand , GetStaffFlagValue ( "None" ) );
+    AddCommandHandler ( "SirenLight" , VehicleSirenLightCommand , GetStaffFlagValue ( "None" ) );
+    AddCommandHandler ( "VehSirenLight" , VehicleSirenLightCommand , GetStaffFlagValue ( "None" ) );
+    AddCommandHandler ( "TaxiLight" , VehicleTaxiLightCommand , GetStaffFlagValue ( "None" ) );
+    AddCommandHandler ( "VehTaxiLight" , VehicleTaxiLightCommand , GetStaffFlagValue ( "None" ) );
+    AddCommandHandler ( "RentPrice" , SetVehicleRentPriceCommand , GetStaffFlagValue ( "ManageVehicles" ) );
+    AddCommandHandler ( "BuyPrice" , SetVehicleBuyPriceCommand , GetStaffFlagValue ( "ManageVehicles" ) );
+    AddCommandHandler ( "RespawnAll" , RespawnAllVehiclesCommand , GetStaffFlagValue ( "ManageVehicles" ) );
+    AddCommandHandler ( "ExplodeAll" , ExplodeAllVehiclesCommand , GetStaffFlagValue ( "ManageVehicles" ) );
+    AddCommandHandler ( "VehOwner" , SetVehicleOwnerCommand , GetStaffFlagValue ( "ManageVehicles" ) );
+    AddCommandHandler ( "VehColour" , SetVehicleColourCommand , GetStaffFlagValue ( "ManageVehicles" ) );
+    AddCommandHandler ( "VehFuel" , SetVehicleFuelCommand , GetStaffFlagValue ( "ManageVehicles" ) );
+    AddCommandHandler ( "VehHealth" , SetVehicleHealthCommand , GetStaffFlagValue ( "ManageVehicles" ) );
 
     return true;
     
@@ -894,7 +894,7 @@ function RentVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = f
     }
     
     local pVehicleData = GetVehicleDataFromVehicle ( pPlayer.Vehicle );
-    local pPlayerData = GetCoreTable( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     
     if ( pVehicleData.iRentPrice == 0 ) {
     
@@ -933,7 +933,7 @@ function RentVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = f
 
 function StopRentVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-    local pPlayerData = GetCoreTable( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
 
     if ( !pPlayerData.pRentingVehicle ) {
     
@@ -960,7 +960,7 @@ function StopRentVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly
 
 function ResetRentedVehicle ( pPlayer ) {
 
-    local pPlayerData = GetCoreTable( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     
     if ( !pPlayerData.pRentingVehicle ) {
     
@@ -995,7 +995,7 @@ function ResetRentedVehicle ( pPlayer ) {
 function SetVehicleRenter ( pVehicle , pPlayer ) {
 
     local pVehicleData = GetVehicleDataFromVehicle ( pVehicle );
-    local pPlayerData = GetCoreTable( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     
     if ( !pVehicleData ) {
     
@@ -1018,10 +1018,9 @@ function GetVehicleDataFromVehicle ( pVehicle ) {
     
         return false;
     
-    }
+    }    
     
-    
-    local pVehicleData = GetCoreTable( ).Vehicles [ pVehicleDataID ];
+    local pVehicleData = GetVehicleData ( pVehicle )
     
     if ( !pVehicleData ) {
     

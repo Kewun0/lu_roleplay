@@ -8,17 +8,22 @@
 
 // - SE, ServerExecute                      ExecuteCodeCommand                              Scripter
 // - SR, ServerReturn                       ExecuteReturnCodeCommand                        Scripter
+// - FuncAlias			                    AddFunctionAliasCommand                         Scripter
+// - Bug                       				SubmitBugCommand		                        None
+// - Idea                       			SubmitIdeaCommand                        		None
+// - Position                      			SubmitPositionCommand                        	None
 
 // -------------------------------------------------------------------------------------------------
 
 function AddScripterCommandHandlers ( ) {
 
-    AddCommandHandler ( "SE" , ExecuteCodeCommand , GetCoreTable ( ).BitFlags.StaffFlags.Scripter );
-    AddCommandHandler ( "SR" , ExecuteReturnCodeCommand , GetCoreTable ( ).BitFlags.StaffFlags.Scripter );
+    AddCommandHandler ( "SE" , ExecuteCodeCommand , GetStaffFlagValue ( "Scripter" ) );
+    AddCommandHandler ( "SR" , ExecuteReturnCodeCommand , GetStaffFlagValue ( "Scripter" ) );
+	AddCommandHandler ( "FuncAlias" , AddFunctionAliasCommand , GetStaffFlagValue ( "Scripter" ) );
 	
-	AddCommandHandler ( "Bug" , SubmitBugCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-	AddCommandHandler ( "Idea" , SubmitIdeaCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-	AddCommandHandler ( "Position" , SubmitPositionCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );	
+	AddCommandHandler ( "Bug" , SubmitBugCommand , GetStaffFlagValue ( "None" ) );
+	AddCommandHandler ( "Idea" , SubmitIdeaCommand , GetStaffFlagValue ( "None" ) );
+	AddCommandHandler ( "Position" , SubmitPositionCommand , GetStaffFlagValue ( "None" ) );	
     
     return true;
 

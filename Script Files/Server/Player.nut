@@ -1,12 +1,12 @@
 function AddPlayerCommandHandlers ( ) {
     
-    AddCommandHandler ( "Login" , LoginCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "Register" , RegisterCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "Login" , LoginCommand , GetStaffFlagValue ( "None" ) );
+    AddCommandHandler ( "Register" , RegisterCommand , GetStaffFlagValue ( "None" ) );
        
-	AddCommandHandler ( "IPLogin" , ToggleIPLoginCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-	AddCommandHandler ( "LUIDLogin" , ToggleLUIDLoginCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+	AddCommandHandler ( "IPLogin" , ToggleIPLoginCommand , GetStaffFlagValue ( "None" ) );
+	AddCommandHandler ( "LUIDLogin" , ToggleLUIDLoginCommand , GetStaffFlagValue ( "None" ) );
 	
-	AddCommandHandler ( "ChangePass" , ChangePasswordCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+	AddCommandHandler ( "ChangePass" , ChangePasswordCommand , GetStaffFlagValue ( "None" ) );
 	
     return true;
     
@@ -205,7 +205,7 @@ function InitPlayer ( pPlayer ) {
     
     }
     
-    GetCoreTable ( ).Players [ pPlayer.ID ] <- GetCoreTable ( ).Classes.PlayerData ( pPlayer );
+    GetPlayerData ( pPlayer ) <- GetCoreTable ( ).Classes.PlayerData ( pPlayer );
     
     GetPlayerData ( pPlayer ).pPlayer = pPlayer;
     
@@ -747,7 +747,7 @@ function GivePlayerCash ( pPlayer , iCash ) {
 
 function GetPlayerData( pPlayer ) {
 
-	return GetCoreTable ( ).Players [ pPlayer.ID ];
+	return GetPlayerData ( pPlayer );
 	
 }
 

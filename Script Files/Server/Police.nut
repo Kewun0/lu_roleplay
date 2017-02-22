@@ -158,7 +158,7 @@ function PoliceRadioCommand ( pPlayer , szCommand , szParams ) {
 
 function IsPlayerPoliceOfficer ( pPlayer ) {
 
-    local pPlayerData = GetCoreTable ( ).Players [ pPlayer.ID ];
+    local pPlayerData = GetPlayerData ( pPlayer );
     
     if ( pPlayerData.iJob == GetCoreTable ( ).Utilities.Jobs.Police ) {
     
