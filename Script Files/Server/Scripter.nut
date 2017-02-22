@@ -6,26 +6,26 @@
 
 // -- COMMANDS -------------------------------------------------------------------------------------
 
-// - SE, ServerExecute                      ExecuteCodeCommand                              Scripter
-// - SR, ServerReturn                       ExecuteReturnCodeCommand                        Scripter
-// - FuncAlias			                    AddFunctionAliasCommand                         Scripter
-// - Bug                       				SubmitBugCommand		                        None
-// - Idea                       			SubmitIdeaCommand                        		None
-// - Position                      			SubmitPositionCommand                        	None
+// - SE, ServerExecute					  ExecuteCodeCommand							  Scripter
+// - SR, ServerReturn					   ExecuteReturnCodeCommand						Scripter
+// - FuncAlias								AddFunctionAliasCommand						 Scripter
+// - Bug					   				SubmitBugCommand								None
+// - Idea					   			SubmitIdeaCommand								None
+// - Position					  			SubmitPositionCommand							None
 
 // -------------------------------------------------------------------------------------------------
 
 function AddScripterCommandHandlers ( ) {
 
-    AddCommandHandler ( "SE" , ExecuteCodeCommand , GetStaffFlagValue ( "Scripter" ) );
-    AddCommandHandler ( "SR" , ExecuteReturnCodeCommand , GetStaffFlagValue ( "Scripter" ) );
+	AddCommandHandler ( "SE" , ExecuteCodeCommand , GetStaffFlagValue ( "Scripter" ) );
+	AddCommandHandler ( "SR" , ExecuteReturnCodeCommand , GetStaffFlagValue ( "Scripter" ) );
 	AddCommandHandler ( "FuncAlias" , AddFunctionAliasCommand , GetStaffFlagValue ( "Scripter" ) );
 	
 	AddCommandHandler ( "Bug" , SubmitBugCommand , GetStaffFlagValue ( "None" ) );
 	AddCommandHandler ( "Idea" , SubmitIdeaCommand , GetStaffFlagValue ( "None" ) );
 	AddCommandHandler ( "Position" , SubmitPositionCommand , GetStaffFlagValue ( "None" ) );	
-    
-    return true;
+	
+	return true;
 
 }
 
@@ -33,120 +33,120 @@ function AddScripterCommandHandlers ( ) {
 
 function ExecuteCodeCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-    if ( bShowHelpOnly ) {
-        
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Executes custom squirrel code server-side" , [ "SE" , "ServerExecute" ] , "Full script access, including root table." );
-        
-        return false;
-    
-    }
-    
-    if ( !szParams ) {
-    
-        SendPlayerSyntaxMessage ( pPlayer , "/ServerExecute <Code>" );
-        
-        return false;
-    
-    }
-    
-    local cCodeClosure = compilestring ( szParams );
-    
-    if ( !cCodeClosure ) {
-    
-        SendPlayerErrorMessage ( pPlayer , "Your code contains an error, and cannot be executed." );
-        
-        return false;
-    
-    }
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Executes custom squirrel code server-side" , [ "SE" , "ServerExecute" ] , "Full script access, including root table." );
+		
+		return false;
+	
+	}
+	
+	if ( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/ServerExecute <Code>" );
+		
+		return false;
+	
+	}
+	
+	local cCodeClosure = compilestring ( szParams );
+	
+	if ( !cCodeClosure ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "Your code contains an error, and cannot be executed." );
+		
+		return false;
+	
+	}
 
-    cCodeClosure ( );
-    
-    SendPlayerSuccessMessage ( pPlayer , "Your code was executed ( " + szParams + " ) " );
-    
-    return true;
-    
+	cCodeClosure ( );
+	
+	SendPlayerSuccessMessage ( pPlayer , "Your code was executed ( " + szParams + " ) " );
+	
+	return true;
+	
 }
 
 // -------------------------------------------------------------------------------------------------
 
 function ExecuteReturnCodeCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-    if ( bShowHelpOnly ) {
-        
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Executes squirrel code server-side, and returns the result." , [ "SR" , "ServerReturn" ] , "Full script access, including root table." );
-        
-        return false;
-    
-    }
-    
-    if ( !szParams ) {
-    
-        SendPlayerSyntaxMessage ( pPlayer , "/ServerReturn <Code>" );
-        
-        return false;
-    
-    }
-    
-    local cCodeClosure = compilestring ( "return " + szParams );
-    
-    if ( !cCodeClosure ) {
-    
-        SendPlayerErrorMessage ( pPlayer , "Your code contains an error, and cannot be executed." );
-        
-        return false;
-    
-    }
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Executes squirrel code server-side, and returns the result." , [ "SR" , "ServerReturn" ] , "Full script access, including root table." );
+		
+		return false;
+	
+	}
+	
+	if ( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/ServerReturn <Code>" );
+		
+		return false;
+	
+	}
+	
+	local cCodeClosure = compilestring ( "return " + szParams );
+	
+	if ( !cCodeClosure ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "Your code contains an error, and cannot be executed." );
+		
+		return false;
+	
+	}
 
-    local pReturnOutput = cCodeClosure ( );
-    
-    SendPlayerSuccessMessage ( pPlayer , "Your code was executed, and returned: " + pReturnOutput );
-    
-    return true;
-    
+	local pReturnOutput = cCodeClosure ( );
+	
+	SendPlayerSuccessMessage ( pPlayer , "Your code was executed, and returned: " + pReturnOutput );
+	
+	return true;
+	
 }
 
 // -------------------------------------------------------------------------------------------------
 
 function onConsoleInput ( szCommand , szParams ) {
-    
-    switch ( szCommand.tolower ( ) ) {
-    
-        case "se":
-        
+	
+	switch ( szCommand.tolower ( ) ) {
+	
+		case "se":
+		
 			local pResult = compilestring ( szParams );
-            
+			
 			if ( !pResult ) {
-            
+			
 				print ( "There was an error in your code!" );
-                
-                return;
+				
+				return;
 			}
 			
 			pResult( );
 			
 			print ( "SE: " + szParams );
-            
-            return;
-            
-        case "sr":
-        
+			
+			return;
+			
+		case "sr":
+		
 			local pResult = compilestring ( "return " + szParams );
-            
+			
 			if ( !pResult ) {
-            
+			
 				print ( "There was an error in your code!" );
-                
-                return;
-                
+				
+				return;
+				
 			}
 			
 			local pReturns = pResult( );
 			
 			print ( "SR: " + pReturns + " (" + szParams + ")" );
-            
-            return;            
-    
-    }
+			
+			return;			
+	
+	}
 
 }
 
@@ -154,29 +154,29 @@ function onConsoleInput ( szCommand , szParams ) {
 
 function SubmitBugCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-    if( bShowHelpOnly ) {
+	if( bShowHelpOnly ) {
 
-        SendPlayerCommandInfoMessage ( pPlayer , "Reporrts a bug to the scripters" , [ "Bug" ] , "" );
+		SendPlayerCommandInfoMessage ( pPlayer , "Reporrts a bug to the scripters" , [ "Bug" ] , "" );
 
-        return false;
+		return false;
 
-    }		
+	}		
 
-    local iBugCount = ReadIniInteger ( "Bugs.ini" , "General" , "iBugCount" );
-    local pPlayerData = GetPlayerData ( pPlayer );
-    
-    iBugCount++;
-    
-    WriteIniInteger ( "Bugs.ini" , "General" , "iBugCount" , iBugCount );
-    
-    local szSafeIniString = CreateSafeIniString ( szParams );
-    
-    WriteIniString ( "Bugs.ini" , "Bug " + iBugCount , "szMessage" , szSafeIniString );
-    WriteIniString ( "Bugs.ini" , "Bug " + iBugCount , "szAddedBy" , pPlayer.Name );
-    WriteIniString ( "Bugs.ini" , "Bug " + iBugCount , "szTimestamp" , ParseDateForDisplay ( time( ) ) );
-    WriteIniInteger ( "Bugs.ini" , "Bug " + iBugCount , "iScriptVersion" , GetCoreTable ( ).Utilities.iScriptVersion );
-    
-    return true;
+	local iBugCount = ReadIniInteger ( "Bugs.ini" , "General" , "iBugCount" );
+	local pPlayerData = GetPlayerData ( pPlayer );
+	
+	iBugCount++;
+	
+	WriteIniInteger ( "Bugs.ini" , "General" , "iBugCount" , iBugCount );
+	
+	local szSafeIniString = CreateSafeIniString ( szParams );
+	
+	WriteIniString ( "Bugs.ini" , "Bug " + iBugCount , "szMessage" , szSafeIniString );
+	WriteIniString ( "Bugs.ini" , "Bug " + iBugCount , "szAddedBy" , pPlayer.Name );
+	WriteIniString ( "Bugs.ini" , "Bug " + iBugCount , "szTimestamp" , ParseDateForDisplay ( time( ) ) );
+	WriteIniInteger ( "Bugs.ini" , "Bug " + iBugCount , "iScriptVersion" , GetCoreTable ( ).Utilities.iScriptVersion );
+	
+	return true;
 
 }
 
@@ -184,29 +184,29 @@ function SubmitBugCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fal
 
 function SubmitIdeaCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-    if( bShowHelpOnly ) {
+	if( bShowHelpOnly ) {
 
-        SendPlayerCommandInfoMessage ( pPlayer , "Sends an idea to the scripters" , [ "Idea" ] , "" );
+		SendPlayerCommandInfoMessage ( pPlayer , "Sends an idea to the scripters" , [ "Idea" ] , "" );
 
-        return false;
+		return false;
 
-    }		
+	}		
 
-    local iIdeaCount = ReadIniInteger ( "Ideas.ini" , "General" , "iIdeaCount" );
-    local pPlayerData = GetPlayerData ( pPlayer );
-    
-    iIdeaCount++;
-    
-    WriteIniInteger ( "Ideas.ini" , "General" , "iIdeaCount" , iIdeaCount );
-    
-    local szSafeIniString = CreateSafeIniString ( szParams );
-    
-    WriteIniString ( "Ideas.ini" , "Idea " + iIdeaCount , "szMessage" , szSafeIniString );
-    WriteIniString ( "Ideas.ini" , "Idea " + iIdeaCount , "szAddedBy" , pPlayer.Name );
-    WriteIniString ( "Ideas.ini" , "Idea " + iIdeaCount , "szTimestamp" , ParseDateForDisplay ( time( ) ) );
-    WriteIniInteger ( "Ideas.ini" , "Idea " + iIdeaCount , "iScriptVersion" , GetCoreTable ( ).Utilities.iScriptVersion );
-    
-    return true;
+	local iIdeaCount = ReadIniInteger ( "Ideas.ini" , "General" , "iIdeaCount" );
+	local pPlayerData = GetPlayerData ( pPlayer );
+	
+	iIdeaCount++;
+	
+	WriteIniInteger ( "Ideas.ini" , "General" , "iIdeaCount" , iIdeaCount );
+	
+	local szSafeIniString = CreateSafeIniString ( szParams );
+	
+	WriteIniString ( "Ideas.ini" , "Idea " + iIdeaCount , "szMessage" , szSafeIniString );
+	WriteIniString ( "Ideas.ini" , "Idea " + iIdeaCount , "szAddedBy" , pPlayer.Name );
+	WriteIniString ( "Ideas.ini" , "Idea " + iIdeaCount , "szTimestamp" , ParseDateForDisplay ( time( ) ) );
+	WriteIniInteger ( "Ideas.ini" , "Idea " + iIdeaCount , "iScriptVersion" , GetCoreTable ( ).Utilities.iScriptVersion );
+	
+	return true;
 
 }
 
@@ -214,32 +214,32 @@ function SubmitIdeaCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fa
 
 function SubmitPositionCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-    if( bShowHelpOnly ) {
+	if( bShowHelpOnly ) {
 
-        SendPlayerCommandInfoMessage ( pPlayer , "Saves a position for reference" , [ "Position" ] , "" );
+		SendPlayerCommandInfoMessage ( pPlayer , "Saves a position for reference" , [ "Position" ] , "" );
 
-        return false;
+		return false;
 
-    }		
+	}		
 
-    local iPositionCount = ReadIniInteger ( "Positions.ini" , "General" , "iPositionCount" );
-    local pPlayerData = GetPlayerData ( pPlayer );
-    
-    iPositionCount++;
-    
-    WriteIniInteger ( "Positions.ini" , "General" , "iPositionCount" , iPositionCount );
-    
-    local szSafeIniString = CreateSafeIniString ( szParams );
+	local iPositionCount = ReadIniInteger ( "Positions.ini" , "General" , "iPositionCount" );
+	local pPlayerData = GetPlayerData ( pPlayer );
+	
+	iPositionCount++;
+	
+	WriteIniInteger ( "Positions.ini" , "General" , "iPositionCount" , iPositionCount );
+	
+	local szSafeIniString = CreateSafeIniString ( szParams );
 	
 	local szPosition = pPlayer.Pos.x + " , " + pPlayer.Pos.y + " , " + pPlayer.Pos.z;
-    
-    WriteIniString ( "Positions.ini" , "Position " + iPositionCount , "szMessage" , szSafeIniString );
+	
+	WriteIniString ( "Positions.ini" , "Position " + iPositionCount , "szMessage" , szSafeIniString );
 	WriteIniString ( "Positions.ini" , "Position " + iPositionCount , "szPosition" , szPosition );
-    WriteIniString ( "Positions.ini" , "Position " + iPositionCount , "szAddedBy" , pPlayer.Name );
-    WriteIniString ( "Positions.ini" , "Position " + iPositionCount , "szTimestamp" , ParseDateForDisplay ( time( ) ) );
-    WriteIniInteger ( "Positions.ini" , "Position " + iPositionCount , "iScriptVersion" , GetCoreTable ( ).Utilities.iScriptVersion );
-    
-    return true;
+	WriteIniString ( "Positions.ini" , "Position " + iPositionCount , "szAddedBy" , pPlayer.Name );
+	WriteIniString ( "Positions.ini" , "Position " + iPositionCount , "szTimestamp" , ParseDateForDisplay ( time( ) ) );
+	WriteIniInteger ( "Positions.ini" , "Position " + iPositionCount , "iScriptVersion" , GetCoreTable ( ).Utilities.iScriptVersion );
+	
+	return true;
 
 }
 
@@ -247,21 +247,21 @@ function SubmitPositionCommand ( pPlayer , szCommand , szParams , bShowHelpOnly 
 
 function AddFunctionAliasCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-    if ( bShowHelpOnly ) {
-        
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Adds a function alias" , [ "FuncAlias" ] , "" );
-        
-        return false;
-    
-    }
-    
-    if ( !szParams ) {
-    
-        SendPlayerSyntaxMessage ( pPlayer , "/FuncAlias <Function> <Alias>" );
-        
-        return false;
-    
-    }
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Adds a function alias" , [ "FuncAlias" ] , "" );
+		
+		return false;
+	
+	}
+	
+	if ( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/FuncAlias <Function> <Alias>" );
+		
+		return false;
+	
+	}
 	
 	if ( NumTok ( pPlayer , " " ) != 2 ) {
 	
@@ -292,11 +292,11 @@ function AddFunctionAliasCommand ( pPlayer , szCommand , szParams , bShowHelpOnl
 	}
 	
 	getroottable ( ).rawset ( szAlias , pFunction );
-    
-    SendPlayerSuccessMessage ( pPlayer , "Function alias added! ( " + szFunction + " as " + szAlias + " ) " );
-    
-    return true;
-    
+	
+	SendPlayerSuccessMessage ( pPlayer , "Function alias added! ( " + szFunction + " as " + szAlias + " ) " );
+	
+	return true;
+	
 }
 
 // -------------------------------------------------------------------------------------------------

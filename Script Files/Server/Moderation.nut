@@ -3,40 +3,40 @@
 
 // -- COMMANDS -------------------------------------------------------------------------------------
 
-// - Kick                                   KickPlayerCommand                               BasicModeration
-// - Ban                                    BanPlayerCommand                                BasicModeration
-// - TempBan                                TempBanPlayerCommand                            BasicModeration
-// - Mute                                   MutePlayerCommand                               BasicModeration
-// - Unmute                                 UnmutePlayerCommand                             BasicModeration
-// - Freeze                                 FreezePlayerCommand                             BasicModeration
-// - Unfreeze                               UnfreezePlayerCommand                           BasicModeration
-// - Report									SubmitStaffReportCommand						None
-// - Reports								ListStaffReportsCommand							BasicModeration
-// - AcceptReport							AcceptStaffReportCommand						BasicModeration
-// - DenyReport								DenyStaffReportCommand							BasicModeration
+// - Kick								KickPlayerCommand								BasicModeration
+// - Ban								BanPlayerCommand								BasicModeration
+// - TempBan							TempBanPlayerCommand							BasicModeration
+// - Mute								MutePlayerCommand								BasicModeration
+// - Unmute								UnmutePlayerCommand								BasicModeration
+// - Freeze								FreezePlayerCommand								BasicModeration
+// - Unfreeze							UnfreezePlayerCommand							BasicModeration
+// - Report								SubmitStaffReportCommand						None
+// - Reports							ListStaffReportsCommand							BasicModeration
+// - AcceptReport						AcceptStaffReportCommand						BasicModeration
+// - DenyReport							DenyStaffReportCommand							BasicModeration
 
 // -------------------------------------------------------------------------------------------------
 
 function AddModerationCommandHandlers ( ) {
 
-    AddCommandHandler ( "Kick" , KickPlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
-    AddCommandHandler ( "Ban" , BanPlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
-    AddCommandHandler ( "TempBan" , TempBanPlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
-    AddCommandHandler ( "Mute" , MutePlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
-    AddCommandHandler ( "Unmute" , UnmutePlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
-    AddCommandHandler ( "Freeze" , FreezePlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
-    AddCommandHandler ( "Unfreeze" , UnfreezePlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
-    
-    AddCommandHandler ( "Goto" , GotoPlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
-    AddCommandHandler ( "GotoVeh" , GotoVehicleCommand , GetStaffFlagValue ( "BasicModeration" ) );
-    //AddCommandHandler ( "GotoVeh" , GotoBusinessCommand , GetStaffFlagValue ( "BasicModeration" ) );
-    AddCommandHandler ( "GotoHouse" , GotoHouseCommand , GetStaffFlagValue ( "BasicModeration" ) );
+	AddCommandHandler ( "Kick" , KickPlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
+	AddCommandHandler ( "Ban" , BanPlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
+	AddCommandHandler ( "TempBan" , TempBanPlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
+	AddCommandHandler ( "Mute" , MutePlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
+	AddCommandHandler ( "Unmute" , UnmutePlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
+	AddCommandHandler ( "Freeze" , FreezePlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
+	AddCommandHandler ( "Unfreeze" , UnfreezePlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
+	
+	AddCommandHandler ( "Goto" , GotoPlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
+	AddCommandHandler ( "GotoVeh" , GotoVehicleCommand , GetStaffFlagValue ( "BasicModeration" ) );
+	//AddCommandHandler ( "GotoVeh" , GotoBusinessCommand , GetStaffFlagValue ( "BasicModeration" ) );
+	AddCommandHandler ( "GotoHouse" , GotoHouseCommand , GetStaffFlagValue ( "BasicModeration" ) );
 	
 	AddCommandHandler ( "Report" , ForumStaffReportCommand , GetStaffFlagValue ( "None" ) );
 	AddCommandHandler ( "Reports" , ListAllStaffReportsCommand , GetStaffFlagValue ( "BasicModeration" ) );
 	
 	AddCommandHandler ( "ResetReport" , ResetStaffReportCommand , GetStaffFlagValue ( "ManageServer" ) | GetStaffFlagValue ( "ManageAdmins" ) | GetStaffFlagValue ( "Scripter" ) );
-    AddCommandHandler ( "AcceptReport" , AcceptStaffReportCommand , GetStaffFlagValue ( "BasicModeration" ) );
+	AddCommandHandler ( "AcceptReport" , AcceptStaffReportCommand , GetStaffFlagValue ( "BasicModeration" ) );
 	AddCommandHandler ( "DenyReport" , DenyStaffReportCommand , GetStaffFlagValue ( "BasicModeration" ) );
 	AddCommandHandler ( "ForumReport" , ForumStaffReportCommand , GetStaffFlagValue ( "BasicModeration" ) );
 	
@@ -46,7 +46,7 @@ function AddModerationCommandHandlers ( ) {
 	
 	AddCommandHandler ( "SetSkin" , SetPlayerSkinCommand , GetStaffFlagValue ( "BasicModeration" ) );
 	
-    return true;
+	return true;
 
 }
 
@@ -54,45 +54,45 @@ function AddModerationCommandHandlers ( ) {
 
 function BanPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-    if ( bShowHelpOnly ) {
-        
-        SendPlayerCommandInfoMessage ( pPlayer , "Bans a player from the server" , [ "Ban" ] , "" );
-        
-        return false;
-    
-    }
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , "Bans a player from the server" , [ "Ban" ] , "" );
+		
+		return false;
+	
+	}
 
-    if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
-        
-        return false;
-    
-    }
-    
-    if( !szParams ) {
-    
-        SendPlayerSyntaxMessage ( pPlayer , "/Ban <Player Name/ID>" );
-        
-        return false;
-    
-    }
-    
-    if ( !FindPlayer ( szParams ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
-        
-        return false;
-    
-    }
-    
-    local pTarget = FindPlayer ( szParams );
-    
-    SendAllAdminMessage ( pTarget.Name + " has been banned by " + pPlayer.Name );
-    
-    BanPlayer ( pTarget , BANTYPE_LUID );
-    
-    return true;
+	if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
+		
+		return false;
+	
+	}
+	
+	if( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/Ban <Player Name/ID>" );
+		
+		return false;
+	
+	}
+	
+	if ( !FindPlayer ( szParams ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
+		
+		return false;
+	
+	}
+	
+	local pTarget = FindPlayer ( szParams );
+	
+	SendAllAdminMessage ( pTarget.Name + " has been banned by " + pPlayer.Name );
+	
+	BanPlayer ( pTarget , BANTYPE_LUID );
+	
+	return true;
 
 }
 
@@ -100,45 +100,45 @@ function BanPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fal
 
 function TempBanPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-    if ( bShowHelpOnly ) {
-        
-        SendPlayerCommandInfoMessage ( pPlayer , "Temporarily bans a player from the server" , [ "TempBan" ] , "" );
-        
-        return false;
-    
-    }
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , "Temporarily bans a player from the server" , [ "TempBan" ] , "" );
+		
+		return false;
+	
+	}
 
-    if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
-        
-        return false;
-    
-    }
-    
-    if( !szParams ) {
-    
-        SendPlayerSyntaxMessage ( pPlayer , "/TempBan <Player Name/ID> <Time in Hours>" );
-        
-        return false;
-    
-    }
-    
-    if ( !FindPlayer ( szParams ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
-        
-        return false;
-    
-    }
-    
-    local pTarget = FindPlayer ( szParams );
-    
-    SendAllAdminMessage ( pTarget.Name + " has been temp-banned by " + pPlayer.Name );
-    
-    BanPlayer ( pTarget , BANTYPE_LUID );
-    
-    return true;
+	if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
+		
+		return false;
+	
+	}
+	
+	if( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/TempBan <Player Name/ID> <Time in Hours>" );
+		
+		return false;
+	
+	}
+	
+	if ( !FindPlayer ( szParams ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
+		
+		return false;
+	
+	}
+	
+	local pTarget = FindPlayer ( szParams );
+	
+	SendAllAdminMessage ( pTarget.Name + " has been temp-banned by " + pPlayer.Name );
+	
+	BanPlayer ( pTarget , BANTYPE_LUID );
+	
+	return true;
 
 }
 
@@ -146,45 +146,45 @@ function TempBanPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly =
 
 function KickPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-    if ( bShowHelpOnly ) {
-        
-        SendPlayerCommandInfoMessage ( pPlayer , "Kicks a player from the server" , [ "Kick" ] , "" );
-        
-        return false;
-    
-    }
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , "Kicks a player from the server" , [ "Kick" ] , "" );
+		
+		return false;
+	
+	}
 
-    if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
-        
-        return false;
-    
-    }
-    
-    if( !szParams ) {
-    
-        SendPlayerSyntaxMessage ( pPlayer , "/Kick <Player Name/ID>" );
-        
-        return false;
-    
-    }
-    
-    if ( !FindPlayer ( szParams ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
-        
-        return false;
-    
-    }
-    
-    local pTarget = FindPlayer ( szParams );
-    
-    SendAllAdminMessage ( pTarget.Name + " has been kicked by " + pPlayer.Name );
-    
-    KickPlayer ( pTarget );
-    
-    return true;
+	if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
+		
+		return false;
+	
+	}
+	
+	if( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/Kick <Player Name/ID>" );
+		
+		return false;
+	
+	}
+	
+	if ( !FindPlayer ( szParams ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
+		
+		return false;
+	
+	}
+	
+	local pTarget = FindPlayer ( szParams );
+	
+	SendAllAdminMessage ( pTarget.Name + " has been kicked by " + pPlayer.Name );
+	
+	KickPlayer ( pTarget );
+	
+	return true;
 
 }
 
@@ -192,45 +192,45 @@ function KickPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fa
 
 function MutePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-    if ( bShowHelpOnly ) {
-        
-        SendPlayerCommandInfoMessage ( pPlayer , "Mutes a player. Keeps them from using any chat." , [ "Mute" , "MutePlayer" ] , "This also blocks chat-related commands (ME, DO, etc)" );
-        
-        return false;
-    
-    }
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , "Mutes a player. Keeps them from using any chat." , [ "Mute" , "MutePlayer" ] , "This also blocks chat-related commands (ME, DO, etc)" );
+		
+		return false;
+	
+	}
 
-    if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
-        
-        return false;
-    
-    }
-    
-    if( !szParams ) {
-    
-        SendPlayerSyntaxMessage ( pPlayer , "/Mute <Player Name/ID>" );
-        
-        return false;
-    
-    }
-    
-    if ( !FindPlayer ( szParams ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
-        
-        return false;
-    
-    }
-    
-    local pTarget = FindPlayer ( szParams );
-    
-    SendAllAdminMessage ( pTarget.Name + " has been muted by " + pPlayer.Name );
-    
-    UnitedIslands.Players [ pTarget.ID ].bMuted = true;
-    
-    return true;
+	if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
+		
+		return false;
+	
+	}
+	
+	if( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/Mute <Player Name/ID>" );
+		
+		return false;
+	
+	}
+	
+	if ( !FindPlayer ( szParams ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
+		
+		return false;
+	
+	}
+	
+	local pTarget = FindPlayer ( szParams );
+	
+	SendAllAdminMessage ( pTarget.Name + " has been muted by " + pPlayer.Name );
+	
+	UnitedIslands.Players [ pTarget.ID ].bMuted = true;
+	
+	return true;
 
 }
 
@@ -238,45 +238,45 @@ function MutePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fa
 
 function UnmutePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-    if ( bShowHelpOnly ) {
-        
-        SendPlayerCommandInfoMessage ( pPlayer , "Unmutes a player so they can use chat again." , [ "Unmute" , "UnmutePlayer" ] , "" );
-        
-        return false;
-    
-    }
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , "Unmutes a player so they can use chat again." , [ "Unmute" , "UnmutePlayer" ] , "" );
+		
+		return false;
+	
+	}
 
-    if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
-        
-        return false;
-    
-    }
-    
-    if( !szParams ) {
-    
-        SendPlayerSyntaxMessage ( pPlayer , "/Unmute <Player Name/ID>" );
-        
-        return false;
-    
-    }
-    
-    if ( !FindPlayer ( szParams ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
-        
-        return false;
-    
-    }
-    
-    local pTarget = FindPlayer ( szParams );
-    
-    SendAllAdminMessage ( pTarget.Name + " has been un-muted by " + pPlayer.Name );
-    
-    UnitedIslands.Players [ pTarget.ID ].bMuted = false;
-    
-    return true;
+	if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
+		
+		return false;
+	
+	}
+	
+	if( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/Unmute <Player Name/ID>" );
+		
+		return false;
+	
+	}
+	
+	if ( !FindPlayer ( szParams ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
+		
+		return false;
+	
+	}
+	
+	local pTarget = FindPlayer ( szParams );
+	
+	SendAllAdminMessage ( pTarget.Name + " has been un-muted by " + pPlayer.Name );
+	
+	UnitedIslands.Players [ pTarget.ID ].bMuted = false;
+	
+	return true;
 
 }
 
@@ -284,47 +284,47 @@ function UnmutePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = 
 
 function FreezePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-    if ( bShowHelpOnly ) {
-        
-        SendPlayerCommandInfoMessage ( pPlayer , "Freezes a player so they can't move." , [ "Freeze" , "FreezePlayer" ] , "They can still look around with their mouse." );
-        
-        return false;
-    
-    }
-    
-    if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
-        
-        return false;
-    
-    }
-    
-    if( !szParams ) {
-    
-        SendPlayerSyntaxMessage ( pPlayer , "/Freeze <Player Name/ID>" );
-        
-        return false;
-    
-    }
-    
-    if ( !FindPlayer ( szParams ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
-        
-        return false;
-    
-    }
-    
-    local pTarget = FindPlayer ( szParams );
-    
-    Message ( UnitedIslands.Colours.Hex.BrightRed + "[ADMIN] " + UnitedIslands.Colours.Hex.White + pTarget.Name + " has been frozen by " + pPlayer.Name );
-    
-    UnitedIslands.Players [ pTarget.ID ].bFrozen = true;
-        
-    pTarget.Frozen = true;
-    
-    return true;
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , "Freezes a player so they can't move." , [ "Freeze" , "FreezePlayer" ] , "They can still look around with their mouse." );
+		
+		return false;
+	
+	}
+	
+	if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
+		
+		return false;
+	
+	}
+	
+	if( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/Freeze <Player Name/ID>" );
+		
+		return false;
+	
+	}
+	
+	if ( !FindPlayer ( szParams ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
+		
+		return false;
+	
+	}
+	
+	local pTarget = FindPlayer ( szParams );
+	
+	Message ( UnitedIslands.Colours.Hex.BrightRed + "[ADMIN] " + UnitedIslands.Colours.Hex.White + pTarget.Name + " has been frozen by " + pPlayer.Name );
+	
+	UnitedIslands.Players [ pTarget.ID ].bFrozen = true;
+		
+	pTarget.Frozen = true;
+	
+	return true;
 
 }
 
@@ -332,47 +332,47 @@ function FreezePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = 
 
 function UnfreezePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-    if ( bShowHelpOnly ) {
-        
-        SendPlayerCommandInfoMessage ( pPlayer , "Unfreezes a player so they can move again." , [ "Unfreeze" ] , "" );
-        
-        return false;
-    
-    }
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , "Unfreezes a player so they can move again." , [ "Unfreeze" ] , "" );
+		
+		return false;
+	
+	}
 
-    if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
-        
-        return false;
-    
-    }
-    
-    if( !szParams ) {
-    
-        SendPlayerSyntaxMessage ( pPlayer , "/Unfreeze <Player Name/ID>" );
-        
-        return false;
-    
-    }
-    
-    if ( !FindPlayer ( szParams ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
-        
-        return false;
-    
-    }
-    
-    local pTarget = FindPlayer ( szParams );
-    
-    Message ( UnitedIslands.Colours.Hex.BrightRed + "[ADMIN] " + UnitedIslands.Colours.Hex.White + pTarget.Name + " has been un-frozen by " + pPlayer.Name );
-    
-    UnitedIslands.Players [ pTarget.ID ].bFrozen = false;
-        
-    pTarget.Frozen = false;
-    
-    return true;
+	if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
+		
+		return false;
+	
+	}
+	
+	if( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/Unfreeze <Player Name/ID>" );
+		
+		return false;
+	
+	}
+	
+	if ( !FindPlayer ( szParams ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
+		
+		return false;
+	
+	}
+	
+	local pTarget = FindPlayer ( szParams );
+	
+	Message ( UnitedIslands.Colours.Hex.BrightRed + "[ADMIN] " + UnitedIslands.Colours.Hex.White + pTarget.Name + " has been un-frozen by " + pPlayer.Name );
+	
+	UnitedIslands.Players [ pTarget.ID ].bFrozen = false;
+		
+	pTarget.Frozen = false;
+	
+	return true;
 
 }
 
@@ -380,45 +380,45 @@ function UnfreezePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly 
 
 function GotoPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-    if ( bShowHelpOnly ) {
-        
-        SendPlayerCommandInfoMessage ( pPlayer , "Teleports you to a player" , [ "Goto" , "GotoPlayer" ] , "You can provide offset X, Y, and Z." );
-        
-        return false;
-    
-    }
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , "Teleports you to a player" , [ "Goto" , "GotoPlayer" ] , "You can provide offset X, Y, and Z." );
+		
+		return false;
+	
+	}
 
-    if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
-        
-        return false;
-    
-    }
-    
-    if( !szParams ) {
-    
-        SendPlayerSyntaxMessage ( pPlayer , "/Goto <Player Name/ID>" );
-        
-        return false;
-    
-    }
-    
-    if ( !FindPlayer ( szParams ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
-        
-        return false;
-    
-    }
-    
-    local pTarget = FindPlayer ( szParams );
-    
-    pPlayer.Pos = GetVectorBehindVector ( pTarget.Pos , pTarget.Angle , 3.0 );
-    
-    SendPlayerSuccessMessage ( pPlayer , "You have been teleported to player '" + pTarget.Name + "' (ID " + pTarget.ID + ")" );
-    
-    return true;
+	if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
+		
+		return false;
+	
+	}
+	
+	if( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/Goto <Player Name/ID>" );
+		
+		return false;
+	
+	}
+	
+	if ( !FindPlayer ( szParams ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
+		
+		return false;
+	
+	}
+	
+	local pTarget = FindPlayer ( szParams );
+	
+	pPlayer.Pos = GetVectorBehindVector ( pTarget.Pos , pTarget.Angle , 3.0 );
+	
+	SendPlayerSuccessMessage ( pPlayer , "You have been teleported to player '" + pTarget.Name + "' (ID " + pTarget.ID + ")" );
+	
+	return true;
 
 }
 
@@ -426,56 +426,56 @@ function GotoPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fa
 
 function GotoVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-    if ( bShowHelpOnly ) {
-        
-        SendPlayerCommandInfoMessage ( pPlayer , "Teleports you to a vehicle." , [ "GotoVeh" ] , "You can provide offset X, Y, and Z." );
-        
-        return false;
-    
-    }
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , "Teleports you to a vehicle." , [ "GotoVeh" ] , "You can provide offset X, Y, and Z." );
+		
+		return false;
+	
+	}
 
-    if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
-        
-        return false;
-    
-    }
-    
-    if( !szParams ) {
-    
-        SendPlayerSyntaxMessage ( pPlayer , "/GotoVeh <Vehicle ID>" );
-        
-        return false;
-    
-    }
-    
-    if ( !IsNum ( szParams ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , "The vehicle ID must be a number!" );
-        
-        return false;   
-    
-    }
-    
-    szParams = szParams.tointeger ( );
-    
-    if ( !FindVehicle ( szParams ) ) {
-    
-        
-        SendPlayerErrorMessage ( pPlayer , "That vehicle does not exist!" );
-        
-        return false;
-    
-    }
-    
-    local pVehicle = FindVehicle ( szParams );
-    
-    pPlayer.Pos = GetVectorAboveVector ( pVehicle.Pos , 3.0 );
-    
-    SendPlayerSuccessMessage ( pPlayer , "You have been teleported to vehicle '" + GetVehicleName( pVehicle.Model ) + "' (ID " + pVehicle.ID + ")" );
-    
-    return true;
+	if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
+		
+		return false;
+	
+	}
+	
+	if( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/GotoVeh <Vehicle ID>" );
+		
+		return false;
+	
+	}
+	
+	if ( !IsNum ( szParams ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The vehicle ID must be a number!" );
+		
+		return false;   
+	
+	}
+	
+	szParams = szParams.tointeger ( );
+	
+	if ( !FindVehicle ( szParams ) ) {
+	
+		
+		SendPlayerErrorMessage ( pPlayer , "That vehicle does not exist!" );
+		
+		return false;
+	
+	}
+	
+	local pVehicle = FindVehicle ( szParams );
+	
+	pPlayer.Pos = GetVectorAboveVector ( pVehicle.Pos , 3.0 );
+	
+	SendPlayerSuccessMessage ( pPlayer , "You have been teleported to vehicle '" + GetVehicleName( pVehicle.Model ) + "' (ID " + pVehicle.ID + ")" );
+	
+	return true;
 
 }
 
@@ -483,96 +483,96 @@ function GotoVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = f
 
 function GivePlayerStaffFlagCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-    if( bShowHelpOnly ) {
+	if( bShowHelpOnly ) {
 
-        SendPlayerCommandInfoMessage ( pPlayer , "Gives a staff flag to a player" , [ "GiveStaffFlag" ] , "" );
+		SendPlayerCommandInfoMessage ( pPlayer , "Gives a staff flag to a player" , [ "GiveStaffFlag" ] , "" );
 
-        return false;
+		return false;
 
-    }
+	}
 
-    local pTarget;
-    local szFlagName;
+	local pTarget;
+	local szFlagName;
 
-    if ( !szParams ) {
+	if ( !szParams ) {
 
-        SendPlayerSyntaxMessage ( pPlayer , "/GiveStaffFlag <Player Name/ID> <Staff Flag Name>" );
-        SendPlayerInfoMessage ( pPlayer , "Use /StaffFlags for a list of staff flags." );
+		SendPlayerSyntaxMessage ( pPlayer , "/GiveStaffFlag <Player Name/ID> <Staff Flag Name>" );
+		SendPlayerInfoMessage ( pPlayer , "Use /StaffFlags for a list of staff flags." );
 
-        return false;
+		return false;
 
-    }
+	}
 
-    if ( NumTok ( szParams , " " ) != 2 ) {
+	if ( NumTok ( szParams , " " ) != 2 ) {
 
-        SendPlayerSyntaxMessage ( pPlayer , "/GiveStaffFlag <Player Name/ID> <Staff Flag Name>" );
-        SendPlayerInfoMessage ( pPlayer , "Use /StaffFlags for a list of staff flags." );
-        
-        return false;
+		SendPlayerSyntaxMessage ( pPlayer , "/GiveStaffFlag <Player Name/ID> <Staff Flag Name>" );
+		SendPlayerInfoMessage ( pPlayer , "Use /StaffFlags for a list of staff flags." );
+		
+		return false;
 
-    }
+	}
 
-    pTarget = FindPlayer ( GetTok ( szParams , " " , 1 ) );
-    szFlagName = GetTok ( szParams , " " , 2 );
+	pTarget = FindPlayer ( GetTok ( szParams , " " , 1 ) );
+	szFlagName = GetTok ( szParams , " " , 2 );
 
-    if ( !pTarget ) {
+	if ( !pTarget ) {
 
-        SendPlayerErrorMessage ( pPlayer , "There is no player that matches '" + szFlagName + "'!" );
+		SendPlayerErrorMessage ( pPlayer , "There is no player that matches '" + szFlagName + "'!" );
 
-        return false;
+		return false;
 
-    }
+	}
 
-    if ( !( szFlagName in GetRootTable ( ).BitFlags.StaffFlags ) ) {
+	if ( !( szFlagName in GetRootTable ( ).BitFlags.StaffFlags ) ) {
 
-        SendPlayerErrorMessage ( pPlayer , "There is no staff flag called '" + szFlagName + "'!" );
-        SendPlayerInfoMessage ( pPlayer , "Use /StaffFlags for a list of staff flags." );
+		SendPlayerErrorMessage ( pPlayer , "There is no staff flag called '" + szFlagName + "'!" );
+		SendPlayerInfoMessage ( pPlayer , "Use /StaffFlags for a list of staff flags." );
 
-        return false;
+		return false;
 
-    }
+	}
 
-    if ( szFlagName == "Scripter" ) {
+	if ( szFlagName == "Scripter" ) {
 
-        if ( !DoesPlayerHaveStaffFlag ( pPlayer , "Scripter" ) ) {
-           
-           SendPlayerErrorMessage ( pPlayer , "You can't give " + pTarget.Name + " the 'Scripter' staff flag!" );
+		if ( !DoesPlayerHaveStaffFlag ( pPlayer , "Scripter" ) ) {
+		   
+		   SendPlayerErrorMessage ( pPlayer , "You can't give " + pTarget.Name + " the 'Scripter' staff flag!" );
 
-           return false;
+		   return false;
 
-        }
+		}
 
-    }    
+	}	
 
-    if ( DoesPlayerHaveStaffFlag ( pTarget , "Scripter" ) ) {
-    
-        if ( !DoesPlayerHaveStaffFlag ( pPlayer , "Scripter" ) ) {
-           
-           SendPlayerErrorMessage ( pPlayer , "You can't modify " + pTarget.Name + "'s flags!" );
+	if ( DoesPlayerHaveStaffFlag ( pTarget , "Scripter" ) ) {
+	
+		if ( !DoesPlayerHaveStaffFlag ( pPlayer , "Scripter" ) ) {
+		   
+		   SendPlayerErrorMessage ( pPlayer , "You can't modify " + pTarget.Name + "'s flags!" );
 
-           return false;
-           
-        }
-        
+		   return false;
+		   
+		}
+		
 
-        return false;
+		return false;
 
-    }    
+	}	
 
-    if ( DoesPlayerHaveStaffFlag ( pPlayer , szFlagName ) ) {
+	if ( DoesPlayerHaveStaffFlag ( pPlayer , szFlagName ) ) {
 
-        SendPlayerErrorMessage ( pPlayer , pTarget.Name + " already has the '" + szFlagName + "' staff flag!" );
+		SendPlayerErrorMessage ( pPlayer , pTarget.Name + " already has the '" + szFlagName + "' staff flag!" );
 
-        return false;
+		return false;
 
-    }
+	}
 
-    SendPlayerSuccessMessage ( pPlayer , "You have given " + pTarget.Name + " the '" + szFlagName + "' staff flag." );
-    SendPlayerAlertMessage ( pTarget , pPlayer.Name + " has given you the '" + szFlagName + "' staff flag." );
+	SendPlayerSuccessMessage ( pPlayer , "You have given " + pTarget.Name + " the '" + szFlagName + "' staff flag." );
+	SendPlayerAlertMessage ( pTarget , pPlayer.Name + " has given you the '" + szFlagName + "' staff flag." );
 
-    AddStaffPermission ( pPlayer , szStaffFlag );
+	AddStaffPermission ( pPlayer , szStaffFlag );
 
-    return true;
+	return true;
 
 }
 
@@ -580,99 +580,99 @@ function GivePlayerStaffFlagCommand ( pPlayer , szCommand , szParams , bShowHelp
 
 function TakePlayerStaffFlagCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-    if( bShowHelpOnly ) {
+	if( bShowHelpOnly ) {
 
-        SendPlayerCommandInfoMessage ( pPlayer , "Takes a staff flag from a player" , [ "TakeStaffFlag" ] , "" );
+		SendPlayerCommandInfoMessage ( pPlayer , "Takes a staff flag from a player" , [ "TakeStaffFlag" ] , "" );
 
-        return false;
+		return false;
 
-    }
+	}
 
-    local pTarget;
-    local szFlagName;
+	local pTarget;
+	local szFlagName;
 
-    if ( !szParams ) {
+	if ( !szParams ) {
 
-        SendPlayerSyntaxMessage ( pPlayer , "/TakeStaffFlag <Player Name/ID> <Staff Flag Name>" );
-        SendPlayerInfoMessage ( pPlayer , "Use /StaffFlags for a list of all staff flags." );
-        SendPlayerInfoMessage ( pPlayer , "Use /PlayerStaffFlags for a list of the player's staff flags." );
+		SendPlayerSyntaxMessage ( pPlayer , "/TakeStaffFlag <Player Name/ID> <Staff Flag Name>" );
+		SendPlayerInfoMessage ( pPlayer , "Use /StaffFlags for a list of all staff flags." );
+		SendPlayerInfoMessage ( pPlayer , "Use /PlayerStaffFlags for a list of the player's staff flags." );
 
-        return false;
+		return false;
 
-    }
+	}
 
-    if ( NumTok ( szParams , " " ) != 2 ) {
+	if ( NumTok ( szParams , " " ) != 2 ) {
 
-        SendPlayerSyntaxMessage ( pPlayer , "/TakeStaffFlag <Player Name/ID> <Staff Flag Name>" );
-        SendPlayerInfoMessage ( pPlayer , "Use /StaffFlags for a list of all staff flags." );
-        SendPlayerInfoMessage ( pPlayer , "Use /PlayerStaffFlags for a list of the player's staff flags." );
-        
-        return false;
+		SendPlayerSyntaxMessage ( pPlayer , "/TakeStaffFlag <Player Name/ID> <Staff Flag Name>" );
+		SendPlayerInfoMessage ( pPlayer , "Use /StaffFlags for a list of all staff flags." );
+		SendPlayerInfoMessage ( pPlayer , "Use /PlayerStaffFlags for a list of the player's staff flags." );
+		
+		return false;
 
-    }
+	}
 
-    pTarget = FindPlayer ( GetTok ( szParams , " " , 1 ) );
-    szFlagName = GetTok ( szParams , " " , 2 );
+	pTarget = FindPlayer ( GetTok ( szParams , " " , 1 ) );
+	szFlagName = GetTok ( szParams , " " , 2 );
 
-    if ( !pTarget ) {
+	if ( !pTarget ) {
 
-        SendPlayerErrorMessage ( pPlayer , "There is no player that matches '" + szFlagName + "'!" );
+		SendPlayerErrorMessage ( pPlayer , "There is no player that matches '" + szFlagName + "'!" );
 
-        return false;
+		return false;
 
-    }
+	}
 
-    if ( !( szFlagName in GetRootTable ( ).BitFlags.StaffFlags ) ) {
+	if ( !( szFlagName in GetRootTable ( ).BitFlags.StaffFlags ) ) {
 
-        SendPlayerErrorMessage ( pPlayer , "There is no staff flag called '" + szFlagName + "'!" );
-        SendPlayerInfoMessage ( pPlayer , "Use /StaffFlags for a list of staff flags." );
+		SendPlayerErrorMessage ( pPlayer , "There is no staff flag called '" + szFlagName + "'!" );
+		SendPlayerInfoMessage ( pPlayer , "Use /StaffFlags for a list of staff flags." );
 
-        return false;
+		return false;
 
-    }
+	}
 
-    if ( szFlagName == "Scripter" ) {
+	if ( szFlagName == "Scripter" ) {
 
-        if ( !DoesPlayerHaveStaffFlag ( pPlayer , "Scripter" ) ) {
-           
-           SendPlayerErrorMessage ( pPlayer , "You can't take " + pTarget.Name + " the 'Scripter' staff flag!" );
+		if ( !DoesPlayerHaveStaffFlag ( pPlayer , "Scripter" ) ) {
+		   
+		   SendPlayerErrorMessage ( pPlayer , "You can't take " + pTarget.Name + " the 'Scripter' staff flag!" );
 
-           return false;
+		   return false;
 
-        }
+		}
 
-    }
+	}
 
-    if ( !DoesPlayerHaveStaffFlag ( pPlayer , szFlagName ) ) {
+	if ( !DoesPlayerHaveStaffFlag ( pPlayer , szFlagName ) ) {
 
-        SendPlayerErrorMessage ( pPlayer , pTarget.Name + " doesn't have the '" + szFlagName + "' staff flag!" );
-        SendPlayerInfoMessage ( pPlayer , "Use /PlayerStaffFlags for a list of the player's staff flags." );
+		SendPlayerErrorMessage ( pPlayer , pTarget.Name + " doesn't have the '" + szFlagName + "' staff flag!" );
+		SendPlayerInfoMessage ( pPlayer , "Use /PlayerStaffFlags for a list of the player's staff flags." );
 
-        return false;
+		return false;
 
-    }
+	}
 
-    if ( DoesPlayerHaveStaffFlag ( pTarget , "Scripter" ) ) {
-    
-        if ( !DoesPlayerHaveStaffFlag ( pPlayer , "Scripter" ) ) {
-           
-           SendPlayerErrorMessage ( pPlayer , "You can't modify " + pTarget.Name + "'s flags!" );
+	if ( DoesPlayerHaveStaffFlag ( pTarget , "Scripter" ) ) {
+	
+		if ( !DoesPlayerHaveStaffFlag ( pPlayer , "Scripter" ) ) {
+		   
+		   SendPlayerErrorMessage ( pPlayer , "You can't modify " + pTarget.Name + "'s flags!" );
 
-           return false;
-           
-        }
-        
+		   return false;
+		   
+		}
+		
 
-        return false;
+		return false;
 
-    }
+	}
 
-    SendPlayerSuccessMessage ( pPlayer , "You have taken the '" + szFlagName + "' staff flag from " + pTarget.Name );
-    SendPlayerAlertMessage ( pTarget , pPlayer.Name + " has taken the '" + szFlagName + "' staff flag away from you." );
+	SendPlayerSuccessMessage ( pPlayer , "You have taken the '" + szFlagName + "' staff flag from " + pTarget.Name );
+	SendPlayerAlertMessage ( pTarget , pPlayer.Name + " has taken the '" + szFlagName + "' staff flag away from you." );
 
-    RemoveStaffPermission ( pPlayer , szStaffFlag );
+	RemoveStaffPermission ( pPlayer , szStaffFlag );
 
-    return true;
+	return true;
 
 }
 
@@ -680,13 +680,13 @@ function TakePlayerStaffFlagCommand ( pPlayer , szCommand , szParams , bShowHelp
 
 function ListAllStaffFlagsCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-    if( bShowHelpOnly ) {
+	if( bShowHelpOnly ) {
 
-        SendPlayerCommandInfoMessage ( pPlayer , "Shows a list of all staff flags." , [ "StaffFlags" ] , "" );
+		SendPlayerCommandInfoMessage ( pPlayer , "Shows a list of all staff flags." , [ "StaffFlags" ] , "" );
 
-        return false;
+		return false;
 
-    }
+	}
 	
 	foreach ( ii , iv in GetCoreTable ( ).BitFlags.StaffFlags ) {
 	
@@ -702,7 +702,7 @@ function ListAllStaffFlagsCommand ( pPlayer , szCommand , szParams , bShowHelpOn
 	
 	}
 	
-    return true;
+	return true;
 
 }
 
@@ -710,13 +710,13 @@ function ListAllStaffFlagsCommand ( pPlayer , szCommand , szParams , bShowHelpOn
 
 function SubmitStaffReportCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-    if( bShowHelpOnly ) {
+	if( bShowHelpOnly ) {
 
-        SendPlayerCommandInfoMessage ( pPlayer , "Reports a player or message to admins" , [ "Report" ] , "" );
+		SendPlayerCommandInfoMessage ( pPlayer , "Reports a player or message to admins" , [ "Report" ] , "" );
 
-        return false;
+		return false;
 
-    }
+	}
 
 	if ( !szParams ) {
 	
@@ -744,13 +744,13 @@ function SubmitStaffReportCommand ( pPlayer , szCommand , szParams , bShowHelpOn
 
 function ListAllStaffReportsCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
 
-    if( bShowHelpOnly ) {
+	if( bShowHelpOnly ) {
 
-        SendPlayerCommandInfoMessage ( pPlayer , "Shows all unhandled staff reports" , [ "Reports" ] , "" );
+		SendPlayerCommandInfoMessage ( pPlayer , "Shows all unhandled staff reports" , [ "Reports" ] , "" );
 
-        return false;
+		return false;
 
-    }
+	}
 
 	if ( !szParams ) {
 	
@@ -783,13 +783,13 @@ function ListAllStaffReportsCommand ( pPlayer , szCommand , szParams , bShowHelp
 
 function AcceptStaffReportCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
 
-    if( bShowHelpOnly ) {
+	if( bShowHelpOnly ) {
 
-        SendPlayerCommandInfoMessage ( pPlayer , "Accepts a report submitted by a player" , [ "AcceptReport" , "AR" ] , "" );
+		SendPlayerCommandInfoMessage ( pPlayer , "Accepts a report submitted by a player" , [ "AcceptReport" , "AR" ] , "" );
 
-        return false;
+		return false;
 
-    }
+	}
 
 	if ( !szParams ) {
 	
@@ -843,13 +843,13 @@ function AcceptStaffReportCommand ( pPlayer , szCommand , szParams , bShowHelpOn
 
 function DenyStaffReportCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
 
-    if( bShowHelpOnly ) {
+	if( bShowHelpOnly ) {
 
-        SendPlayerCommandInfoMessage ( pPlayer , "Denies a report submitted by a player" , [ "DenyReport" , "DR" ] , "" );
+		SendPlayerCommandInfoMessage ( pPlayer , "Denies a report submitted by a player" , [ "DenyReport" , "DR" ] , "" );
 
-        return false;
+		return false;
 
-    }
+	}
 
 	if ( !szParams ) {
 	
@@ -903,13 +903,13 @@ function DenyStaffReportCommand ( pPlayer , szCommand , szParams , bShowHelpOnly
 
 function ForumStaffReportCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
 
-    if( bShowHelpOnly ) {
+	if( bShowHelpOnly ) {
 
-        SendPlayerCommandInfoMessage ( pPlayer , "Sets a report as needing to be put on forum" , [ "ForumReport" ] , "" );
+		SendPlayerCommandInfoMessage ( pPlayer , "Sets a report as needing to be put on forum" , [ "ForumReport" ] , "" );
 
-        return false;
+		return false;
 
-    }
+	}
 
 	if ( !szParams ) {
 	
@@ -963,13 +963,13 @@ function ForumStaffReportCommand ( pPlayer , szCommand , szParams , bShowHelpOnl
 
 function ResetStaffReportCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
 
-    if( bShowHelpOnly ) {
+	if( bShowHelpOnly ) {
 
-        SendPlayerCommandInfoMessage ( pPlayer , "Resets a handled staff report to handle it again" , [ "ResetReport" ] , "" );
+		SendPlayerCommandInfoMessage ( pPlayer , "Resets a handled staff report to handle it again" , [ "ResetReport" ] , "" );
 
-        return false;
+		return false;
 
-    }
+	}
 
 	if ( !szParams ) {
 	
@@ -1137,70 +1137,70 @@ function GetAllUnhandledStaffReports ( ) {
 
 function SetPlayerSkinCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-    if( bShowHelpOnly ) {
+	if( bShowHelpOnly ) {
 
-        SendPlayerCommandInfoMessage ( pPlayer , "Sets a player's skin" , [ "SetSkin" ] , "" );
+		SendPlayerCommandInfoMessage ( pPlayer , "Sets a player's skin" , [ "SetSkin" ] , "" );
 
-        return false;
+		return false;
 
-    }
+	}
 
-    local szTargetParam = false;
-    local szSkinParam = false;
-    
-    if( !szParams ) {
-    
-        SendPlayerSyntaxMessage ( pPlayer , "/SetSkin <Player Name/ID> <Skin ID>" );
-        
-        return false;
-    
-    }
-    
-    if( NumTok ( szParams , " " ) != 2 ) {
-    
-        SendPlayerSyntaxMessage ( pPlayer , "/setskin <Player Name/ID> <Skin ID>" );
-        
-        return false;
-    
-    }    
-    
-    szTargetParam = GetTok ( szParams , " " , 1 );
-    szSkinParam = GetTok ( szParams , " " , 2 );
-    
-    if ( !FindPlayer ( szTargetParam ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , "That player is not connected!" );
-        
-        return false;
-    
-    }
-    
-    if ( !IsNum ( szSkinParam ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , "The skin ID must be a number!" );
-        
-        return false;    
-    
-    }
-    
-    szSkinParam = szSkinParam.tointeger ( );
-    
-    if ( !IsValidSkinID ( szSkinParam ) ) {
-    
-        SendPlayerErrorMessage ( pPlayer , "That skin ID is invalid!" );
-        
-        return false;    
-    
-    }
-    
-    local pTarget = FindPlayer ( szTargetParam );
-    
-    SendPlayerSuccessMessage ( pPlayer , "You set " + pTarget.Name + "'s skin to ID " + szSkinParam );
-    SendPlayerAlertMessage ( pTarget , pTarget.Name + " has set your skin to ID " + szSkinParam );
-    
-    SetPlayerSkin ( pTarget , szSkinParam );
-    
-    return true;
+	local szTargetParam = false;
+	local szSkinParam = false;
+	
+	if( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/SetSkin <Player Name/ID> <Skin ID>" );
+		
+		return false;
+	
+	}
+	
+	if( NumTok ( szParams , " " ) != 2 ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/setskin <Player Name/ID> <Skin ID>" );
+		
+		return false;
+	
+	}	
+	
+	szTargetParam = GetTok ( szParams , " " , 1 );
+	szSkinParam = GetTok ( szParams , " " , 2 );
+	
+	if ( !FindPlayer ( szTargetParam ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "That player is not connected!" );
+		
+		return false;
+	
+	}
+	
+	if ( !IsNum ( szSkinParam ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The skin ID must be a number!" );
+		
+		return false;	
+	
+	}
+	
+	szSkinParam = szSkinParam.tointeger ( );
+	
+	if ( !IsValidSkinID ( szSkinParam ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "That skin ID is invalid!" );
+		
+		return false;	
+	
+	}
+	
+	local pTarget = FindPlayer ( szTargetParam );
+	
+	SendPlayerSuccessMessage ( pPlayer , "You set " + pTarget.Name + "'s skin to ID " + szSkinParam );
+	SendPlayerAlertMessage ( pTarget , pTarget.Name + " has set your skin to ID " + szSkinParam );
+	
+	SetPlayerSkin ( pTarget , szSkinParam );
+	
+	return true;
 
 }
 

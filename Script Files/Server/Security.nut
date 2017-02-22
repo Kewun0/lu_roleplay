@@ -1,6 +1,6 @@
 function AnticheatCheckPlayers ( ) {
 
-    return;
+	return;
 
 }
 
@@ -8,7 +8,7 @@ function AnticheatCheckPlayers ( ) {
 
 function AnticheatCheckPlayers ( ) {
 
-    return;
+	return;
 
 }
 
