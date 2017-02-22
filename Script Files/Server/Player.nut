@@ -1,12 +1,12 @@
 function AddPlayerCommandHandlers ( ) {
     
-    AddCommandHandler ( "Login" , LoginCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "Register" , RegisterCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "Login" , LoginCommand , GetStaffFlagValue ( "None" ) );
+    AddCommandHandler ( "Register" , RegisterCommand , GetStaffFlagValue ( "None" ) );
        
-	AddCommandHandler ( "IPLogin" , ToggleIPLoginCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-	AddCommandHandler ( "LUIDLogin" , ToggleLUIDLoginCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+	AddCommandHandler ( "IPLogin" , ToggleIPLoginCommand , GetStaffFlagValue ( "None" ) );
+	AddCommandHandler ( "LUIDLogin" , ToggleLUIDLoginCommand , GetStaffFlagValue ( "None" ) );
 	
-	AddCommandHandler ( "ChangePass" , ChangePasswordCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+	AddCommandHandler ( "ChangePass" , ChangePasswordCommand , GetStaffFlagValue ( "None" ) );
 	
     return true;
     

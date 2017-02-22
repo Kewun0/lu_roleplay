@@ -51,18 +51,18 @@ function AddAllCommandHandlers ( ) {
     //AddCommandHandler ( "Login" , PlayerLoginCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
     //AddCommandHandler ( "Register" , PlayerRegisterCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
 
-    AddCommandHandler ( "Shout" , AreaShoutCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "S" , AreaShoutCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "Shout" , AreaShoutCommand , GetStaffFlagValue ( "None" ) );
+    AddCommandHandler ( "S" , AreaShoutCommand , GetStaffFlagValue ( "None" ) );
     
-    AddCommandHandler ( "Talk" , AreaTalkCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "Local" , AreaTalkCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "L" , AreaTalkCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "Talk" , AreaTalkCommand , GetStaffFlagValue ( "None" ) );
+    AddCommandHandler ( "Local" , AreaTalkCommand , GetStaffFlagValue ( "None" ) );
+    AddCommandHandler ( "L" , AreaTalkCommand , GetStaffFlagValue ( "None" ) );
     
-    AddCommandHandler ( "PM" , PrivateMessageCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "MSG" , PrivateMessageCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "Send" , PrivateMessageCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+    AddCommandHandler ( "PM" , PrivateMessageCommand , GetStaffFlagValue ( "None" ) );
+    AddCommandHandler ( "MSG" , PrivateMessageCommand , GetStaffFlagValue ( "None" ) );
+    AddCommandHandler ( "Send" , PrivateMessageCommand , GetStaffFlagValue ( "None" ) );
 	
-	AddCommandHandler ( "Help" , HelpCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+	AddCommandHandler ( "Help" , HelpCommand , GetStaffFlagValue ( "None" ) );
     
     // AddCommandHandler ( "tazer" , ToggleTazerCommand );
     
@@ -71,6 +71,7 @@ function AddAllCommandHandlers ( ) {
     AddScripterCommandHandlers ( );
     AddClanCommandHandlers ( );
 	AddModerationCommandHandlers ( );
+	AddJobCommandHandlers ( );
     
 }
 

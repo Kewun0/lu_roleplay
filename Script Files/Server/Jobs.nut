@@ -1,3 +1,13 @@
+function AddJobCommandHandlers ( ) {
+
+	AddCommandHandlers ( "TakeJob" , TakeJobCommand , GetStaffFlagValue ( "None" ) );
+	
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
 function ShowJobInformationToPlayer ( pPlayer , pJobData ) {
     
     if ( !pJobData ) {

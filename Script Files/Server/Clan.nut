@@ -14,11 +14,11 @@
 
 function AddClanCommandHandlers ( ) {
 
-    AddCommandHandler ( "NewClan" , NewClanCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageClans );
-    AddCommandHandler ( "ReloadClans" , ReloadClansCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageClans );
-    AddCommandHandler ( "TakeTurf" , TakeTurfCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "GiveTurf" , GiveTurfCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-    AddCommandHandler ( "ClanOwner" , SetClanOwnerCommand , GetCoreTable ( ).BitFlags.StaffFlags.ManageClans );
+    AddCommandHandler ( "NewClan" , NewClanCommand , GetStaffFlagValue ( "ManageClans" ) );
+    AddCommandHandler ( "ReloadClans" , ReloadClansCommand , GetStaffFlagValue ( "ManageClans" ) );
+    AddCommandHandler ( "TakeTurf" , TakeTurfCommand , GetStaffFlagValue ( "None" ) );
+    AddCommandHandler ( "GiveTurf" , GiveTurfCommand , GetStaffFlagValue ( "None" ) );
+    AddCommandHandler ( "ClanOwner" , SetClanOwnerCommand , GetStaffFlagValue ( "ManageClans" ) );
 
 }
 
