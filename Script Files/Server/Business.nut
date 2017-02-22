@@ -38,13 +38,13 @@ function BuyFromBusinessPickups ( ) {
 
 function CreateBusinessCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-    if ( bShowHelpOnly ) {
-        
-        SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Creates a new business" , [ "CreateBiz" , "AddBiz" ] , "Must be accepted by an admin." );
-        
-        return false;
-    
-    }
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Creates a new business" , [ "CreateBiz" , "AddBiz" ] , "Must be accepted by an admin." );
+		
+		return false;
+	
+	}
 	
 	
 	
