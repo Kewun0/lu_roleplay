@@ -44,7 +44,9 @@ function AddModerationCommandHandlers ( ) {
 	AddCommandHandler ( "TakeStaffFlag" , GivePlayerStaffFlagCommand , GetStaffFlagValue ( "ManageAdmins" ) );
 	AddCommandHandler ( "StaffFlags" , ListAllStaffFlagsCommand , GetStaffFlagValue ( "ManageAdmins" ) );
 	
-	AddCommandHandler ( "SetSkin" , SetPlayerSkinCommand , GetStaffFlagValue ( "BasicModeration" ) );
+	AddCommandHandler ( "SetSkin" , SetPlayerSkinCommand , GetStaffFlagValue ( "ManagePlayerStats" ) );
+	AddCommandHandler ( "GiveMoney" , GivePlayerMoneyCommand , GetStaffFlagValue ( "ManagePlayerStats" ) );
+	AddCommandHandler ( "GiveGun" , GivePlayerWeaponCommand , GetStaffFlagValue ( "ManagePlayerStats" ) );
 	
 	return true;
 
@@ -1206,6 +1208,167 @@ function SetPlayerSkinCommand ( pPlayer , szCommand , szParams , bShowHelpOnly =
 
 // -------------------------------------------------------------------------------------------------
 
+function GivePlayerMoneyCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+	if( bShowHelpOnly ) {
+
+		SendPlayerCommandInfoMessage ( pPlayer , "Gives a player money" , [ "GiveMoney" ] , "" );
+
+		return false;
+
+	}
+
+	local szTargetParam = false;
+	local szMoneyParam = false;
+	
+	if( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/GiveMoney <Player Name/ID> <Amount>" );
+		
+		return false;
+	
+	}
+	
+	if( NumTok ( szParams , " " ) != 2 ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/GiveMoney <Player Name/ID> <Amount>" );
+		
+		return false;
+	
+	}	
+	
+	szTargetParam = GetTok ( szParams , " " , 1 );
+	szMoneyParam = GetTok ( szParams , " " , 2 );
+	
+	if ( !FindPlayer ( szTargetParam ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "That player is not connected!" );
+		
+		return false;
+	
+	}
+	
+	if ( !IsNum ( szMoneyParam ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The amount of money must be a number!" );
+		
+		return false;	
+	
+	}
+	
+	szMoneyParam = szMoneyParam.tointeger ( );
+	
+	if ( szMoneyParam > 0 ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The amount must be more than 0!" );
+		
+		return false;	
+	
+	}
+	
+	local pTarget = FindPlayer ( szTargetParam );
+	
+	SendPlayerSuccessMessage ( pPlayer , "You gave " + pTarget.Name + " $" + szMoneyParam );
+	SendPlayerAlertMessage ( pTarget , pTarget.Name + " has given you $" + szMoneyParam );
+	
+	GivePlayerMoney ( pTarget , szMoneyParam );
+	
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function GivePlayerWeaponCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+	if( bShowHelpOnly ) {
+
+		SendPlayerCommandInfoMessage ( pPlayer , "Gives a player a weapon" , [ "GiveGun" , "GiveWeapon" ] , "" );
+
+		return false;
+
+	}
+
+	local szTargetParam = false;
+	local szMoneyParam = false;
+	
+	if( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/GiveGun <Player Name/ID> <Weapon ID> <Ammo>" );
+		
+		return false;
+	
+	}
+	
+	if( NumTok ( szParams , " " ) != 3 ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/GiveGun <Player Name/ID> <Weapon ID> <Ammo>" );
+		
+		return false;
+	
+	}	
+	
+	szTargetParam = GetTok ( szParams , " " , 1 );
+	szWeaponParam = GetTok ( szParams , " " , 2 );
+	szAmmoParam = GetTok ( szParams , " " , 3 );
+	
+	if ( !FindPlayer ( szTargetParam ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "That player is not connected!" );
+		
+		return false;
+	
+	}
+	
+	if ( !IsNum ( szWeaponParam ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The weapon ID must be a number!" );
+		
+		return false;	
+	
+	}
+	
+	szWeaponParam = szWeaponParam.tointeger ( );
+	
+	if ( !IsNum ( szAmmoParam ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The ammo amount must be a number!" );
+		
+		return false;	
+	
+	}	
+	
+	szAmmoParam = szAmmoParam.tointeger ( );
+	
+	if ( szWeaponParam > 0 && szWeaponParam < 12 ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The weapon ID must be between 1 and 11!" );
+		
+		return false;	
+	
+	}
+	
+	if ( szAmmoParam > 0 && szAmmoParam < 99999 ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The weapon ID must be between 1 and 99999!" );
+		
+		return false;	
+	
+	}	
+	
+	local pTarget = FindPlayer ( szTargetParam );
+	
+	SendPlayerSuccessMessage ( pPlayer , "You gave " + pTarget.Name + " $" + szMoneyParam );
+	SendPlayerAlertMessage ( pTarget , pTarget.Name + " has given you $" + szMoneyParam );
+	
+	GivePlayerWeapon ( pTarget , szWeaponParam , szAmmoParam );
+	
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
 function CanPlayerSubmitStaffReport ( pPlayer ) {
 
 	return true;
@@ -1219,5 +1382,3 @@ function CanPlayerSubmitStaffReport ( pPlayer ) {
 print ( "[Server.Moderation]: Script file loaded and ready." );
 
 // -------------------------------------------------------------------------------------------------
-
-
