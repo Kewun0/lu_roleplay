@@ -1,3 +1,5 @@
+// -------------------------------------------------------------------------------------------------
+
 function InitClassesCoreTable ( ) {
 
 	local pClassesCoreTable = { };
@@ -72,67 +74,69 @@ function InitPlayerDataClass ( ) {
 		
 		iClan					   = 0;
 		
-		iHealth					 = 0;
-		iArmour					 = 0;
+		iHealth						= 0;
+		iArmour						= 0;
 		iTimesBusted				= 0;
-		iStarsObtained			  = 0;
+		iStarsObtained				= 0;
 		iStarsEvaded				= 0;
-		iHighestWantedLevel		 = 0;
+		iHighestWantedLevel			= 0;
 		
 		iBusinessesPurchased		= 0;
 		iHousesPurchased			= 0;
-		iWeaponsPurchased		   = 0;
+		iWeaponsPurchased			= 0;
 		
-		iSpentOnWeapons			 = 0;
+		iSpentOnWeapons				= 0;
 		
 		iVehicleResprays			= 0;
-		iWantedVehicleResprays	  = 0;
+		iWantedVehicleResprays		= 0;
 		
 		iLongestGameTime			= 0;
 
-		iCharacterLevel			 = 0;
+		iCharacterLevel				= 0;
 		iCharacterExperience		= 0;
 
-		pPosition				   = ::Vector ( -763.80 , -603.30 , 11.33 );
-		iAngle					  = 268.556;
+		pPosition					= ::Vector ( -763.80 , -603.30 , 11.33 );
+		iAngle						= 268.556;
 
-		bMuted					  = false;
-		bFrozen					 = false;
+		bMuted						= false;
+		bFrozen						= false;
 		
 		iAccountSettings			= 0;
-		iLicenses				   = 0;
-		iStaffFlags				 = 0;
+		iLicenses					= 0;
+		iStaffFlags					= 0;
 		
-		iLastUpdate				 = 0;
-		iPingKickTicks			  = 0;
-		iLoginAttemptsRemaining	 = 0;
-		iDeadIsland				 = 0;
-		bDead					   = false;
-		iSpawnBug				   = 0;
-		iLastIdleCheck			  = 0;
+		iLastUpdate					= 0;
+		iPingKickTicks				= 0;
+		iLoginAttemptsRemaining		= 3;
+		iDeadIsland					= 0;
+		bDead						= false;
+		iSpawnBug					= 0;
+		iLastIdleCheck				= 0;
 		iLastSpamWarning			= 0;
-		iMuteStart				  = 0;
+		iMuteStart					= 0;
 		
 		pSession					= false;
-		bAuthenticated			  = false;
+		bAuthenticated				= false;
 		
-		bTazerArmed				 = false;
-		bTazed					  = false;
-		bCuffed					 = false;
+		bTazerArmed					= false;
+		bTazed						= false;
+		bCuffed						= false;
 		
-		pAntiCheatPosition		  = ::Vector ( 0.0 , 0.0 , 0.0 );
+		pAntiCheatPosition			= ::Vector ( 0.0 , 0.0 , 0.0 );
 		
-		pCrimes					 = [ ];
+		pCrimes						= [ ];
 		
-		pStaffNotes				 = [ ];
+		pStaffNotes					= [ ];
 		
-		pRentingVehicle			 = false;
+		pRentingVehicle				= false;
 		
-		iLocale					 = 0;
+		iLocale						= 0;
+		
+		bNewlyRegistered 			= false;
 		
 		constructor ( pPlayer ) {
 			
-			pPlayer					 = pPlayer;
+			pPlayer					= pPlayer;
 			
 		}
 		
