@@ -1,3 +1,5 @@
+// -------------------------------------------------------------------------------------------------
+
 function AddCommandHandler ( szCommand , szListener , iStaffFlags ) {
 	
 	if ( typeof szCommand != "string" || typeof szListener != "function" ) {
