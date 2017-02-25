@@ -1,3 +1,5 @@
+// -------------------------------------------------------------------------------------------------
+
 function SetVehicleOnFire ( pVehicle ) {
 
 	local pFireData = GetCoreTable.Classes.FireData ( );
