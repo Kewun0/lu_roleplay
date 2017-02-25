@@ -1216,6 +1216,16 @@ function GetVehicleModelIDCommand ( pPlayer , szCommand , szParams , bShowHelpOn
 
 // -------------------------------------------------------------------------------------------------
 
+function GetVehicleData ( pVehicle ) {
+
+	local iVehicleDataIndex = GetCoreTable ( ).VehicleToData [ pVehicle.ID ];
+	
+	return GetCoreTable ( ).Vehicles [ iVehicleDataIndex ];
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
 // -- THIS GOES LAST
 
 print ( "[Server.Vehicle]: Script file loaded and ready." );
