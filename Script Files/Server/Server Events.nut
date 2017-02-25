@@ -59,7 +59,7 @@ function onPlayerPart ( pPlayer , iReason ) {
 	// -- Make sure this goes last in the function. Once it's gone, we can't use it!
  
 	
-	GetPlayerData ( pPlayer ) <- null;
+	GetCoreTable ( ).Players [ pPlayer.ID ] <- null;
 
 	return true;
 	
@@ -102,30 +102,35 @@ function onPlayerEnteredVehicle ( pPlayer , pVehicle , iSeatID ) {
 	// -- If they entered the driver's seat
 	
 	if( iSeatID == 0 ) {
-	
-		// -- Vehicle engines automatically turn on when entering as a driver. If the engine is supposed to be off, use SetEngineState
-		
-		if ( !pVehicleData.bEngine ) {
-		
-			pVehicle.SetEngineState ( false );
-		
-		}
 		
 		// -- If the car can be rented, let the player know.
 	
 		if ( pVehicleData.iRentPrice > 0 ) {
 		
-			if ( !pVehicleData.pRenter ) {
+			if ( pVehicleData.pRenter ) {
 			
-				SendPlayerAlertMessage ( pPlayer , "You are renting this " + GetVehicleName ( pVehicle.Model ) );
+				if ( pVehicleData.pRenter.ID == pPlayer.ID ) {
+				
+					SendPlayerAlertMessage ( pPlayer , "You are renting this " + GetVehicleName ( pVehicle.Model ) );
+				
+				}
 			
-			}
+			} else {
 			
-			pVehicle.SetEngineState ( false );
-			
-			MessagePlayer ( "If you want to drive this vehicle, you'll need to rent it for $" + pVehicleData.iRentPrice , pPlayer , GetCoreTable ( ).Colours.RGB.White );
-			MessagePlayer ( "Use /rentvehicle to drive it now. Otherwise, please exit the vehicle." , pPlayer , GetCoreTable ( ).Colours.RGB.White );
+				pVehicleData.bEngine = false;
+				
+				MessagePlayer ( "If you want to drive this vehicle, you'll need to rent it for $" + pVehicleData.iRentPrice , pPlayer , GetCoreTable ( ).Colours.RGB.White );
+				MessagePlayer ( "Use /rentvehicle to drive it now. Otherwise, please exit the vehicle." , pPlayer , GetCoreTable ( ).Colours.RGB.White );
 		
+			}
+		
+		}
+		
+		// -- Vehicle engines automatically turn on when entering as a driver. If the engine is supposed to be off, use SetEngineState
+		
+		if ( !pVehicleData.bEngine ) {
+		
+			pVehicle.SetEngineState ( false );
 		
 		}
 	
@@ -145,7 +150,11 @@ function onPlayerSpawn ( pPlayer , iSpawnClass ) {
 	
 	if ( !pPlayerData.bCanSpawn ) {
 	
-		pPlayer.ForceToSpawnScreen ( );
+		ClearChat ( pPlayer );
+		
+		MessagePlayer ( pPlayer , "You need to be logged in to spawn!" );
+		
+		KickPlayer ( pPlayer );
 		
 		return 0;
 	
@@ -159,6 +168,20 @@ function onPlayerSpawn ( pPlayer , iSpawnClass ) {
 		pPlayer.Skin = pPlayerData.iSkin;
 		
 		pPlayer.Cash = pPlayerData.iCash;
+	
+	}
+	
+	if ( pPlayerData.bNewlyRegistered ) {
+	
+		ClearChat ( pPlayer );
+			
+		MessagePlayer ( "Your flight has just landed in Liberty City." , pPlayer , GetRGBColour ( "White" ) );
+		MessagePlayer ( "You have some cash to get started." , pPlayer , GetRGBColour ( "White" ) );
+		
+		MessagePlayer ( "Be sure to read the /rules and use /help for info." , pPlayer , GetRGBColour ( "Yellow" ) );
+		
+		MessagePlayer ( "To get started, get in a rental van or take the subway." , pPlayer , GetRGBColour ( "LightGrey" ) );
+		MessagePlayer ( "The Shoreside Terminal station is down the road to the south." , pPlayer , GetRGBColour ( "LightGrey" ) );
 	
 	}
 	
@@ -178,6 +201,8 @@ function onPlayerCommand ( pPlayer , szCommand , szParams ) {
 		
 		if ( !pPlayerData.bAuthenticated ) {
 		
+			SendPlayerErrorMessage ( pPlayer , "You need to be logged in to use commands!" );
+		
 			print ( "- Player '" + pPlayer.Name + "' (ID " + pPlayer.ID + ") failed to use command. Reason: Not authenticated - String: /" + szCommand + " " + szParams );
 			
 			return false;
@@ -185,6 +210,8 @@ function onPlayerCommand ( pPlayer , szCommand , szParams ) {
 		}
 		
 		if( !pPlayerData.bCanUseCommands ) {
+		
+			SendPlayerErrorMessage ( pPlayer , "You can't use commands right now!" );
 		
 			print ( "- Player '" + pPlayer.Name + "' (ID " + pPlayer.ID + ") failed to use command. Reason: bCanUseCommands is false - String: /" + szCommand + " " + szParams );
 			
