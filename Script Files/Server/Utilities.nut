@@ -1,3 +1,19 @@
+// -------------------------------------------------------------------------------------------------
+
+function AddUtilitiesCommandHandlers ( ) {
+
+	AddCommandHandler ( "NearPlayers" , NearbyPlayersCommand , GetStaffFlagValue ( "None" ) );
+	AddCommandHandler ( "NearVehicles" , NearbyVehiclesCommand , GetStaffFlagValue ( "None" ) );
+	AddCommandHandler ( "Location" , PlayerLocationCommand , GetStaffFlagValue ( "None" ) );
+	
+	// Command Aliases
+	AddCommandHandler ( "Loc" , PlayerLocationCommand , GetStaffFlagValue ( "None" ) );
+	AddCommandHandler ( "NearVeh" , NearbyVehiclesCommand , GetStaffFlagValue ( "None" ) );
+	AddCommandHandler ( "Near" , NearbyPlayersCommand , GetStaffFlagValue ( "None" ) );
+}
+
+// -------------------------------------------------------------------------------------------------
+
 function GetPlayerIsland ( pPlayer ) {
 
 	local pPos = pPlayer.Pos;
@@ -533,6 +549,56 @@ function GetNumberOfRegisteredAccounts ( ) {
 
 // -------------------------------------------------------------------------------------------------
 
+function GetHexColour ( szColourName ) {
+
+	if ( GetCoreTable ( ).Colours.Hex.rawin ( szColourName ) ) {
+	
+		return GetCoreTable ( ).Colours.Hex [ szColourName ];
+
+	}
+
+	return GetCoreTable ( ).Colours.Hex.White;
+	
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function GetRGBColour ( szColourName ) {
+
+	if ( GetCoreTable ( ).Colours.RGB.rawin ( szColourName ) ) {
+	
+		return GetCoreTable ( ).Colours.RGB [ szColourName ];
+
+	}
+
+	return GetCoreTable ( ).Colours.RGB.White;
+	
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function GetColourByType ( szColourTypeName ) {
+
+	if ( GetCoreTable ( ).Colours.ByType.rawin ( szColourTypeName ) ) {
+	
+		return GetCoreTable ( ).Colours.ByType [ szColourTypeName ];
+
+	}
+
+	return GetCoreTable ( ).Colours.Hex.White;
+	
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function GetPlayerNameAndIDForConsole ( pPlayer ) {
+
+	return pPlayer.Name + " [ID " + pPlayer.ID + "]";
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
 function ParseDateForDisplay ( iTimeStamp ) {
 
 	local pDate = date ( iTimeStamp );
@@ -808,6 +874,46 @@ function GetTimeDifferenceDisplay ( iTimeOne , iTimeTwo ) {
 	
 	return szHours + " and " + szMinutes;
 	
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function NearbyPlayersCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+	local fDistance = 20.0;
+	
+	if ( szParams ) {
+	
+		if ( !IsNum ( szParams ) ) {
+		
+			SendPlayerErrorMessage ( pPlayer , "The range must be a number!" );
+			
+			return false;
+		
+		}
+		
+		if ( szParams.tointeger ( ) > 0 ) {
+		
+			SendPlayerErrorMessage ( pPlayer , "The range must be more than 0!" );
+			
+			return false;
+		
+		}		
+		
+		fDistance = szParams.tointeger ( );
+	
+	}
+	
+	local pNearbyPlayers = GetPlayersInRange ( pPlayer.Pos , fDistance );
+	
+	foreach ( ii , iv in pNearbyPlayers ) {
+	
+		SendPlayerNormalMessage ( pPlayer , GetHexColour ( "LightGrey" ) + "• " + iv.Name + " (" + GetDistance ( pPlayer.Pos , iv.Pos ) + " meters " + GetCardinalDirectionText ( GetCardinalDirection ( pPlayer.Pos , iv.Pos ) ) + ")" );
+	
+	}
+
+	return true;
+
 }
 
 // -------------------------------------------------------------------------------------------------
