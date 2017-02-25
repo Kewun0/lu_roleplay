@@ -454,6 +454,8 @@ function InitServerProcessingThreads ( ) {
 	
 	pThreadTable.LoadVehicleThread <- ::newthread ( LoadVehicleFromDatabase );
 	pThreadTable.SaveVehicleThread <- ::newthread ( SaveVehicleToDatabase );
+	// pThreadTable.LoadPlayerThread <- ::newthread ( LoadPlayerFromDatabase );
+	// pThreadTable.SavePlayerThread <- ::newthread ( SavePlayerToDatabase );	
 
 	return pThreadTable;
 	
