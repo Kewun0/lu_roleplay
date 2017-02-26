@@ -37,5 +37,8 @@ function onScriptLoad ( ) {
 	pCoreTable.Vehicles <- ::LoadVehiclesFromDatabase ( );
 	
 	InitGameEntities ( );
+	
+	ConnectedPlayers <- { };
 
 }
+
