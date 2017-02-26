@@ -1,20 +1,6 @@
 // NAME: Moderation.nut
 // DESC: Handles anything related to server moderation. Commands and information for server staff.
 
-// -- COMMANDS -------------------------------------------------------------------------------------
-
-// - Kick								KickPlayerCommand								BasicModeration
-// - Ban								BanPlayerCommand								BasicModeration
-// - TempBan							TempBanPlayerCommand							BasicModeration
-// - Mute								MutePlayerCommand								BasicModeration
-// - Unmute								UnmutePlayerCommand								BasicModeration
-// - Freeze								FreezePlayerCommand								BasicModeration
-// - Unfreeze							UnfreezePlayerCommand							BasicModeration
-// - Report								SubmitStaffReportCommand						None
-// - Reports							ListStaffReportsCommand							BasicModeration
-// - AcceptReport						AcceptStaffReportCommand						BasicModeration
-// - DenyReport							DenyStaffReportCommand							BasicModeration
-
 // -------------------------------------------------------------------------------------------------
 
 function AddModerationCommandHandlers ( ) {
@@ -28,8 +14,9 @@ function AddModerationCommandHandlers ( ) {
 	AddCommandHandler ( "Unfreeze" , UnfreezePlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
 	
 	AddCommandHandler ( "Goto" , GotoPlayerCommand , GetStaffFlagValue ( "BasicModeration" ) );
+	AddCommandHandler ( "GetHere" , GetPlayerToMeCommand , GetStaffFlagValue ( "BasicModeration" ) );
 	AddCommandHandler ( "GotoVeh" , GotoVehicleCommand , GetStaffFlagValue ( "BasicModeration" ) );
-	//AddCommandHandler ( "GotoVeh" , GotoBusinessCommand , GetStaffFlagValue ( "BasicModeration" ) );
+	AddCommandHandler ( "GetVeh" , GetVehicleCommand , GetStaffFlagValue ( "BasicModeration" ) );
 	AddCommandHandler ( "GotoHouse" , GotoHouseCommand , GetStaffFlagValue ( "BasicModeration" ) );
 	
 	AddCommandHandler ( "Report" , ForumStaffReportCommand , GetStaffFlagValue ( "None" ) );
@@ -44,7 +31,13 @@ function AddModerationCommandHandlers ( ) {
 	AddCommandHandler ( "TakeStaffFlag" , GivePlayerStaffFlagCommand , GetStaffFlagValue ( "ManageAdmins" ) );
 	AddCommandHandler ( "StaffFlags" , ListAllStaffFlagsCommand , GetStaffFlagValue ( "ManageAdmins" ) );
 	
-	AddCommandHandler ( "SetSkin" , SetPlayerSkinCommand , GetStaffFlagValue ( "BasicModeration" ) );
+	AddCommandHandler ( "SetSkin" , SetPlayerSkinCommand , GetStaffFlagValue ( "ManagePlayerStats" ) );
+	AddCommandHandler ( "GiveMoney" , GivePlayerMoneyCommand , GetStaffFlagValue ( "ManagePlayerStats" ) );
+	AddCommandHandler ( "GiveGun" , GivePlayerWeaponCommand , GetStaffFlagValue ( "ManagePlayerStats" ) );
+	
+	AddCommandHandler ( "SaveAll" , SaveServerDataCommand , GetStaffFlagValue ( "ManageServer" ) );
+	
+	AddCommandHandler ( "InVeh" , SaveServerDataCommand , GetStaffFlagValue ( "BasicModeration" ) );
 	
 	return true;
 
@@ -57,14 +50,6 @@ function BanPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fal
 	if ( bShowHelpOnly ) {
 		
 		SendPlayerCommandInfoMessage ( pPlayer , "Bans a player from the server" , [ "Ban" ] , "" );
-		
-		return false;
-	
-	}
-
-	if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
-	
-		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
 		
 		return false;
 	
@@ -88,9 +73,35 @@ function BanPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fal
 	
 	local pTarget = FindPlayer ( szParams );
 	
-	SendAllAdminMessage ( pTarget.Name + " has been banned by " + pPlayer.Name );
+	SendAdminMessageToAll ( pTarget.Name + " has been banned by " + pPlayer.Name );
 	
 	BanPlayer ( pTarget , BANTYPE_LUID );
+	
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function AdminChatCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , "Talks on admin chat" , [ "SC" , "StaffChat" ] , "" );
+		
+		return false;
+	
+	}
+	
+	if( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/StaffChat <Message>" );
+		
+		return false;
+	
+	}
+	
+	SendMessageToAdmins ( GetHexColour ( "MediumRed" ) + "(Staff Chat) " + GetHexColour ( "MediumGrey" ) + "<" + GetPlayerData ( pPlayer ).szStaffTitle + "> " + GetHexColour ( "LightGrey" ) + pPlayer.Name + ": " + GetHexColour ( "White" ) + szMessage );
 	
 	return true;
 
@@ -103,14 +114,6 @@ function TempBanPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly =
 	if ( bShowHelpOnly ) {
 		
 		SendPlayerCommandInfoMessage ( pPlayer , "Temporarily bans a player from the server" , [ "TempBan" ] , "" );
-		
-		return false;
-	
-	}
-
-	if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
-	
-		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
 		
 		return false;
 	
@@ -134,7 +137,7 @@ function TempBanPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly =
 	
 	local pTarget = FindPlayer ( szParams );
 	
-	SendAllAdminMessage ( pTarget.Name + " has been temp-banned by " + pPlayer.Name );
+	SendAdminMessageToAll ( pTarget.Name + " has been temp-banned by " + pPlayer.Name );
 	
 	BanPlayer ( pTarget , BANTYPE_LUID );
 	
@@ -149,14 +152,6 @@ function KickPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fa
 	if ( bShowHelpOnly ) {
 		
 		SendPlayerCommandInfoMessage ( pPlayer , "Kicks a player from the server" , [ "Kick" ] , "" );
-		
-		return false;
-	
-	}
-
-	if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
-	
-		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
 		
 		return false;
 	
@@ -180,7 +175,7 @@ function KickPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fa
 	
 	local pTarget = FindPlayer ( szParams );
 	
-	SendAllAdminMessage ( pTarget.Name + " has been kicked by " + pPlayer.Name );
+	SendAdminMessageToAll ( pTarget.Name + " has been kicked by " + pPlayer.Name );
 	
 	KickPlayer ( pTarget );
 	
@@ -195,14 +190,6 @@ function MutePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fa
 	if ( bShowHelpOnly ) {
 		
 		SendPlayerCommandInfoMessage ( pPlayer , "Mutes a player. Keeps them from using any chat." , [ "Mute" , "MutePlayer" ] , "This also blocks chat-related commands (ME, DO, etc)" );
-		
-		return false;
-	
-	}
-
-	if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
-	
-		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
 		
 		return false;
 	
@@ -226,9 +213,9 @@ function MutePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fa
 	
 	local pTarget = FindPlayer ( szParams );
 	
-	SendAllAdminMessage ( pTarget.Name + " has been muted by " + pPlayer.Name );
+	SendAdminMessageToAll ( pTarget.Name + " has been muted by " + pPlayer.Name );
 	
-	UnitedIslands.Players [ pTarget.ID ].bMuted = true;
+	GetPlayerData ( pTarget ).bMuted = true;
 	
 	return true;
 
@@ -241,14 +228,6 @@ function UnmutePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = 
 	if ( bShowHelpOnly ) {
 		
 		SendPlayerCommandInfoMessage ( pPlayer , "Unmutes a player so they can use chat again." , [ "Unmute" , "UnmutePlayer" ] , "" );
-		
-		return false;
-	
-	}
-
-	if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
-	
-		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
 		
 		return false;
 	
@@ -272,9 +251,9 @@ function UnmutePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = 
 	
 	local pTarget = FindPlayer ( szParams );
 	
-	SendAllAdminMessage ( pTarget.Name + " has been un-muted by " + pPlayer.Name );
+	SendAdminMessageToAll ( pTarget.Name + " has been un-muted by " + pPlayer.Name );
 	
-	UnitedIslands.Players [ pTarget.ID ].bMuted = false;
+	GetPlayerData ( pTarget ).bMuted = false;
 	
 	return true;
 
@@ -287,14 +266,6 @@ function FreezePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = 
 	if ( bShowHelpOnly ) {
 		
 		SendPlayerCommandInfoMessage ( pPlayer , "Freezes a player so they can't move." , [ "Freeze" , "FreezePlayer" ] , "They can still look around with their mouse." );
-		
-		return false;
-	
-	}
-	
-	if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
-	
-		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
 		
 		return false;
 	
@@ -318,9 +289,9 @@ function FreezePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = 
 	
 	local pTarget = FindPlayer ( szParams );
 	
-	Message ( UnitedIslands.Colours.Hex.BrightRed + "[ADMIN] " + UnitedIslands.Colours.Hex.White + pTarget.Name + " has been frozen by " + pPlayer.Name );
+	SendAdminMessageToAll ( pTarget.Name + " has been frozen by " + pPlayer.Name );
 	
-	UnitedIslands.Players [ pTarget.ID ].bFrozen = true;
+	GetPlayerData ( pTarget ).bFrozen = true;
 		
 	pTarget.Frozen = true;
 	
@@ -335,14 +306,6 @@ function UnfreezePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly 
 	if ( bShowHelpOnly ) {
 		
 		SendPlayerCommandInfoMessage ( pPlayer , "Unfreezes a player so they can move again." , [ "Unfreeze" ] , "" );
-		
-		return false;
-	
-	}
-
-	if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
-	
-		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
 		
 		return false;
 	
@@ -366,9 +329,9 @@ function UnfreezePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly 
 	
 	local pTarget = FindPlayer ( szParams );
 	
-	Message ( UnitedIslands.Colours.Hex.BrightRed + "[ADMIN] " + UnitedIslands.Colours.Hex.White + pTarget.Name + " has been un-frozen by " + pPlayer.Name );
+	SendAdminMessageToAll ( pTarget.Name + " has been un-frozen by " + pPlayer.Name );
 	
-	UnitedIslands.Players [ pTarget.ID ].bFrozen = false;
+	GetPlayerData ( pTarget ).bFrozen = false;
 		
 	pTarget.Frozen = false;
 	
@@ -383,14 +346,6 @@ function GotoPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fa
 	if ( bShowHelpOnly ) {
 		
 		SendPlayerCommandInfoMessage ( pPlayer , "Teleports you to a player" , [ "Goto" , "GotoPlayer" ] , "You can provide offset X, Y, and Z." );
-		
-		return false;
-	
-	}
-
-	if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
-	
-		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
 		
 		return false;
 	
@@ -414,9 +369,111 @@ function GotoPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fa
 	
 	local pTarget = FindPlayer ( szParams );
 	
-	pPlayer.Pos = GetVectorBehindVector ( pTarget.Pos , pTarget.Angle , 3.0 );
+	if ( pTarget.Vehicle ) {
+	
+		pPlayer.Pos = GetVectorAboveVector ( pTarget.Pos , 3.0 );
+	
+	} else {
+	
+		pPlayer.Pos = GetVectorInFrontVector ( pTarget.Pos , pTarget.Angle , 3.0 );
+	
+	}
 	
 	SendPlayerSuccessMessage ( pPlayer , "You have been teleported to player '" + pTarget.Name + "' (ID " + pTarget.ID + ")" );
+	
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function GetPlayerToMeCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , "Teleports a player to you" , [ "GetHere" , "BringPlayer" ] , "You can provide offset X, Y, and Z." );
+		
+		return false;
+	
+	}
+	
+	if( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/GetHere <Player Name/ID>" );
+		
+		return false;
+	
+	}
+	
+	if ( !FindPlayer ( szParams ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
+		
+		return false;
+	
+	}
+	
+	local pTarget = FindPlayer ( szParams );
+	
+	if ( pPlayer.Vehicle ) {
+	
+		pTarget.Pos = GetVectorAboveVector ( pPlayer.Pos , 3.0 );
+	
+	} else {
+	
+		pTarget.Pos = GetVectorInFrontVector ( pPlayer.Pos , pPlayer.Angle , 3.0 );
+	
+	}
+	
+	SendPlayerSuccessMessage ( pPlayer , "You have been teleported '" + pTarget.Name + "' (ID " + pTarget.ID + ") to you." );
+	SendPlayerSuccessMessage ( pTarget , "You have been teleported to '" + pPlayer.Name + "' (ID " + pPlayer.ID + ")" );
+	
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function GetPlayerVehicleInfoCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , "Gets info for the vehicle a player is driving" , [ "InVeh" ] , "" );
+		
+		return false;
+	
+	}
+	
+	if( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/InVeh <Player Name/ID>" );
+		
+		return false;
+	
+	}
+	
+	if ( !FindPlayer ( szParams ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
+		
+		return false;
+	
+	}
+	
+	local pTarget = FindPlayer ( szParams );
+	
+	if ( pTarget.Vehicle ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "That player is not in a vehicle!" );
+		
+		return false;
+	
+	}
+	
+	MessagePlayer ( "== VEHICLE INFO ======================" );
+	MessagePlayer ( "- Owner: " + GetVehicleOwnerTypeName ( pTarget.Vehicle ) + " " + GetVehicleOwnerName ( pTarget.Vehicle ) + ", Seat: " + pTarget.VehicleSeat , pPlayer , GetRGBColour ( "White" ) );
+	MessagePlayer ( "- Locked: " + GetYesNoBoolText ( GetVehicleData ( pTarget.Vehicle ).bLocked ) + ", Engine: " + GetOnOffBoolText ( GetVehicleData ( pTarget.Vehicle ).bEngineState ) , pPlayer , GetRGBColour ( "White" ) );
+	MessagePlayer ( "- Database ID: " + GetVehicleData ( pTarget.Vehicle ).iDatabaseID + ", Type: " + GetVehicleName ( pTarget.Vehicle.Model ) , pPlayer , GetRGBColour ( "White" ) );
 	
 	return true;
 
@@ -474,6 +531,176 @@ function GotoVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = f
 	pPlayer.Pos = GetVectorAboveVector ( pVehicle.Pos , 3.0 );
 	
 	SendPlayerSuccessMessage ( pPlayer , "You have been teleported to vehicle '" + GetVehicleName( pVehicle.Model ) + "' (ID " + pVehicle.ID + ")" );
+	
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function GetVehicleDatabaseIDCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , "Gets the database ID of a vehicle" , [ "VehDBID" ] , "" );
+		
+		return false;
+	
+	}
+
+	if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
+		
+		return false;
+	
+	}
+	
+	if( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/VehDBID <Vehicle ID>" );
+		
+		return false;
+	
+	}
+	
+	if ( !IsNum ( szParams ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The vehicle ID must be a number!" );
+		
+		return false;   
+	
+	}
+	
+	szParams = szParams.tointeger ( );
+	
+	if ( !FindVehicle ( szParams ) ) {
+		
+		SendPlayerErrorMessage ( pPlayer , "That vehicle does not exist!" );
+		
+		return false;
+	
+	}
+	
+	SendPlayerSuccessMessage ( pPlayer , "The database ID for '" + GetVehicleName( pVehicle.Model ) + "' (ID " + pVehicle.ID + ") is " + GetVehicleData ( pVehicle ).iDatabaseID );
+	
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function RespawnVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , "Respawns a vehicle" , [ "RespawnVeh" ] , "" );
+		
+		return false;
+	
+	}
+
+	if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
+		
+		return false;
+	
+	}
+	
+	if( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/RespawnVeh <Vehicle ID>" );
+		
+		return false;
+	
+	}
+	
+	if ( !IsNum ( szParams ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The vehicle ID must be a number!" );
+		
+		return false;   
+	
+	}
+	
+	szParams = szParams.tointeger ( );
+	
+	if ( !FindVehicle ( szParams ) ) {
+		
+		SendPlayerErrorMessage ( pPlayer , "That vehicle does not exist!" );
+		
+		return false;
+	
+	}
+	
+	local pColour1 = GetVehicleData ( pVehicle ).pColour1;
+	local pColour2 = GetVehicleData ( pVehicle ).pColour2;
+	
+	pVehicle.Respawn ( );
+	pVehicle.RGBColour1 = Colour ( pColour1.r , pColour1.g , pColour1.b );
+	pVehicle.RGBColour2 = Colour ( pColour2.r , pColour2.g , pColour2.b );
+	pVehicle.Locked = GetVehicleData ( pVehicle ).bLocked;
+	
+	SendPlayerSuccessMessage ( pPlayer , "The '" + GetVehicleName( pVehicle.Model ) + "' (ID " + pVehicle.ID + ") has been respawned!" );
+	
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function GetVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , "Teleports a vehicle to you." , [ "GetVeh" ] , "You can provide offset X, Y, and Z." );
+		
+		return false;
+	
+	}
+
+	if( !DoesPlayerHaveStaffPermission ( pPlayer , "BasicModeration" ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
+		
+		return false;
+	
+	}
+	
+	if( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/GotoVeh <Vehicle ID>" );
+		
+		return false;
+	
+	}
+	
+	if ( !IsNum ( szParams ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The vehicle ID must be a number!" );
+		
+		return false;   
+	
+	}
+	
+	szParams = szParams.tointeger ( );
+	
+	if ( !FindVehicle ( szParams ) ) {
+	
+		
+		SendPlayerErrorMessage ( pPlayer , "That vehicle does not exist!" );
+		
+		return false;
+	
+	}
+	
+	local pVehicle = FindVehicle ( szParams );
+	
+	pVehicle.Pos = GetVectorInFrontOfPlayer ( pPlayer , 10.0 );
+	pVehicle.Angle = pPlayer.Angle;
+	
+	SendPlayerSuccessMessage ( pPlayer , "You have been teleported vehicle '" + GetVehicleName( pVehicle.Model ) + "' (ID " + pVehicle.ID + ") to you." );
 	
 	return true;
 
@@ -1206,9 +1433,217 @@ function SetPlayerSkinCommand ( pPlayer , szCommand , szParams , bShowHelpOnly =
 
 // -------------------------------------------------------------------------------------------------
 
+function GivePlayerMoneyCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+	if( bShowHelpOnly ) {
+
+		SendPlayerCommandInfoMessage ( pPlayer , "Gives a player money" , [ "GiveMoney" ] , "" );
+
+		return false;
+
+	}
+
+	local szTargetParam = false;
+	local szMoneyParam = false;
+	
+	if( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/GiveMoney <Player Name/ID> <Amount>" );
+		
+		return false;
+	
+	}
+	
+	if( NumTok ( szParams , " " ) != 2 ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/GiveMoney <Player Name/ID> <Amount>" );
+		
+		return false;
+	
+	}	
+	
+	szTargetParam = GetTok ( szParams , " " , 1 );
+	szMoneyParam = GetTok ( szParams , " " , 2 );
+	
+	if ( !FindPlayer ( szTargetParam ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "That player is not connected!" );
+		
+		return false;
+	
+	}
+	
+	if ( !IsNum ( szMoneyParam ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The amount of money must be a number!" );
+		
+		return false;	
+	
+	}
+	
+	szMoneyParam = szMoneyParam.tointeger ( );
+	
+	if ( szMoneyParam > 0 ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The amount must be more than 0!" );
+		
+		return false;	
+	
+	}
+	
+	local pTarget = FindPlayer ( szTargetParam );
+	
+	SendPlayerSuccessMessage ( pPlayer , "You gave " + pTarget.Name + " $" + szMoneyParam );
+	SendPlayerAlertMessage ( pTarget , pTarget.Name + " has given you $" + szMoneyParam );
+	
+	GivePlayerMoney ( pTarget , szMoneyParam );
+	
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function GivePlayerWeaponCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+	if( bShowHelpOnly ) {
+
+		SendPlayerCommandInfoMessage ( pPlayer , "Gives a player a weapon" , [ "GiveGun" , "GiveWeapon" ] , "" );
+
+		return false;
+
+	}
+
+	local szTargetParam = false;
+	local szWeaponParam = false;
+	local szAmmoParam = false;
+	
+	if( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/GiveGun <Player Name/ID> <Weapon ID> <Ammo>" );
+		
+		return false;
+	
+	}
+	
+	if( NumTok ( szParams , " " ) != 3 ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/GiveGun <Player Name/ID> <Weapon ID> <Ammo>" );
+		
+		return false;
+	
+	}	
+	
+	szTargetParam = GetTok ( szParams , " " , 1 );
+	szWeaponParam = GetTok ( szParams , " " , 2 );
+	szAmmoParam = GetTok ( szParams , " " , 3 );
+	
+	if ( !FindPlayer ( szTargetParam ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "That player is not connected!" );
+		
+		return false;
+	
+	}
+	
+	if ( !IsNum ( szWeaponParam ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The weapon ID must be a number!" );
+		
+		return false;	
+	
+	}
+	
+	szWeaponParam = szWeaponParam.tointeger ( );
+	
+	if ( !IsNum ( szAmmoParam ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The ammo amount must be a number!" );
+		
+		return false;	
+	
+	}	
+	
+	szAmmoParam = szAmmoParam.tointeger ( );
+	
+	if ( szWeaponParam > 0 && szWeaponParam < 12 ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The weapon ID must be between 1 and 11!" );
+		
+		return false;	
+	
+	}
+	
+	if ( szAmmoParam > 0 && szAmmoParam < 99999 ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The weapon ID must be between 1 and 99999!" );
+		
+		return false;	
+	
+	}	
+	
+	local pTarget = FindPlayer ( szTargetParam );
+	
+	SendPlayerSuccessMessage ( pPlayer , "You gave " + pTarget.Name + " $" + szMoneyParam );
+	SendPlayerAlertMessage ( pTarget , pTarget.Name + " has given you $" + szMoneyParam );
+	
+	GivePlayerWeapon ( pTarget , szWeaponParam , szAmmoParam );
+	
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
 function CanPlayerSubmitStaffReport ( pPlayer ) {
 
 	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function SaveServerDataCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+	SendAdminMessageToAll ( pPlayer , "All server data is being saved. You might experience some lag!" );
+
+	SaveServerDataToDatabase ( );
+	
+	SendAdminMessageToAll ( pPlayer , "All server data has been saved! The lag should be gone now!" );
+	
+	SendPlayerSuccessMessage ( pPlayer , "All server data has been saved!" );
+	
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function SaveServerDataToDatabase ( ) {
+
+	print ( "- Beginning server data saving ..." );
+	
+	SaveAllVehiclesToDatabase ( );
+	
+	print ( "- Saved vehicles to database" );
+	
+	SaveAllPlayersToDatabase ( );
+	
+	print ( "- Saved players to database" );
+	
+	SaveAllClansToDatabase ( );
+	
+	print ( "- Saved clans to database" );
+	
+	SaveAllBusinessesToDatabase ( );
+	
+	print ( "- Saved businesses to database" );	
+	
+	SaveAllHousesToDatabase ( );
+	
+	print ( "- Saved houses to database" );
+	
+	return;
 
 }
 
@@ -1219,5 +1654,3 @@ function CanPlayerSubmitStaffReport ( pPlayer ) {
 print ( "[Server.Moderation]: Script file loaded and ready." );
 
 // -------------------------------------------------------------------------------------------------
-
-

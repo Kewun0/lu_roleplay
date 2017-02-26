@@ -2,7 +2,7 @@
 
 function AddJobCommandHandlers ( ) {
 
-	AddCommandHandlers ( "TakeJob" , TakeJobCommand , GetStaffFlagValue ( "None" ) );
+	AddCommandHandler ( "TakeJob" , TakeJobCommand , GetStaffFlagValue ( "None" ) );
 	
 	return true;
 

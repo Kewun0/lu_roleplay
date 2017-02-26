@@ -1,5 +1,7 @@
 
 
+// -------------------------------------------------------------------------------------------------
+
 function PoliceArrestCommand ( pPlayer , szCommand , szParams, bShowHelpOnly = false  ) {
 
 	if ( !IsPlayerPoliceOfficer ( pPlayer ) ) {

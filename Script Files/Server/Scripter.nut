@@ -113,13 +113,22 @@ function onConsoleInput ( szCommand , szParams ) {
 	
 		case "se":
 		
+			if ( !szParams ) {
+
+				print ( "[DEBUG]: You need to enter some code!" );
+				
+				return;			
+			
+			}
+		
 			local pResult = compilestring ( szParams );
 			
 			if ( !pResult ) {
 			
-				print ( "There was an error in your code!" );
+				print ( "[DEBUG]: There was an error in your code!" );
 				
 				return;
+				
 			}
 			
 			pResult( );
@@ -129,12 +138,20 @@ function onConsoleInput ( szCommand , szParams ) {
 			return;
 			
 		case "sr":
+
+			if ( !szParams ) {
+
+				print ( "[DEBUG]: You need to enter some code!" );
+				
+				return;			
+			
+			}		
 		
 			local pResult = compilestring ( "return " + szParams );
 			
 			if ( !pResult ) {
 			
-				print ( "There was an error in your code!" );
+				print ( "[DEBUG]: There was an error in your code!" );
 				
 				return;
 				
@@ -144,7 +161,29 @@ function onConsoleInput ( szCommand , szParams ) {
 			
 			print ( "SR: " + pReturns + " (" + szParams + ")" );
 			
-			return;			
+			return;	
+
+		case "luid":
+			
+			if ( !szParams ) {
+
+				print ( "[DEBUG]: You need to enter a player name or ID!" );
+				
+				return;			
+			
+			}
+			
+			local pTarget = !FindPlayer ( szParams );
+			
+			if ( !pTarget ) {
+			
+				print ( "[DEBUG]: Player not found" );
+			
+			}
+			
+			print ( "[DEBUG]: " + GetPlayerNameAndIDForConsole ( pTarget ) + " LUID: " + pTarget.LUID );
+			
+			break;
 	
 	}
 
@@ -156,7 +195,7 @@ function SubmitBugCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fal
 
 	if( bShowHelpOnly ) {
 
-		SendPlayerCommandInfoMessage ( pPlayer , "Reporrts a bug to the scripters" , [ "Bug" ] , "" );
+		SendPlayerCommandInfoMessage ( pPlayer , "Reports a bug to the scripters" , [ "Bug" ] , "" );
 
 		return false;
 

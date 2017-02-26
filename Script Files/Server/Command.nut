@@ -1,3 +1,5 @@
+// -------------------------------------------------------------------------------------------------
+
 function AddCommandHandler ( szCommand , szListener , iStaffFlags ) {
 	
 	if ( typeof szCommand != "string" || typeof szListener != "function" ) {
@@ -48,8 +50,8 @@ function DoesCommandHandlerExist ( szCommand ) {
 
 function AddAllCommandHandlers ( ) {
 
-	//AddCommandHandler ( "Login" , PlayerLoginCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
-	//AddCommandHandler ( "Register" , PlayerRegisterCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+	// AddCommandHandler ( "Login" , PlayerLoginCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
+	// AddCommandHandler ( "Register" , PlayerRegisterCommand , GetCoreTable ( ).BitFlags.StaffFlags.None );
 
 	AddCommandHandler ( "Shout" , AreaShoutCommand , GetStaffFlagValue ( "None" ) );
 	AddCommandHandler ( "S" , AreaShoutCommand , GetStaffFlagValue ( "None" ) );
@@ -63,6 +65,10 @@ function AddAllCommandHandlers ( ) {
 	AddCommandHandler ( "Send" , PrivateMessageCommand , GetStaffFlagValue ( "None" ) );
 	
 	AddCommandHandler ( "Help" , HelpCommand , GetStaffFlagValue ( "None" ) );
+	
+	AddCommandHandler ( "Veh" , CommonVehHelpCommand , GetStaffFlagValue ( "None" ) );
+	AddCommandHandler ( "Skin" , CommonSkinHelpCommand , GetStaffFlagValue ( "None" ) );
+	AddCommandHandler ( "V" , CommonVehHelpCommand , GetStaffFlagValue ( "None" ) );
 	
 	// AddCommandHandler ( "tazer" , ToggleTazerCommand );
 	

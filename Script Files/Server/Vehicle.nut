@@ -30,6 +30,7 @@ function AddVehicleCommandHandlers ( ) {
 	AddCommandHandler ( "AddVeh" 			, CreateVehicleCommand 				, GetStaffFlagValue ( "ManageVehicles" ) );
 	AddCommandHandler ( "DelVeh" 			, DeleteVehicleCommand 				, GetStaffFlagValue ( "ManageVehicles" ) );
 	AddCommandHandler ( "RentVehicle" 		, RentVehicleCommand 				, GetStaffFlagValue ( "None" ) );
+	AddCommandHandler ( "BuyVehicle" 		, BuyVehicleCommand 				, GetStaffFlagValue ( "None" ) );
 	AddCommandHandler ( "StopRent" 			, StopRentVehicleCommand 			, GetStaffFlagValue ( "None" ) );
 	AddCommandHandler ( "VehEngine" 		, VehicleEngineCommand 				, GetStaffFlagValue ( "None" ) );
 	AddCommandHandler ( "Engine" 			, VehicleEngineCommand 				, GetStaffFlagValue ( "None" ) );
@@ -48,9 +49,10 @@ function AddVehicleCommandHandlers ( ) {
 	AddCommandHandler ( "RespawnAll" 		, RespawnAllVehiclesCommand 		, GetStaffFlagValue ( "ManageVehicles" ) );
 	AddCommandHandler ( "ExplodeAll" 		, ExplodeAllVehiclesCommand 		, GetStaffFlagValue ( "ManageVehicles" ) );
 	AddCommandHandler ( "VehOwner" 			, SetVehicleOwnerCommand 			, GetStaffFlagValue ( "ManageVehicles" ) );
-	AddCommandHandler ( "VehColour" 		, SetVehicleColourCommand 			, GetStaffFlagValue ( "ManageVehicles" ) );
+	AddCommandHandler ( "VehColour" 		, SetVehicleColourCommand 			, GetStaffFlagValue ( "None" ) );
 	AddCommandHandler ( "VehFuel" 			, SetVehicleFuelCommand 			, GetStaffFlagValue ( "ManageVehicles" ) );
 	AddCommandHandler ( "VehHealth" 		, SetVehicleHealthCommand 			, GetStaffFlagValue ( "ManageVehicles" ) );
+	AddCommandHandler ( "VehSpawnLock" 		, VehicleSpawnLockCommand 			, GetStaffFlagValue ( "ManageVehicles" ) );
 
 	return true;
 	
@@ -98,42 +100,43 @@ function CallLoadVehicleThread ( iDatabaseID ) {
 
 function SaveVehicleToDatabase ( pVehicle ) {
 	
-	local iVehicleDataID = ::GetCoreTable( ).VehicleToData [ pVehicle.ID ];
-	local pVehicleData = ::GetCoreTable( ).Vehicles [ iVehicleDataID ];
+	local pVehicleData = ::GetVehicleData ( pVehicle );
 	local pQuery = false;
 	
-	// -- Check to see if the vehicle is already in the database. A vehicle that isn't, will have an iDatabaseID of 0
-	// -- Unlike the arrays and such that start with 0 in the script, the database ID's start with 1, so 0 is very bad.
+	local pPosition = pVehicleData.pPosition;
+	local fAngle = pVehicleData.fAngle;
 	
-	if ( pVehicleData.iDatabaseID != 0 ) {
-		
-		pVehicleData.szFileString = "Scripts/lu_roleplay/Data/Vehicles/" + pVehicleData.iDatabaseID + ".ini";
+	if ( !pVehicleData.bSpawnLock ) {
 	
-		::WriteIniInteger ( pVehicleData.szFileString , "General" , "iModel" , pVehicleData.iModel );
-		::WriteIniInteger ( pVehicleData.szFileString , "General" , "iColour1Red" , pVehicleData.pColour1.r );
-		::WriteIniInteger ( pVehicleData.szFileString , "General" , "iColour1Green" , pVehicleData.pColour1.g );
-		::WriteIniInteger ( pVehicleData.szFileString , "General" , "iColour1Blue" , pVehicleData.pColour1.b );
-		::WriteIniInteger ( pVehicleData.szFileString , "General" , "iColour2Red" , pVehicleData.pColour2.r );
-		::WriteIniInteger ( pVehicleData.szFileString , "General" , "iColour2Green" , pVehicleData.pColour2.g );
-		::WriteIniInteger ( pVehicleData.szFileString , "General" , "iColour2Blue" , pVehicleData.pColour2.b );
-		::WriteIniBool ( pVehicleData.szFileString , "General" , "bLocked" , pVehicleData.bLocked );
-		::WriteIniFloat ( pVehicleData.szFileString , "General" , "fHealth" , pVehicleData.fHealth );
-		::WriteIniFloat ( pVehicleData.szFileString , "General" , "fEngineDamage" , pVehicleData.fEngineDamage );
-		::WriteIniFloat ( pVehicleData.szFileString , "General" , "fPositionX" , pVehicleData.pPosition.x );
-		::WriteIniFloat ( pVehicleData.szFileString , "General" , "fPositionY" , pVehicleData.pPosition.y );
-		::WriteIniFloat ( pVehicleData.szFileString , "General" , "fPositionZ" , pVehicleData.pPosition.z );
-		::WriteIniFloat ( pVehicleData.szFileString , "General" , "fRotationX" , 0.0 );
-		::WriteIniFloat ( pVehicleData.szFileString , "General" , "fRotationY" , 0.0 );
-		::WriteIniFloat ( pVehicleData.szFileString , "General" , "fRotationZ" , 0.0 );		
-		::WriteIniFloat ( pVehicleData.szFileString , "General" , "fAngle" , pVehicleData.fAngle );	 
-		::WriteIniInteger ( pVehicleData.szFileString , "General" , "iOwnerType" , pVehicleData.iOwnerType );
-		::WriteIniInteger ( pVehicleData.szFileString , "General" , "iOwnerID" , pVehicleData.iOwnerID );
-		::WriteIniInteger ( pVehicleData.szFileString , "General" , "iRentPrice" , pVehicleData.iRentPrice );
-		::WriteIniInteger ( pVehicleData.szFileString , "General" , "iBuyPrice" , pVehicleData.iBuyPrice );		
-		
+		pPosition = pVehicle.Pos;
+		fAngle = pVehicle.Angle;
+	
 	}
+
+	::WriteIniInteger ( pVehicleData.szFileString , "General" , "iModel" , pVehicleData.iModel );
+	::WriteIniInteger ( pVehicleData.szFileString , "General" , "iColour1Red" , pVehicleData.pColour1.r );
+	::WriteIniInteger ( pVehicleData.szFileString , "General" , "iColour1Green" , pVehicleData.pColour1.g );
+	::WriteIniInteger ( pVehicleData.szFileString , "General" , "iColour1Blue" , pVehicleData.pColour1.b );
+	::WriteIniInteger ( pVehicleData.szFileString , "General" , "iColour2Red" , pVehicleData.pColour2.r );
+	::WriteIniInteger ( pVehicleData.szFileString , "General" , "iColour2Green" , pVehicleData.pColour2.g );
+	::WriteIniInteger ( pVehicleData.szFileString , "General" , "iColour2Blue" , pVehicleData.pColour2.b );
+	::WriteIniBool ( pVehicleData.szFileString , "General" , "bLocked" , pVehicleData.bLocked );
+	::WriteIniFloat ( pVehicleData.szFileString , "General" , "fHealth" , pVehicleData.fHealth );
+	::WriteIniFloat ( pVehicleData.szFileString , "General" , "fEngineDamage" , pVehicleData.fEngineDamage );
+	::WriteIniFloat ( pVehicleData.szFileString , "General" , "fPositionX" , pPosition.x );
+	::WriteIniFloat ( pVehicleData.szFileString , "General" , "fPositionY" , pPosition.y );
+	::WriteIniFloat ( pVehicleData.szFileString , "General" , "fPositionZ" , pPosition.z );
+	::WriteIniFloat ( pVehicleData.szFileString , "General" , "fRotationX" , 0.0 );
+	::WriteIniFloat ( pVehicleData.szFileString , "General" , "fRotationY" , 0.0 );
+	::WriteIniFloat ( pVehicleData.szFileString , "General" , "fRotationZ" , 0.0 );		
+	::WriteIniFloat ( pVehicleData.szFileString , "General" , "fAngle" , fAngle );
+	::WriteIniInteger ( pVehicleData.szFileString , "General" , "iOwnerType" , pVehicleData.iOwnerType );
+	::WriteIniInteger ( pVehicleData.szFileString , "General" , "iOwnerID" , pVehicleData.iOwnerID );
+	::WriteIniInteger ( pVehicleData.szFileString , "General" , "iRentPrice" , pVehicleData.iRentPrice );
+	::WriteIniInteger ( pVehicleData.szFileString , "General" , "iBuyPrice" , pVehicleData.iBuyPrice );		
+	::WriteIniBool ( pVehicleData.szFileString , "General" , "bSpawnLock" , pVehicleData.bSpawnLock );	
 	
-	print ( "- Vehicle " + pVehicleData.iDatabaseID + " (spawned as " + pVehicle.ID + " saved to database" );
+	::print ( "- Vehicle " + pVehicleData.iDatabaseID + " (spawned as " + pVehicle.ID + ") saved to database" );
 	
 	return true;
 	
@@ -171,18 +174,22 @@ function CreateVehicles ( ) {
 			
 			pVehicle = CreateVehicle ( iv.iModel , Vector ( iv.pPosition.x , iv.pPosition.y , iv.pPosition.z ) , iv.fAngle );
 			
-			pVehicle.RGBColour1 = Colour ( iv.pColour1.r , iv.pColour1.g , iv.pColour1.b );
-			pVehicle.RGBColour2 = Colour ( iv.pColour2.r , iv.pColour2.g , iv.pColour2.b );
+			if ( pVehicle ) {
 			
-			pVehicle.Locked = iv.bLocked;
-			pVehicle.LightState = !( pVehicle.LightState );
-			pVehicle.SetEngineState ( false );
+				pVehicle.RGBColour1 = Colour ( iv.pColour1.r , iv.pColour1.g , iv.pColour1.b );
+				pVehicle.RGBColour2 = Colour ( iv.pColour2.r , iv.pColour2.g , iv.pColour2.b );
+				
+				pVehicle.Locked = iv.bLocked;
+				pVehicle.LightState = !( pVehicle.LightState );
+				pVehicle.SetEngineState ( false );
+				
+				iv.pVehicle = pVehicle;
+				
+				GetCoreTable ( ).VehicleToData [ pVehicle.ID ] = ii;
+				
+				print ( "[ServerStart]: Vehicle " + pVehicle.ID + " Spawned (" + GetVehicleName ( iv.iModel ) + " - " + ii + ")" );
 			
-			iv.pVehicle = pVehicle;
-			
-			GetCoreTable ( ).VehicleToData [ pVehicle.ID ] = ii;
-			
-			print ( "[ServerStart]: Vehicle " + pVehicle.ID + " Spawned (" + GetVehicleName ( iv.iModel ) + " - " + ii + ")" );
+			}
 			
 		}
 	
@@ -202,7 +209,7 @@ function VehicleEngineCommand ( pPlayer , szCommand , szParams , bShowHelpOnly =
 	
 	if ( bShowHelpOnly ) {
 		
-		SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Turns a vehicles engine on or off." , [ "engine" , "vehengine" ] , "You must have the keys. For more info, use /help vehicle keys." );
+		SendPlayerCommandInfoMessage ( pPlayer , "Turns a vehicles engine on or off." , [ "engine" , "vehengine" ] , "You must have the keys. For more info, use /help vehicle keys." );
 		
 		return false;
 	
@@ -275,7 +282,7 @@ function VehicleLockCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = f
 	
 	if ( bShowHelpOnly ) {
 		
-		SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Locks or unlocks a vehicle's doors." , [ "Lock" , "VehLock" ] , "You must have keys, or be in a front seat. Use '/help vehicle keys' for info." );
+		SendPlayerCommandInfoMessage ( pPlayer , "Locks or unlocks a vehicle's doors." , [ "Lock" , "VehLock" ] , "You must have keys, or be in a front seat. Use '/help vehicle keys' for info." );
 		
 		return false;
 	
@@ -357,8 +364,8 @@ function VehicleLockCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = f
 
 		if ( !szParams ) {
 		
-		SendPlayerSyntaxMessage ( pPlayer , "/Lights <ON/OFF>" );
-		SendPlayerInfoMessage ( pPlayer , "Not case-sensitive. Example: OFF, Off, and off will all work." );
+			SendPlayerSyntaxMessage ( pPlayer , "/Lights <ON/OFF>" );
+			SendPlayerInfoMessage ( pPlayer , "Not case-sensitive. Example: OFF, Off, and off will all work." );
 			
 			print ( "- Player '" + pPlayer.Name + "' (ID " + pPlayer.ID + ") failed to lock vehicle " + pClosestVehicle.ID + " (" + GetVehicleName ( pClosestVehicle.Model ) + "). Reason: No lock state param" );
 			
@@ -414,7 +421,7 @@ function VehicleLightsCommand ( pPlayer , szCommand , szParams , bShowHelpOnly =
 	
 	if ( bShowHelpOnly ) {
 		
-		SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Turns a vehicle's main lights on or off." , [ "Lights" , "VehLights" ] , "You must be driving the vehicle." );
+		SendPlayerCommandInfoMessage ( pPlayer , "Turns a vehicle's main lights on or off." , [ "Lights" , "VehLights" ] , "You must be driving the vehicle." );
 		
 		return false;
 	
@@ -480,7 +487,7 @@ function VehicleSirenLightCommand ( pPlayer , szCommand , szParams , bShowHelpOn
 	
 	if ( bShowHelpOnly ) {
 		
-		SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Turns a vehicle's siren light on or off." , [ "SirenLight" , "VehSirenLight" ] , "You must be in a front seat. Only works on cars with siren lights." );
+		SendPlayerCommandInfoMessage ( pPlayer , "Turns a vehicle's siren light on or off." , [ "SirenLight" , "VehSirenLight" ] , "You must be in a front seat. Only works on cars with siren lights." );
 		
 		return false;
 	
@@ -546,7 +553,7 @@ function VehicleTaxiLightCommand ( pPlayer , szCommand , szParams , bShowHelpOnl
 	
 	if ( bShowHelpOnly ) {
 		
-		SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Turns a vehicle's taxi light on or off." , [ "TaxiLight" , "VehTaxiLight" ] , "You must be in a front seat. Only works on cars with siren lights." );
+		SendPlayerCommandInfoMessage ( pPlayer , "Turns a vehicle's taxi light on or off." , [ "TaxiLight" , "VehTaxiLight" ] , "You must be in a front seat. Only works on cars with siren lights." );
 		
 		return false;
 	
@@ -611,7 +618,7 @@ function VehicleSirenCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = 
 	
 	if ( bShowHelpOnly ) {
 		
-		SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Turns a vehicle's siren on or off." , [ "Siren" , "VehSiren" ] , "You must be in a front seat. Only works on cars with sirens." );
+		SendPlayerCommandInfoMessage ( pPlayer , "Turns a vehicle's siren on or off." , [ "Siren" , "VehSiren" ] , "You must be in a front seat. Only works on cars with sirens." );
 		
 		return false;
 	
@@ -875,6 +882,66 @@ function SetVehicleBuyPriceCommand ( pPlayer , szCommand , szParams , bShowHelpO
 
 // -------------------------------------------------------------------------------------------------
 
+function BuyVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+	if ( !pPlayer.Vehicle ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "You are not in a vehicle!" );
+		
+		return false;
+	
+	}
+	
+	if ( pPlayer.VehicleSeat != 0 ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "You must be the driver!" );
+		
+		return false;	
+	
+	}
+	
+	local pVehicleData = GetVehicleDataFromVehicle ( pPlayer.Vehicle );
+	local pPlayerData = GetPlayerData ( pPlayer );
+	
+	if ( pVehicleData.iBuyPrice == 0 ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "This vehicle is not for sale!" );
+		
+		return false;
+	
+	}	
+	
+	if ( pVehicleData.pRenter != false ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "This vehicle is already being rented!" );
+		
+		return false;
+	
+	}	   
+	
+	if ( pPlayerData.iCash < pVehicleData.iRentPrice ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "You don't have enough money to buy this vehicle!" );
+		
+		return false;
+	
+	}
+	
+	SetVehicleOwner ( pPlayer.Vehicle , pPlayer );
+	
+	SendPlayerSuccessMessage ( pPlayer , "You now own this vehicle! Use /engine to start it." );
+	
+	pPlayerData.pBuyVehPosition = pPlayer.Vehicle.Pos;
+	pPlayerData.pBuyVehAngle = pPlayer.Vehicle.Angle;
+	pPlayerData.pBuyVehState = 2;
+	
+	
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
 function RentVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
 	if ( !pPlayer.Vehicle ) {
@@ -1036,6 +1103,14 @@ function GetVehicleDataFromVehicle ( pVehicle ) {
 
 function CreateVehicleCommand ( pPlayer , szVehicle , szParams , bShowHelpOnly = false ) {
 
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , "Creates a new vehicle" , [ "AddVeh" ] , "" );
+		
+		return false;
+	
+	}
+
 	if ( !szParams ) {
 		
 		SendPlayerSyntaxMessage ( pPlayer , "/AddVeh <Model ID/Name>" );
@@ -1043,6 +1118,8 @@ function CreateVehicleCommand ( pPlayer , szVehicle , szParams , bShowHelpOnly =
 		return false;
 		
 	}
+
+	local iModelID = 0;
 	
 	if ( IsNum ( szParams ) ) {
 		
@@ -1068,6 +1145,53 @@ function CreateVehicleCommand ( pPlayer , szVehicle , szParams , bShowHelpOnly =
 		
 	}
 	
+	print ( iModelID );
+	
+	local pVehicle = CreateNewVehicle ( iModelID , GetVectorInFrontOfPlayer ( pPlayer , 10.0 ) , pPlayer.Angle );
+	
+	SendPlayerSuccessMessage ( pPlayer , "Vehicle created! (Type: " + GetVehicleName ( pVehicle.Model ) + ")" );
+	
+	return true;
+	
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function CreateNewVehicle ( iModelID , pPosition , fAngle ) {
+
+	local pVehicle = CreateVehicle ( iModelID , pPosition , fAngle , Colour ( 255 , 255 , 255 ) , Colour ( 255 , 255 , 255 ) );
+	
+	if ( pVehicle ) {
+	
+		local pVehicleData = GetCoreTable( ).Classes.VehicleData ( );
+		pVehicleData.iModel = iModelID;
+		pVehicleData.pColour1 = { r = 255 , g = 255 , b = 255 } ,
+		pVehicleData.pColour2 = { r = 255 , g = 255 , b = 255 } ,
+		pVehicleData.pPosition = pPosition;
+		pVehicleData.pRotation = Vector ( 0.0 , 0.0 , fAngle );
+		pVehicleData.fAngle = fAngle;
+		pVehicleData.pVehicle = pVehicle;
+		
+		local iVehicleCount = ::GetNumberOfVehicles ( );
+		
+		iVehicleCount = iVehicleCount + 1;
+		
+		pVehicleData.iDatabaseID = iVehicleCount.tointeger ( );
+		
+		::WriteIniInteger ( "Scripts/lu_roleplay/Data/Index.ini" , "General" , "iVehicleAmount" , iVehicleCount );	
+		
+		pVehicleData.szFileString = "Scripts/lu_roleplay/Data/Vehicles/" + pVehicleData.iDatabaseID + ".ini";		
+		
+		GetCoreTable ( ).Vehicles.push ( pVehicleData );
+		
+		GetCoreTable ( ).VehicleToData [ pVehicle.ID ] = GetVehicleDataSlotByDatabaseID ( pVehicleData.iDatabaseID );
+		
+		::SaveVehicleToDatabase ( pVehicle );
+		
+		return pVehicle;
+	
+	}
+
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -1075,6 +1199,14 @@ function CreateVehicleCommand ( pPlayer , szVehicle , szParams , bShowHelpOnly =
 function RespawnVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
 	local pVehicle = false;
+	
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , "Respawns a vehicle" , [ "RespawnVeh" ] , "" );
+		
+		return false;
+	
+	}	
 
 	if ( !szParams ) {
 	
@@ -1114,6 +1246,14 @@ function RespawnVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly 
 
 function RespawnAllVehiclesCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , "Respawns all vehicles" , [ "RespawnAll" ] , "" );
+		
+		return false;
+	
+	}
+
 	foreach ( ii , iv in GetCoreTable( ).Vehicles ) {
 	
 		if ( iv.pVehicle ) {
@@ -1134,6 +1274,14 @@ function RespawnAllVehiclesCommand ( pPlayer , szCommand , szParams , bShowHelpO
 // -------------------------------------------------------------------------------------------------
 
 function ExplodeAllVehiclesCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , "Blows up all vehicles" , [ "ExplodeAll" ] , "" );
+		
+		return false;
+	
+	}
 
 	foreach ( ii , iv in GetCoreTable( ).Vehicles ) {
 	
@@ -1163,7 +1311,60 @@ function DeleteVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly =
 // -------------------------------------------------------------------------------------------------
 
 function SetVehicleOwnerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
-
+	
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , "Sets a player as owner of a vehicle" , [ "VehOwner" ] , "" );
+		
+		return false;
+	
+	}
+	
+	if( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/VehOwner <Vehicle ID> <Player Name/ID>" );
+		
+		return false;
+	
+	}
+	
+	if( NumTok ( szParams , " " ) != 2 ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/VehOwner <Vehicle ID> <Player Name/ID>" );
+		
+		return false;
+	
+	}
+	
+	local szVehicleParam = GetTok ( szParams , " " , 1 );
+	local szTargetParam = GetTok ( szParams , " " , 2 );
+	
+	if ( !FindPlayer ( szTargetParam ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "That player was not found!" );
+		
+		return false;   
+	
+	}
+	
+	local pTarget = FindPlayer ( szTargetParam );
+	
+	if ( !FindVehicle ( szVehicleParam.tointeger ( ) ) ) {
+		
+		SendPlayerErrorMessage ( pPlayer , "That vehicle does not exist!" );
+		
+		return false;
+	
+	}
+	
+	local pVehicle = FindVehicle ( szVehicleParam.tointeger ( ) );
+	
+	GetVehicleData ( pVehicle ).iOwnerType = GetCoreTable ( ).Utilities.pVehicleOwnerType.Player;
+	GetVehicleData ( pVehicle ).iOwnerID = GetPlayerData ( pPlayer ).iDatabaseID;
+	
+	SendPlayerSuccessMessage ( pPlayer , "The owner for vehicle '" + GetVehicleName( pVehicle.Model ) + "' (ID " + pVehicle.ID + ") has been set to " + pPlayer.Name );
+	SendPlayerAlertMessage ( pTarget , pPlayer.Name + " has set you as owner for vehicle '" + GetVehicleName( pVehicle.Model ) + "' (ID " + pVehicle.ID + ")" );
+	
 	return true;
 
 }
@@ -1172,6 +1373,100 @@ function SetVehicleOwnerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly
 
 function SetVehicleColourCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , "Sets a vehicle colour" , [ "VehColour" ] , "" );
+		
+		return false;
+	
+	}
+	
+	if( !pPlayer.Vehicle ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "You need to be in a vehicle!" );
+		
+		return false;
+	
+	}	
+	
+	if( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/VehColour <Colour Number> <Red> <Green> <Blue>" );
+		
+		return false;
+	
+	}
+	
+	if( NumTok ( szParams , " " ) != 4 ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/VehColour <1/2> <Red> <Green> <Blue>" );
+		
+		return false;
+	
+	}
+	
+	local szColourIDParam = GetTok ( szParams , " " , 1 );
+	local szRedParam = GetTok ( szParams , " " , 2 );
+	local szGreenParam = GetTok ( szParams , " " , 3 );
+	local szBlueParam = GetTok ( szParams , " " , 4 );
+	
+	if ( !DoesPlayerHaveVehicleKeys ( pPlayer , pPlayer.Vehicle ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "You can't change this vehicle's colour!" );
+		
+		return false;
+	
+	}
+	
+	if ( !IsNum ( szColourIDParam ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The colour ID must be 1 or 2 !" );
+		
+		return false;
+	
+	}
+	
+	if ( !IsValidVehicleColourIndex ( szColourIDParam.tointeger ( ) ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The colour ID must be 1 or 2 !" );
+		
+		return false;
+	
+	}
+	
+	
+	if ( !IsNum ( szRedParam ) || !IsNum ( szGreenParam ) || !IsNum ( szBlueParam ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The colours must all be numbers!" );
+		
+		return false;
+	
+	}	
+	
+	if ( !IsValidRGBValue ( szRedParam.tointeger ( ) ) || !IsValidRGBValue ( szGreenParam.tointeger ( ) ) || !IsValidRGBValue ( szBlueParam.tointeger ( ) ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The colours must all be between 0 and 255!" );
+		
+		return false;
+	
+	}
+	
+	local pColour = { r = szRedParam.tointeger ( ) , g = szGreenParam.tointeger ( ) , b = szBlueParam.tointeger ( ) };
+	
+	if ( szColourIDParam.tointeger ( ) == 1 ) {
+	
+		GetVehicleData ( pPlayer.Vehicle ).pColour1 = pColour;
+		pPlayer.Vehicle.RGBColour1 = Colour ( pColour.r , pColour.g , pColour.b );
+		
+	} else {
+	
+		GetVehicleData ( pPlayer.Vehicle ).pColour2 = pColour;
+		pPlayer.Vehicle.RGBColour2 = Colour ( pColour.r , pColour.g , pColour.b );
+		
+	}
+	
+	SendPlayerSuccessMessage ( pPlayer , "You set the colour for vehicle '" + GetVehicleName( pPlayer.Vehicle.Model ) + "' (ID " + pPlayer.Vehicle.ID + ") to " + szRedParam + " red, " + szGreenParam + " green, and " + szBlueParam + " blue" );
+	
 	return true;
 
 }
@@ -1211,6 +1506,192 @@ function GetVehicleModelIDCommand ( pPlayer , szCommand , szParams , bShowHelpOn
 	SendPlayerSuccessMessage ( pPlayer , format ( GetPlayerLocaleMessage ( pPlayer , "VehicleModelID" ) , szModelID ) );
 	
 	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function CommonVehHelpCommand ( pPlayer , szCommand , szParams ) {
+
+	SendPlayerAlertMessage ( pPlayer , "To buy a vehicle, visit the dealership in Portland." );
+	SendPlayerAlertMessage ( pPlayer , "Use /GPS to find the dealership." );
+	SendPlayerAlertMessage ( pPlayer , "Use the train to go to Portland if you don't have a car." );
+	
+	return true;
+	
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function GetVehicleData ( pVehicle ) {
+
+	local iVehicleDataIndex = GetCoreTable ( ).VehicleToData [ pVehicle.ID ];
+	
+	return GetCoreTable ( ).Vehicles [ iVehicleDataIndex ];
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function SetVehicleOwner ( pVehicle , pPlayer ) {
+
+	GetVehicleData ( pVehicle ).iOwnerType = GetCoreTable ( ).Utilities.pVehicleOwnerType.Player;
+	GetVehicleData ( pVehicle ).iOwnerID = GetPlayerData ( pPlayer ).iDatabaseID;
+	
+	GetVehicleData ( pVehicle ).iBuyPrice = 0;
+	GetVehicleData ( pVehicle ).iRentPrice = 0;
+	
+	return true;
+	
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function SetVehicleUnowned ( pVehicle ) {
+
+	GetVehicleData ( pVehicle ).iOwnerType = GetCoreTable ( ).Utilities.pVehicleOwnerType.None;
+	GetVehicleData ( pVehicle ).iOwnerID = 0;
+	
+	return true;
+	
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function GetVehicleDataSlotByDatabaseID ( iDatabaseID ) {
+
+	foreach ( ii , iv in GetCoreTable ( ).Vehicles ) {
+	
+		if ( iv.iDatabaseID == iDatabaseID ) {
+		
+			return ii;
+		
+		}
+	
+	}
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function IsValidVehicleColourIndex ( iVehicleColourIndex ) {
+
+	if ( iVehicleColourIndex == 1 || iVehicleColourIndex == 2 ) {
+	
+		return true;
+	
+	}
+	
+	return false;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function IsValidVehicleModel ( iModelID ) {
+
+	if ( iModelID < 90 && i > 150 ) {
+	
+		return false;
+	
+	}
+	
+	if ( iModelID == 140 || iModelID == 147 || iModelID == 140 || iModelID == 141 ) {
+	
+		return false;
+	
+	}
+	
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function VehicleSpawnLockCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+	if ( bShowHelpOnly ) {
+		
+		SendPlayerCommandInfoMessage ( pPlayer , "Toggles a vehicle spawn lock on or off" , [ "VehSpawnLock" ] , "" );
+		
+		return false;
+	
+	}
+	
+	if ( !pPlayer.Vehicle ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "You must be in a vehicle!" );
+		
+		return false;
+	
+	}
+	
+	if ( GetVehicleData ( pPlayer.Vehicle ).bSpawnLock ) {
+	
+		GetVehicleData ( pPlayer.Vehicle ).bSpawnLock = false;
+		SendPlayerSuccessMessage ( pPlayer , "The " + GetVehicleName ( pPlayer.Vehicle.Model ) + " will now save it's position" );
+	
+	} else {
+	
+		GetVehicleData ( pPlayer.Vehicle ).bSpawnLock = true;
+		SendPlayerSuccessMessage ( pPlayer , "The " + GetVehicleName ( pPlayer.Vehicle.Model ) + " will no longer save it's position" );
+		
+		GetVehicleData ( pPlayer.Vehicle ).pPosition = pPlayer.Vehicle.Pos;
+		GetVehicleData ( pPlayer.Vehicle ).fAngle = pPlayer.Vehicle.Angle;
+		
+	}
+	
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function GetVehicleOwnerName ( pVehicle ) {
+
+	switch ( GetVehicleData ( pVehicle ).iOwnerType ) {
+	
+		case GetCoreTable ( ).Utilities.pVehicleOwnerType.None:
+			return "None";
+			
+		case GetCoreTable ( ).Utilities.pVehicleOwnerType.Player:
+			return GetAccountDataByDatabaseID ( GetVehicleData ( pVehicle ).iOwnerID ).szName;
+			
+		case GetCoreTable ( ).Utilities.pVehicleOwnerType.Clan:
+			return GetClanDataByDatabaseID ( GetVehicleData ( pVehicle ).iOwnerID ).szName;
+			
+		case GetCoreTable ( ).Utilities.pVehicleOwnerType.Job:
+			return GetCoreTable ( ).Jobs [ GetVehicleData ( pVehicle ).iOwnerID ].szName;
+			
+		default:
+			return "Unknown";
+	}
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function GetVehicleOwnerTypeName ( pVehicle ) {
+
+	switch ( GetVehicleData ( pVehicle ).iOwnerType ) {
+	
+		case GetCoreTable ( ).Utilities.pVehicleOwnerType.None:
+			return "None";
+			
+		case GetCoreTable ( ).Utilities.pVehicleOwnerType.Player:
+			return "Player";
+			
+		case GetCoreTable ( ).Utilities.pVehicleOwnerType.Clan:
+			return "Clan";
+			
+		case GetCoreTable ( ).Utilities.pVehicleOwnerType.Job:
+			return "Job";
+			
+		default:
+			return "Unknown";
+	}
+	
+	return "Unknown";
 
 }
 

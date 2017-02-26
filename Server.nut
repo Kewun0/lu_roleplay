@@ -4,7 +4,6 @@ function LoadAllScriptFiles ( ) {
 
 	dofile ( szScriptsPath + "Script Files/Server/Core.nut" , true );
 	dofile ( szScriptsPath + "Script Files/Server/Bit Flags.nut" , true );
-	dofile ( szScriptsPath + "Script Files/Server/Bugs.nut" , true );
 	dofile ( szScriptsPath + "Script Files/Server/Business.nut" , true );
 	dofile ( szScriptsPath + "Script Files/Server/Chat.nut" , true );
 	dofile ( szScriptsPath + "Script Files/Server/Clan.nut" , true );
@@ -38,5 +37,8 @@ function onScriptLoad ( ) {
 	pCoreTable.Vehicles <- ::LoadVehiclesFromDatabase ( );
 	
 	InitGameEntities ( );
+	
+	ConnectedPlayers <- { };
 
 }
+

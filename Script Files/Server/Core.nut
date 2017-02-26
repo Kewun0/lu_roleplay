@@ -162,6 +162,7 @@ function InitUtilitiesCoreTable ( ) {
 	pUtilitiesValuesTable.iScriptVersion				<- 1;
 	pUtilitiesValuesTable.iStartTimeStamp				<- 0;
 	pUtilitiesValuesTable.pZeroVector					<- Vector ( 0.0 , 0.0 , 0.0 );
+	pUtilitiesValuesTable.szPartReasons					<- [ "Disconnected" , "Crashed" , "Timed Out" , "Kicked" , "Banned" ];
 	pUtilitiesValuesTable.iNoWeapon						<- [ WEP_VEHICLE , WEP_DROWNED , WEP_FALL , WEP_EXPLOSION ];
 	pUtilitiesValuesTable.szCardinalDirections			<- [ "North" , "Northeast" , "East" , "Southeast" , "South" , "Southwest" , "West" , "Northwest" , "Unknown" ];
 	pUtilitiesValuesTable.pAllowedVehicles				<- [ 90 , 91 , 92 , 93 , 94 , 95 , 96 , 99 , 100 , 101 , 102 , 103 , 104 , 105 , 108 , 109 , 111 , 112 , 113 , 114 , 119 , 121 , 127 , 129 , 130 , 132 , 133 , 134 , 135 , 136 , 137 , 138 , 139 , 144 , 145 , 146 , 149 ];
@@ -454,6 +455,8 @@ function InitServerProcessingThreads ( ) {
 	
 	pThreadTable.LoadVehicleThread <- ::newthread ( LoadVehicleFromDatabase );
 	pThreadTable.SaveVehicleThread <- ::newthread ( SaveVehicleToDatabase );
+	// pThreadTable.LoadPlayerThread <- ::newthread ( LoadPlayerFromDatabase );
+	// pThreadTable.SavePlayerThread <- ::newthread ( SavePlayerToDatabase );	
 
 	return pThreadTable;
 	
