@@ -8,6 +8,9 @@ function AddPlayerCommandHandlers ( ) {
 	
 	AddCommandHandler ( "ChangePass" , ChangePasswordCommand , GetStaffFlagValue ( "None" ) );
 	
+	// AddCommandHandler ( "Language" , ChangeLocaleCommand , GetStaffFlagValue ( "None" ) );
+	// AddCommandHandler ( "Lang" , ChangeLocaleCommand , GetStaffFlagValue ( "None" ) );
+	
 	return true;
 	
 }
@@ -27,9 +30,11 @@ function SavePlayerToDatabase ( pPlayer ) {
 	local szIP = "";
 	local szLUID = "";
 	
+	print ( "TEST" );
+	
 	if ( pPlayerData.iDatabaseID == 0 ) {
 	
-		local iDatabaseID = GetNumberOfRegisteredAccounts( );
+		local iDatabaseID = GetNumberOfRegisteredAccounts ( );
 		
 		iDatabaseID = iDatabaseID + 1;
 		
@@ -41,23 +46,21 @@ function SavePlayerToDatabase ( pPlayer ) {
 		
 		WriteIniInteger ( pPlayerData.szFileString , "General" , "iDatabaseID" , iDatabaseID.tointeger ( ) );
 		
-		WriteIniInteger ( "Scripts/lu_roleplay/Data/Index.ini" , "Account Index" , pPlayer.Name , iDatabaseID.tointeger ( ) );
+		WriteIniInteger ( "Scripts/lu_roleplay/Data/Index.ini" , "Account Index" , CreateSafeIniString ( pPlayer.Name ) , iDatabaseID.tointeger ( ) );
 		
 		pPosition = Vector ( -763.80 , -603.30 , 11.33 );
 		iAngle = 268.556;
 	
 	}
 	
-	if ( pPlayerData.bAuthenticated ) {
+	if ( pPlayerData.bAuthenticated || pPlayerData.bNewlyRegistered ) {
 	
 		szIP = pPlayer.IP;
 		szLUID = pPlayer.LUID;
 	
 	}
-	
-	pPlayerData.iDatabaseID = pPlayerData.iDatabaseID;
 			
-	WriteIniString ( pPlayerData.szFileString , "General" , "szName" , pPlayerData.szName );
+	WriteIniString ( pPlayerData.szFileString , "General" , "szName" , CreateSafeIniString ( pPlayer.Name ) );
 	WriteIniString ( pPlayerData.szFileString , "General" , "szPassword" , pPlayerData.szPassword );
 
 	WriteIniInteger ( pPlayerData.szFileString , "General" , "iLastSession" , pPlayerData.iLastSession );
@@ -115,6 +118,18 @@ function SavePlayerToDatabase ( pPlayer ) {
 		
 	return true;
 	
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function SaveAllPlayersToDatabase ( ) {
+
+	foreach ( ii , iv in GetCoreTable ( ).Players ) {
+	
+		CallSavePlayerThread ( iv.pPlayer );
+	
+	}
+
 }
 	
 // -------------------------------------------------------------------------------------------------
@@ -201,7 +216,9 @@ function InitPlayer ( pPlayer ) {
 
 	ClearChat ( pPlayer );
 	
-	GetCoreTable ( ).Players [ pPlayer.ID ] <- GetCoreTable ( ).Classes.PlayerData ( pPlayer );
+	//pPlayerData = GetCoreTable ( ).Classes.PlayerData ( pPlayer );
+	
+	//GetCoreTable ( ).Players [ pPlayer.ID ] <- pPlayerData;
 		
 	SendWelcomeMessage ( pPlayer );
 	
@@ -316,7 +333,7 @@ function LoginCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false )
 	
 	if ( pPlayerData.szPassword != SaltAccountPassword ( szParams , pPlayer.Name ) ) {
 	
-		if ( pPlayer.iLoginAttemptsRemaining > 0 ) {
+		if ( pPlayerData.iLoginAttemptsRemaining > 0 ) {
 		
 			pPlayerData.iLoginAttemptsRemaining--;
 		   
@@ -326,9 +343,9 @@ function LoginCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false )
 		
 		} else {
 		
+			SendPlayerErrorMessage ( pPlayer , format ( GetPlayerLocaleMessage ( pPlayer , "LoginFailedKick" ) ) );
+		
 			KickPlayer ( pPlayer );
-		   
-			SendPlayerErrorMessage ( pPlayer , format ( GetPlayerLocaleMessage ( pPlayer , "LoginFailed" ) , pPlayerData.iLoginAttemptsRemaining ) );
 			
 			return false;
 		
@@ -429,6 +446,8 @@ function ChangePasswordCommand ( pPlayer , szCommand , szParams , bShowHelpOnly 
 	
 	pPlayerData.szPassword = szSaltedNewPassword;
 	::CallSavePlayerThread ( pPlayer );
+	
+	SendPlayerSuccessMessage ( pPlayer , "Your password has been changed!" );
 	
 	return true;
 	
@@ -644,19 +663,11 @@ function LoadPlayerFromDatabase ( pPlayer ) {
 
 	local szName = CreateSafeIniString ( pPlayer.Name );
 	
-	print ( "NAME " + szName );
-	
 	local pPlayerData = GetPlayerData ( pPlayer );
-	
-	print ( "GOT PLAYERDATA" );
 	
 	pPlayerData.iDatabaseID	= GetPlayerDatabaseID ( pPlayer.Name );
 	
-	print ( "DBID : " + pPlayerData.iDatabaseID + " " + type ( pPlayerData.iDatabaseID ) );
-	
 	if ( pPlayerData.iDatabaseID.tointeger ( ) == 0 ) {
-	
-		print ( "NOT REGISTERED" );
 		
 		return false;
 	
@@ -717,6 +728,8 @@ function LoadPlayerFromDatabase ( pPlayer ) {
 	pPlayerData.iAccountSettings			= ReadIniInteger( pPlayerData.szFileString , "General" , "iAccountSettings" );
 	pPlayerData.iLicenses					= ReadIniInteger( pPlayerData.szFileString , "General" , "iLicenses" );
 	pPlayerData.iStaffFlags					= ReadIniInteger( pPlayerData.szFileString , "General" , "iStaffFlags" );
+	
+	pPlayerData.szStaffTitle				= ReadIniStringg( pPlayerData.szFileString , "General" , "szStaffTitle" );
 	
 	// pPlayerData.pCrimes					= ::LoadAccountCrimesByAccountID ( iDatabaseID );
 	
@@ -880,6 +893,123 @@ function ToggleLUIDLoginCommand ( pPlayer , szCommand , szParams , bShowHelpOnly
 	}
 	
 	return true;
+	
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function CommonSkinHelpCommand ( pPlayer , szCommand , szParams ) {
+
+	SendPlayerAlertMessage ( pPlayer , "To change your skin, buy one from a clothing store." );
+	SendPlayerAlertMessage ( pPlayer , "Use /GPS to find a clothing store." );
+
+	return true;
+	
+}
+
+// -------------------------------------------------------------------------------------------------
+
+/*
+function SetLocaleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+	if ( bShowHelpOnly ) {
+	
+		SendPlayerCommandInfoMessage ( pPlayer , "Sets your language" , [ "Language" , "Lang" ] , "" );
+	
+		return false;
+	
+	}
+	
+	local pPlayerData = GetPlayerData ( pPlayer );
+	
+	if ( !szParams ) {
+	
+		SendPlayerAlertMessage ( pPlayer , "You language is set to English" );
+	
+	}
+
+}
+*/
+
+// -------------------------------------------------------------------------------------------------
+
+function GetAccountDataByDatabaseID ( szName ) {
+
+	local szName = CreateSafeIniString ( pPlayer.Name );
+	
+	local pPlayerData = GetCoreTable ( ).Classes.PlayerData ( );
+	
+	pPlayerData.iDatabaseID	= GetPlayerDatabaseID ( szName );
+	
+	if ( pPlayerData.iDatabaseID.tointeger ( ) == 0 ) {
+		
+		return false;
+	
+	}
+	
+	pPlayerData.szFileString				= "Scripts/lu_roleplay/Data/Accounts/" + pPlayerData.iDatabaseID + ".ini";
+	
+	pPlayerData.szName						= ReadIniString ( pPlayerData.szFileString , "General" , "szName" );
+	pPlayerData.szPassword					= ReadIniString ( pPlayerData.szFileString , "General" , "szPassword" );
+	
+	pPlayerData.iLastSession				= ReadIniInteger ( pPlayerData.szFileString , "General" , "iLastSession" );
+	pPlayerData.szLastIP					= ReadIniString ( pPlayerData.szFileString , "General" , "szLastIP" );
+	pPlayerData.szLastLUID					= ReadIniString ( pPlayerData.szFileString , "General" , "szLastLUID" );
+	
+	pPlayerData.iRegisteredTimestamp		= ReadIniInteger ( pPlayerData.szFileString , "General" , "iRegisteredTimestamp" );
+	pPlayerData.iLastLoginTimestamp			= ReadIniInteger ( pPlayerData.szFileString , "General" , "ilastLoginTimestamp" );
+	
+	pPlayerData.iConnectTime				= ReadIniInteger ( pPlayerData.szFileString , "General" , "iConnecTime" );
+	
+	pPlayerData.iKills						= ReadIniInteger ( pPlayerData.szFileString , "General" , "iKills" );
+	pPlayerData.iDeaths						= ReadIniInteger ( pPlayerData.szFileString , "General" , "iDeaths" );
+	pPlayerData.iMaxKillStreak				= ReadIniInteger ( pPlayerData.szFileString , "General" , "iMaxKillStreak" );
+	pPlayerData.iHeadshots					= ReadIniInteger ( pPlayerData.szFileString , "General" , "iHeadshots" );
+	pPlayerData.fFurthestHeadshot			= ReadIniFloat ( pPlayerData.szFileString , "General" , "fFurthestHeadshot" );
+	pPlayerData.iPackagesPicked				= ReadIniInteger ( pPlayerData.szFileString , "General" , "iPackagesPicked" );
+	
+	pPlayerData.fDistanceOnFoot				= ReadIniFloat ( pPlayerData.szFileString , "General" , "fDistanceOnFoot" );
+	pPlayerData.fDistanceCar				= ReadIniFloat ( pPlayerData.szFileString , "General" , "fDistanceCar" );
+	pPlayerData.fDistanceBoat				= ReadIniFloat ( pPlayerData.szFileString , "General" , "fDistanceBoat" );
+	pPlayerData.fDistancePlane				= ReadIniFloat ( pPlayerData.szFileString , "General" , "fDistancePlane" );
+	
+	pPlayerData.iHealthPicked				= ReadIniInteger ( pPlayerData.szFileString , "General" , "iHealthPicked" );
+	pPlayerData.iArmourPicked				= ReadIniInteger ( pPlayerData.szFileString , "General" , "iArmourPicked" );
+	pPlayerData.iWeaponsPicked				= ReadIniInteger ( pPlayerData.szFileString , "General" , "iWeaponsPicked" );
+	
+	pPlayerData.iCash						= ReadIniInteger ( pPlayerData.szFileString , "General" , "iCash" );
+	pPlayerData.iBank						= ReadIniInteger ( pPlayerData.szFileString , "General" , "iBank" );
+	
+	pPlayerData.iSkin						= ReadIniInteger ( pPlayerData.szFileString , "General" , "iSkin" );
+	
+	pPlayerData.iHealth						= ReadIniInteger ( pPlayerData.szFileString , "General" , "iHealth" );
+	pPlayerData.iArmour					 	= ReadIniInteger ( pPlayerData.szFileString , "General" , "iArmour" );
+	pPlayerData.iTimesBusted				= ReadIniInteger ( pPlayerData.szFileString , "General" , "iTimesBusted" );
+	pPlayerData.iStarsObtained			 	= ReadIniInteger ( pPlayerData.szFileString , "General" , "iStarsObtained" );
+	pPlayerData.iStarsEvaded				= ReadIniInteger ( pPlayerData.szFileString , "General" , "iStarsEvaded" );
+	pPlayerData.iHighestWantedLevel		 	= ReadIniInteger ( pPlayerData.szFileString , "General" , "iHighestWantedLevel" );
+	pPlayerData.iBusinessesPurchased		= ReadIniInteger ( pPlayerData.szFileString , "General" , "iBusinessesPurchased" );
+	pPlayerData.iHousesPurchased			= ReadIniInteger ( pPlayerData.szFileString , "General" , "iHousesPurchased" );
+	pPlayerData.iWeaponsPurchased		   	= ReadIniInteger ( pPlayerData.szFileString , "General" , "iWeaponsPurchased" );
+	pPlayerData.iSpentOnWeapons			 	= ReadIniInteger ( pPlayerData.szFileString , "General" , "iSpentOnWeapons" );
+	pPlayerData.iVehicleResprays			= ReadIniInteger ( pPlayerData.szFileString , "General" , "iVehicleResprays" );
+	pPlayerData.iWantedVehicleResprays	  	= ReadIniInteger ( pPlayerData.szFileString , "General" , "iWantedVehicleResprays" );
+	pPlayerData.iLongestGameTime			= ReadIniInteger ( pPlayerData.szFileString , "General" , "iLongestGameTime" );
+
+	pPlayerData.pPosition					= Vector ( ReadIniFloat( pPlayerData.szFileString , "General" , "fPositionX" ) , ReadIniFloat( pPlayerData.szFileString , "General" , "fPositionY" ) , ReadIniFloat( pPlayerData.szFileString , "General" , "fPositionZ" ) );
+	pPlayerData.iAngle						= ReadIniInteger( pPlayerData.szFileString , "General" , "iAngle" );
+
+	pPlayerData.iAccountSettings			= ReadIniInteger( pPlayerData.szFileString , "General" , "iAccountSettings" );
+	pPlayerData.iLicenses					= ReadIniInteger( pPlayerData.szFileString , "General" , "iLicenses" );
+	pPlayerData.iStaffFlags					= ReadIniInteger( pPlayerData.szFileString , "General" , "iStaffFlags" );
+	
+	pPlayerData.szStaffTitle				= ReadIniStringg( pPlayerData.szFileString , "General" , "szStaffTitle" );
+	
+	// pPlayerData.pCrimes					= ::LoadAccountCrimesByAccountID ( iDatabaseID );
+	
+	// pPlayerData.pStaffNotes				= ::LoadPlayerStaffNotesByAccountID ( iDatabaseID );	
+
+	return pPlayerData;
 	
 }
 
