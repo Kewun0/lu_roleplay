@@ -918,6 +918,48 @@ function NearbyPlayersCommand ( pPlayer , szCommand , szParams , bShowHelpOnly =
 
 // -------------------------------------------------------------------------------------------------
 
+function IsValidRGBValue ( iValue ) {
+
+	if ( iValue >= 0 && iValue <= 255 ) {
+	
+		return true;
+		
+	}
+	
+	return false;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function GetYesNoBoolText ( bBool ) {
+
+	if ( !bBool ) {
+	
+		return "No";
+	
+	}
+	
+	return "Yes";
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function GetOnOffBoolText ( bBool ) {
+
+	if ( !bBool ) {
+	
+		return "Off";
+	
+	}
+	
+	return "On";
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
 // -- THIS GOES LAST
 
 print ( "[Server.Utilities]: Script file loaded and ready." );

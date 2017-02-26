@@ -16,9 +16,11 @@ function onServerStart ( ) {
 
 function onScriptUnload ( ) {
 
-	foreach ( ii , iv in GetCoreTable ( ).Players ) {
+	Message ( "SCRIPT RE-LOADING ... PLEASE /RECONNECT !!!" , Colour ( 255 , 0 , 0 ) );
 	
-		KickPlayer ( iv.pPlayer );
+	foreach ( ii , iv in ConnectedPlayers ) {
+	
+		KickPlayer ( iv );
 	
 	}
 	
@@ -30,6 +32,12 @@ function onScriptUnload ( ) {
 
 function onPlayerConnect ( pPlayer ) {
 	
+	ConnectedPlayers [ pPlayer.ID ] <- pPlayer;
+	
+	GetCoreTable ( ).Players [ pPlayer.ID ] <- GetCoreTable ( ).Classes.PlayerData ( pPlayer );
+	
+	Message ( GetHexColour ( "White" ) + pPlayer.Name + GetHexColour ( "LightGrey" ) + " has connected!" , GetRGBColour ( "White" ) );
+	
 	::print ( "- Player '" + pPlayer.Name + "' connected. (ID: " + pPlayer.ID + ", IP: " + pPlayer.IP + ", LUID " + pPlayer.LUID + ")" );
 	
 }
@@ -38,7 +46,7 @@ function onPlayerConnect ( pPlayer ) {
 
 function onPlayerJoin ( pPlayer ) {
 	
-	MessagePlayer ( "Please wait a moment ..." , pPlayer , GetCoreTable ( ).Colours.RGB.White );
+	MessagePlayer ( "Please wait a moment ..." , pPlayer , GetRGBColour ( "White" ) );
 	
 	NewTimer ( "InitPlayer" , 2000 , 1 , pPlayer );
 	
@@ -56,11 +64,14 @@ function onPlayerPart ( pPlayer , iReason ) {
 	
 	ResetRentedVehicle ( pPlayer );
 	
+	Message ( GetHexColour ( "White" ) + pPlayer.Name + GetHexColour ( "LightGrey" ) + " has left the server (" + GetCoreTable ( ).Utilities.szPartReasons [ iReason ] + ")" , GetRGBColour ( "White" ) );
+	
 	// -- Make sure this goes last in the function. Once it's gone, we can't use it!
- 
 	
 	GetCoreTable ( ).Players [ pPlayer.ID ] <- null;
 
+	ConnectedPlayers [ pPlayer.ID ] <- null;
+	
 	return true;
 	
 }
@@ -103,6 +114,12 @@ function onPlayerEnteredVehicle ( pPlayer , pVehicle , iSeatID ) {
 	
 	if( iSeatID == 0 ) {
 		
+		if ( pVehicleData.iOwnerType == GetCoreTable ( ).Utilities.pVehicleOwnerType.Player && pVehicleData.iOwnerID == pPlayerData.iDatabaseID ) {
+		
+			SendPlayerAlertMessage ( pPlayer , "You are the owner of this " + GetVehicleName ( pVehicle.Model ) );
+		
+		}
+		
 		// -- If the car can be rented, let the player know.
 	
 		if ( pVehicleData.iRentPrice > 0 ) {
@@ -119,11 +136,28 @@ function onPlayerEnteredVehicle ( pPlayer , pVehicle , iSeatID ) {
 			
 				pVehicleData.bEngine = false;
 				
-				MessagePlayer ( "If you want to drive this vehicle, you'll need to rent it for $" + pVehicleData.iRentPrice , pPlayer , GetCoreTable ( ).Colours.RGB.White );
-				MessagePlayer ( "Use /rentvehicle to drive it now. Otherwise, please exit the vehicle." , pPlayer , GetCoreTable ( ).Colours.RGB.White );
+				MessagePlayer ( "If you want to drive this vehicle, you'll need to rent it for $" + pVehicleData.iRentPrice , pPlayer , GetRGBColour ( "White" ) );
+				MessagePlayer ( "Use /rentvehicle to drive it now. Otherwise, please exit the vehicle." , pPlayer , GetRGBColour ( "White" ) );
 		
 			}
 		
+		}
+		
+		// -- If the car can be bought, let the player know.
+		
+		if ( pVehicleData.iBuyPrice > 0 ) {
+		
+			pVehicleData.bEngine = false;
+			
+			pPlayerData.pBuyVehState = 1;
+			pPlayerData.pBuyVehVehicle = pVehicle;
+			pPlayerData.pBuyVehPrice = pVehicleData.iBuyPrice;
+			pPlayerData.pBuyVehPosition = pVehicle.Pos;
+			pPlayerData.pBuyVehAngle = pVehicle.Angle;
+		
+			MessagePlayer ( "This vehicle is for sale. Cost $" + pVehicleData.iBuyPrice , pPlayer , GetRGBColour ( "White" ) );
+			MessagePlayer ( "Use /buyvehicle to buy it now. Otherwise, please exit the vehicle." , pPlayer , GetRGBColour ( "White" ) );			
+
 		}
 		
 		// -- Vehicle engines automatically turn on when entering as a driver. If the engine is supposed to be off, use SetEngineState
@@ -144,6 +178,46 @@ function onPlayerEnteredVehicle ( pPlayer , pVehicle , iSeatID ) {
 
 // -------------------------------------------------------------------------------------------------
 
+function onPlayerUpdate ( pPlayer ) {
+
+	if ( pPlayer.Vehicle ) {
+	
+		if ( GetPlayerData ( pPlayer ).pBuyVehState == 2 ) { // Player bought car, waiting to leave the parking space
+		
+			if ( GetDistance ( pPlayer.Pos , GetPlayerData ( pPlayer ).pBuyVehPosition ) > 15.0 ) {
+				
+				GetPlayerData ( pPlayer ).pBuyVehState = 0; // Player left parking space, create new dealership car and reset
+				local pVehicle = CreateNewVehicle ( GetPlayerData ( pPlayer ).pBuyVehVehicle.Model , GetPlayerData ( pPlayer ).pBuyVehPosition , GetPlayerData ( pPlayer ).pBuyVehAngle );
+				GetVehicleData ( pVehicle ).iBuyPrice = GetPlayerData ( pPlayer ).pBuyVehPrice;
+			
+			}
+		
+		}
+	
+	}
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function onPlayerExitedVehicle ( pPlayer , pVehicle , iSeatID ) {
+	
+	if ( GetPlayerData ( pPlayer ).pBuyVehState == 2 ) { // Player bought car, but they got out before leaving the lot
+		
+		GetPlayerData ( pPlayer ).pBuyVehVehicle.Pos = Vector ( 1215.1 , -102.78 , 14.15 );
+		GetPlayerData ( pPlayer ).pBuyVehVehicle.Angle = 90.0;
+
+		CreateNewVehicle ( pVehicleData , GetPlayerData ( pPlayer ).pBuyVehPosition , GetPlayerData ( pPlayer ).pBuyVehAngle );
+		GetPlayerData ( pPlayer ).pBuyVehState = 0; // Create new dealership car and reset	
+		
+	}
+	
+	return 1;
+	
+}
+
+// -------------------------------------------------------------------------------------------------
+
 function onPlayerSpawn ( pPlayer , iSpawnClass ) {
 
 	local pPlayerData = GetPlayerData ( pPlayer );
@@ -152,9 +226,9 @@ function onPlayerSpawn ( pPlayer , iSpawnClass ) {
 	
 		ClearChat ( pPlayer );
 		
-		MessagePlayer ( pPlayer , "You need to be logged in to spawn!" );
+		MessagePlayer ( "You need to be logged in to spawn!" , pPlayer , GetRGBColour ( "BrightRed" ) );
 		
-		KickPlayer ( pPlayer );
+		pPlayer.ForceToSpawnScreen ( );
 		
 		return 0;
 	
@@ -180,8 +254,8 @@ function onPlayerSpawn ( pPlayer , iSpawnClass ) {
 		
 		MessagePlayer ( "Be sure to read the /rules and use /help for info." , pPlayer , GetRGBColour ( "Yellow" ) );
 		
-		MessagePlayer ( "To get started, get in a rental van or take the subway." , pPlayer , GetRGBColour ( "LightGrey" ) );
-		MessagePlayer ( "The Shoreside Terminal station is down the road to the south." , pPlayer , GetRGBColour ( "LightGrey" ) );
+		MessagePlayer ( "To get started, get in a rental Blista or take the train." , pPlayer , GetRGBColour ( "LightGrey" ) );
+		MessagePlayer ( "The Shoreside Terminal train station is down the road to the south." , pPlayer , GetRGBColour ( "LightGrey" ) );
 	
 	}
 	
@@ -196,6 +270,12 @@ function onPlayerCommand ( pPlayer , szCommand , szParams ) {
 	print ( "- Player '" + pPlayer.Name + "' (ID " + pPlayer.ID + ") tried command. String: /" + szCommand + " " + szParams );
 
 	local pPlayerData = GetPlayerData ( pPlayer );
+	
+	if ( !pPlayerData ) {
+	
+		return false;
+	
+	}
 	
 	if( !IsCommandAllowedBeforeAuthentication ( szCommand ) ) {
 		
