@@ -19,7 +19,7 @@ function ShowWelcomeMessage ( pPlayer ) {
 
 function SendPlayerErrorMessage ( pPlayer , szMessage ) {
 
-	MessagePlayer ( GetColourByType ( "ErrorHeader" ) + GetPlayerLocaleMessage ( pPlayer , "ErrorMessageHeader" ) + ": " + GetColourByType ( "ErrorMessage" ) + szMessage , pPlayer , GetRGBColour ( "White" ) );
+	MessagePlayer ( GetColourByType ( "GeneralErrorHeader" ) + GetPlayerLocaleMessage ( pPlayer , "ErrorMessageHeader" ) + ": " + GetColourByType ( "GeneralErrorMessage" ) + szMessage , pPlayer , GetRGBColour ( "White" ) );
 	
 	return true;
 
@@ -27,7 +27,7 @@ function SendPlayerErrorMessage ( pPlayer , szMessage ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function SendAdminMessageToAll ( pPlayer , szMessage ) {
+function SendAdminMessageToAll ( szMessage ) {
 
 	Message ( GetColourByType ( "AdminAnnounceHeader" ) + "ADMIN: " + GetColourByType ( "AdminAnnounceMessage" ) + szMessage , GetCoreTable ( ).Colours.RGB.White );
 	
@@ -37,9 +37,27 @@ function SendAdminMessageToAll ( pPlayer , szMessage ) {
 
 // -------------------------------------------------------------------------------------------------
 
+function SendMessageToAdmins ( szMessage ) {
+
+	foreach ( ii , iv in GetCoreTable ( ).Players ) {
+	
+		if ( iv.iStaffFlags != 0 ) {
+		
+			MessagePlayer ( szMessage , iv.pPlayer , GetRGBColour ( "White" ) );
+		
+		}
+	
+	}
+	
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
 function SendPlayerSyntaxMessage ( pPlayer , szMessage ) {
 
-	MessagePlayer ( GetColourByType ( "SyntaxHeader" ) + GetPlayerLocaleMessage ( pPlayer , "SyntaxMessageHeader" ) + ": " + GetColourByType ( "SyntaxMessage" ) + szMessage , pPlayer , GetRGBColour ( "White" ) );
+	MessagePlayer ( GetColourByType ( "GeneralSyntaxHeader" ) + GetPlayerLocaleMessage ( pPlayer , "SyntaxMessageHeader" ) + ": " + GetColourByType ( "GeneralSyntaxMessage" ) + szMessage , pPlayer , GetRGBColour ( "White" ) );
 	
 	return true;
 
@@ -59,7 +77,7 @@ function SendPlayerNormalMessage ( pPlayer , szMessage ) {
 
 function SendPlayerAlertMessage ( pPlayer , szMessage ) {
 
-	MessagePlayer ( GetColourByType ( "AlertHeader" ) + GetPlayerLocaleMessage ( pPlayer , "AlertHeader" ) + ": " + GetColourByType ( "AlertMessage" ) + szMessage , pPlayer , GetRGBColour ( "White" ) );
+	MessagePlayer ( GetColourByType ( "GeneralAlertHeader" ) + GetPlayerLocaleMessage ( pPlayer , "AlertMessageHeader" ) + ": " + GetColourByType ( "GeneralAlertMessage" ) + szMessage , pPlayer , GetRGBColour ( "White" ) );
 	
 	return true;
 
@@ -69,7 +87,7 @@ function SendPlayerAlertMessage ( pPlayer , szMessage ) {
 
 function SendPlayerSuccessMessage ( pPlayer , szMessage ) {
 
-	MessagePlayer ( GetColourByType ( "SuccessHeader" ) + GetPlayerLocaleMessage ( pPlayer , "SuccessHeader" ) + ": " + GetColourByType ( "SuccessMessage" ) + szMessage , pPlayer , GetRGBColour ( "White" ) );
+	MessagePlayer ( GetColourByType ( "GeneralSuccessHeader" ) + GetPlayerLocaleMessage ( pPlayer , "SuccessMessageHeader" ) + ": " + GetColourByType ( "GeneralSuccessMessage" ) + szMessage , pPlayer , GetRGBColour ( "White" ) );
 	
 	return true;
 
@@ -290,11 +308,11 @@ function PlayerAreaTalkMessage ( pPlayer , szMessage ) {
 		
 	}
 	
-	foreach ( ii , iv in GetCoreTable ( ).Players ) {
+	foreach ( ii , iv in ConnectedPlayers ) {
 		
-		if ( GetDistance ( pPlayer.Pos , iv.pPlayer.Pos ) < GetCoreTable ( ).Utilities.fAreaTalkRange ) {
+		if ( GetDistance ( pPlayer.Pos , iv.Pos ) < GetCoreTable ( ).Utilities.fAreaTalkRange ) {
 	
-			MessagePlayer ( GetColourByType ( "AreaTalkHeader" ) + "(Nearby) " + GetColourByType ( "AreaTalkName" ) + pPlayer.Name + ": " + GetColourByType ( "AreaTalkMessage" ) + szMessage , iv.pPlayer );
+			MessagePlayer ( GetColourByType ( "AreaTalkHeader" ) + "(Nearby) " + GetColourByType ( "AreaTalkName" ) + pPlayer.Name + ": " + GetColourByType ( "AreaTalkMessage" ) + szMessage , iv );
 		
 		}
 	
@@ -314,13 +332,13 @@ function PlayerAreaShoutMessage ( pPlayer , szMessage ) {
 		
 	}
 	
-	foreach ( ii , iv in GetCoreTable ( ).Players ) {
+	foreach ( ii , iv in ConnectedPlayers ) {
 		
-		if ( iv.pPlayer.Spawned ) {
+		if ( iv.Spawned ) {
 		
-			if ( GetDistance ( pPlayer.Pos , iv.pPlayer.Pos ) < GetCoreTable ( ).Utilities.fAreaShoutRange ) {
+			if ( GetDistance ( pPlayer.Pos , iv.Pos ) < GetCoreTable ( ).Utilities.fAreaShoutRange ) {
 		
-				MessagePlayer ( GetColourByType ( "AreaShoutHeader" ) + "(Shout) " + GetColourByType ( "AreaShoutName" ) + pPlayer.Name + ": " + GetColourByType ( "AreaShoutMessage" ) + szMessage + "!" , iv.pPlayer );
+				MessagePlayer ( GetColourByType ( "AreaShoutHeader" ) + "(Shout) " + GetColourByType ( "AreaShoutName" ) + pPlayer.Name + ": " + GetColourByType ( "AreaShoutMessage" ) + szMessage + "!" , iv );
 			
 			}
 		
@@ -368,7 +386,7 @@ function HelpCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) 
 	if ( !szParams ) {
 		
 		SendPlayerSyntaxMessage ( pPlayer , "/Help <Category>" );
-		MessagePlayer ( GetHexColour ( "White" ) + "Help Categories: " + GetHexColour ( "LightGrey" ) + "Account, Command, Vehicle, Job, Chat, Rules, Website" , pPlayer , GetCoreTable ( ).Colours.RGB.White );
+		MessagePlayer ( GetHexColour ( "White" ) + "Help Categories: " + GetHexColour ( "LightGrey" ) + "Account, Command, Vehicle, Job, Chat, Rules, Website" , pPlayer , GetRGBColour ( "White" ) );
 		
 		return false;
 		
@@ -478,6 +496,9 @@ function HelpCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) 
 	
 	}
 	
+	SendPlayerSyntaxMessage ( pPlayer , "/Help <Category>" );
+	MessagePlayer ( GetHexColour ( "White" ) + "Help Categories: " + GetHexColour ( "LightGrey" ) + "Account, Command, Vehicle, Job, Chat, Rules, Website" , pPlayer , GetRGBColour ( "White" ) );
+	
 	return true;
 	
 }
@@ -545,7 +566,9 @@ function SendPlayerCommandInfoMessage ( pPlayer , szDescription , pAliases , szE
 
 function SendPlayerInfoMessage ( pPlayer , szMessage ) {
 
-	MessagePlayer ( GetCoreTable ( ).Colours.ByType.InfoMessageHeader + GetPlayerLocaleMessage ( pPlayer , "InfoMessageHeader" ) + ": " + GetCoreTable ( ).Colours.ByType.InfoMessageHeader + szMessage , pPlayer , GetCoreTable ( ).Colours.RGB.White );
+	//MessagePlayer ( GetColourByType ( "InfoMessageHeader" ) + GetPlayerLocaleMessage ( pPlayer , "InfoMessageHeader" ) + ": " + etColourByType ( "InfoMessageMessage" ) + szMessage , pPlayer , GetCoreTable ( ).Colours.RGB.White );
+	
+	SendPlayerAlertMessage ( pPlayer , szMessage );
 	
 	return true;
 
