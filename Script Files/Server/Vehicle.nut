@@ -4,27 +4,6 @@
 
 // -- COMMANDS -------------------------------------------------------------------------------------
 
-// - AddVeh								CreateVehicleCommand							ManageVehicles
-// - DelVeh								DeleteVehicleCommand							ManageVehicles
-// - RentVehicle						RentVehicleCommand							  	None
-// - StopRent							StopRentVehicleCommand						  	None
-// - Lights,VehLights					VehicleLightsCommand							None
-// - Engine.VehEngine					VehicleEngineCommand							None
-// - Lock,VehLock						VehicleLockCommand							  	None	
-// - Siren,VehSiren						VehicleSirenCommand							 	None
-// - SirenLight,VehSirenLight			VehicleSirenLightCommand						None
-// - TaxiLight,VehTaxiLight				VehicleTaxiLightCommand						 	None
-// - RentPrice							SetVehicleRentPriceCommand						ManageVehicles
-// - BuyPrice							SetVehicleBuyPriceCommand						ManageVehicles
-// - RespawnAll							RespawnAllVehiclesCommand						ManageServer
-// - ExplodeAll							ExplodeAllVehiclesCommand						ManageServer
-// - VehOwner							SetVehicleOwnerCommand							ManageVehicles
-// - VehColour							SetVehicleColourCommand							ManageVehicles
-// - VehFuel							SetVehicleFuelCommand							ManageVehicles
-// - VehHealth							SetVehicleHealthCommand							ManageVehicles
-
-// -------------------------------------------------------------------------------------------------
-
 function AddVehicleCommandHandlers ( ) {
 
 	AddCommandHandler ( "AddVeh" 			, CreateVehicleCommand 				, GetStaffFlagValue ( "ManageVehicles" ) );
@@ -105,13 +84,6 @@ function SaveVehicleToDatabase ( pVehicle ) {
 	
 	local pPosition = pVehicleData.pPosition;
 	local fAngle = pVehicleData.fAngle;
-	
-	if ( !pVehicleData.bSpawnLock ) {
-	
-		pPosition = pVehicle.Pos;
-		fAngle = pVehicle.Angle;
-	
-	}
 
 	::WriteIniInteger ( pVehicleData.szFileString , "General" , "iModel" , pVehicleData.iModel );
 	::WriteIniInteger ( pVehicleData.szFileString , "General" , "iColour1Red" , pVehicleData.pColour1.r );
@@ -909,17 +881,9 @@ function BuyVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fa
 		
 		return false;
 	
-	}	
-	
-	if ( pVehicleData.pRenter != false ) {
-	
-		SendPlayerErrorMessage ( pPlayer , "This vehicle is already being rented!" );
-		
-		return false;
-	
 	}	   
 	
-	if ( pPlayerData.iCash < pVehicleData.iRentPrice ) {
+	if ( pPlayerData.iCash < pVehicleData.iBuyPrice ) {
 	
 		SendPlayerErrorMessage ( pPlayer , "You don't have enough money to buy this vehicle!" );
 		
@@ -927,14 +891,16 @@ function BuyVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fa
 	
 	}
 	
+	TakePlayerCash ( pPlayer , pVehicleData.iBuyPrice );
 	SetVehicleOwner ( pPlayer.Vehicle , pPlayer );
 	
 	SendPlayerSuccessMessage ( pPlayer , "You now own this vehicle! Use /engine to start it." );
+	SendPlayerAlertMessage ( pPlayer , "Please drive this car off the parking space, or you will lose it." );
 	
 	pPlayerData.pBuyVehPosition = pPlayer.Vehicle.Pos;
 	pPlayerData.pBuyVehAngle = pPlayer.Vehicle.Angle;
+	pPlayerData.pBuyVehVehicle = pPlayer.Vehicle;
 	pPlayerData.pBuyVehState = 2;
-	
 	
 	return true;
 
@@ -1135,9 +1101,11 @@ function CreateVehicleCommand ( pPlayer , szVehicle , szParams , bShowHelpOnly =
 		
 	} else {
 		
-		local iModelID = GetVehicleIDFromName ( szParams );
+		local iModelID = GetVehicleIDFromName ( szParams.tostring ( ) );
 		
-		if ( IsValidVehicleModel ( iModelID ) ) {
+		if ( !IsValidVehicleModel ( iModelID ) ) {
+			
+			SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "VehicleModelInvalid" ) );
 			
 			return false;
 			
@@ -1590,7 +1558,7 @@ function IsValidVehicleColourIndex ( iVehicleColourIndex ) {
 
 function IsValidVehicleModel ( iModelID ) {
 
-	if ( iModelID < 90 && i > 150 ) {
+	if ( iModelID < 90 && iModelID > 150 ) {
 	
 		return false;
 	
@@ -1629,15 +1597,18 @@ function VehicleSpawnLockCommand ( pPlayer , szCommand , szParams , bShowHelpOnl
 	if ( GetVehicleData ( pPlayer.Vehicle ).bSpawnLock ) {
 	
 		GetVehicleData ( pPlayer.Vehicle ).bSpawnLock = false;
-		SendPlayerSuccessMessage ( pPlayer , "The " + GetVehicleName ( pPlayer.Vehicle.Model ) + " will now save it's position" );
+		SendPlayerSuccessMessage ( pPlayer , "The " + GetVehicleName ( pPlayer.Vehicle.Model ) + " is not locked in the old spawn position anymore." );
 	
 	} else {
 	
 		GetVehicleData ( pPlayer.Vehicle ).bSpawnLock = true;
-		SendPlayerSuccessMessage ( pPlayer , "The " + GetVehicleName ( pPlayer.Vehicle.Model ) + " will no longer save it's position" );
+		SendPlayerSuccessMessage ( pPlayer , "The " + GetVehicleName ( pPlayer.Vehicle.Model ) + " is now locked in this position for respawn." );	
 		
 		GetVehicleData ( pPlayer.Vehicle ).pPosition = pPlayer.Vehicle.Pos;
 		GetVehicleData ( pPlayer.Vehicle ).fAngle = pPlayer.Vehicle.Angle;
+		
+		pPlayer.Vehicle.SpawnPos = pPlayer.Vehicle.Pos;
+		pPlayer.Vehicle.SpawnAngle = pPlayer.Vehicle.Angle;
 		
 	}
 	

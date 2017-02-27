@@ -27,8 +27,8 @@ function SavePlayerToDatabase ( pPlayer ) {
 	
 	local pPosition = ( ( pPlayer.Spawned ) ? pPlayer.Pos : pPlayerData.pPosition );
 	local iAngle = ( ( pPlayer.Spawned ) ? pPlayer.Angle : pPlayerData.iAngle );
-	local szIP = "";
-	local szLUID = "";
+	local szIP = pPlayerData.szLastIP;
+	local szLUID = pPlayerData.szLastLUID;
 	
 	print ( "TEST" );
 	
@@ -48,8 +48,8 @@ function SavePlayerToDatabase ( pPlayer ) {
 		
 		WriteIniInteger ( "Scripts/lu_roleplay/Data/Index.ini" , "Account Index" , CreateSafeIniString ( pPlayer.Name ) , iDatabaseID.tointeger ( ) );
 		
-		pPosition = Vector ( -763.80 , -603.30 , 11.33 );
-		iAngle = 268.556;
+		pPosition = Vector ( 1038.3 , -666.5 , 14.97 );
+		iAngle = 90.0;
 	
 	}
 	
@@ -329,9 +329,17 @@ function LoginCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false )
 	
 	}
 	
+	if ( !szParams ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "You need to enter a password!" );
+		
+		return false;		
+	
+	}	
+	
 	// -- Is the password correct?
 	
-	if ( pPlayerData.szPassword != SaltAccountPassword ( szParams , pPlayer.Name ) ) {
+	if ( pPlayerData.szPassword != SaltAccountPassword ( szParams , CreateSafeIniString ( pPlayer.Name ) ) ) {
 	
 		if ( pPlayerData.iLoginAttemptsRemaining > 0 ) {
 		
@@ -433,8 +441,8 @@ function ChangePasswordCommand ( pPlayer , szCommand , szParams , bShowHelpOnly 
 	
 	local szOldPassword = GetTok ( szParams , " " , 1 );
 	local szNewPassword = GetTok ( szParams , " " , 2 );
-	local szSaltedOldPassword = SaltAccountPassword ( szOldPassword , pPlayer.Name );
-	local szSaltedNewPassword = SaltAccountPassword ( szNewPassword , pPlayer.Name );
+	local szSaltedOldPassword = SaltAccountPassword ( szOldPassword , CreateSafeIniString ( pPlayer.Name ) );
+	local szSaltedNewPassword = SaltAccountPassword ( szNewPassword , CreateSafeIniString ( pPlayer.Name ) );
 	
 	if ( szSaltedOldPassword != pPlayerData.szPassword ) {
 	
@@ -633,7 +641,7 @@ function SaltAccountPassword ( szPassword , szAccountName ) {
 
 	if ( szPassword != "" && szAccountName != "" ) {
 	
-		return SHA256 ( "[UnitedIslandsRPG] . " + szAccountName + " . " + szPassword );
+		return SHA256 ( "[LifeInLibertyCity] . " + szAccountName + " . " + szPassword );
 	
 	}
 	
@@ -645,7 +653,7 @@ function SaltAccountPassword ( szPassword , szAccountName ) {
 
 function GetPlayerDatabaseID ( szName ) {
 
-	local iAccountID = ReadIniInteger ( "Scripts/lu_roleplay/Data/Index.ini" , "Account Index" , CreateSafeIniString ( szName ) );
+	local iAccountID = ReadIniInteger ( szScriptsPath + "Data/Index.ini" , "Account Index" , CreateSafeIniString ( szName ) );
 	
 	if ( !iAccountID ) {
 	
@@ -662,10 +670,9 @@ function GetPlayerDatabaseID ( szName ) {
 function LoadPlayerFromDatabase ( pPlayer ) {
 
 	local szName = CreateSafeIniString ( pPlayer.Name );
-	
 	local pPlayerData = GetPlayerData ( pPlayer );
 	
-	pPlayerData.iDatabaseID	= GetPlayerDatabaseID ( pPlayer.Name );
+	pPlayerData.iDatabaseID	= GetPlayerDatabaseID ( szName );
 	
 	if ( pPlayerData.iDatabaseID.tointeger ( ) == 0 ) {
 		
@@ -729,7 +736,7 @@ function LoadPlayerFromDatabase ( pPlayer ) {
 	pPlayerData.iLicenses					= ReadIniInteger( pPlayerData.szFileString , "General" , "iLicenses" );
 	pPlayerData.iStaffFlags					= ReadIniInteger( pPlayerData.szFileString , "General" , "iStaffFlags" );
 	
-	pPlayerData.szStaffTitle				= ReadIniStringg( pPlayerData.szFileString , "General" , "szStaffTitle" );
+	pPlayerData.szStaffTitle				= ReadIniString( pPlayerData.szFileString , "General" , "szStaffTitle" );
 	
 	// pPlayerData.pCrimes					= ::LoadAccountCrimesByAccountID ( iDatabaseID );
 	
@@ -935,7 +942,7 @@ function SetLocaleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fal
 
 function GetAccountDataByDatabaseID ( szName ) {
 
-	local szName = CreateSafeIniString ( pPlayer.Name );
+	local szName = CreateSafeIniString ( szName );
 	
 	local pPlayerData = GetCoreTable ( ).Classes.PlayerData ( );
 	

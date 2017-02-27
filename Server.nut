@@ -1,4 +1,8 @@
+// -------------------------------------------------------------------------------------------------
+
 szScriptsPath <- "Scripts/lu_roleplay/";
+
+// -------------------------------------------------------------------------------------------------
 
 function LoadAllScriptFiles ( ) {
 
@@ -13,6 +17,7 @@ function LoadAllScriptFiles ( ) {
 	dofile ( szScriptsPath + "Script Files/Server/Database.nut" , true );
 	dofile ( szScriptsPath + "Script Files/Server/Fire.nut" , true );
 	dofile ( szScriptsPath + "Script Files/Server/House.nut" , true );
+	dofile ( szScriptsPath + "Script Files/Server/IRC.nut" , true );
 	dofile ( szScriptsPath + "Script Files/Server/Jobs.nut" , true );
 	dofile ( szScriptsPath + "Script Files/Server/Locale.nut" , true );
 	dofile ( szScriptsPath + "Script Files/Server/Messaging.nut" , true );
@@ -26,6 +31,8 @@ function LoadAllScriptFiles ( ) {
 	dofile ( szScriptsPath + "Script Files/Server/Vehicle.nut" , true );
 	
 }
+
+// -------------------------------------------------------------------------------------------------
 
 function onScriptLoad ( ) {
 	
@@ -42,3 +49,4 @@ function onScriptLoad ( ) {
 
 }
 
+// -------------------------------------------------------------------------------------------------

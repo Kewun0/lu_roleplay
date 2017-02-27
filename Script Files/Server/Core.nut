@@ -475,6 +475,8 @@ function InitGameEntities ( ) {
 	::CreateVehicles ( );
 	
 	::AddAllCommandHandlers ( );
+	
+	// ::Echo_Initialize ( );
 
 	return true;
 	

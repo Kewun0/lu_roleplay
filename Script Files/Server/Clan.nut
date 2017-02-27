@@ -1,17 +1,6 @@
 // NAME: Clans.nut
 // DESC: Handles commands, data, and other utilities for clans, clan turf wars, clan services, etc.
 
-// -- COMMANDS -------------------------------------------------------------------------------------
-
-// - NewClan,RequestClan					NewClanCommand								  ManageClans
-// - ReloadClans							ReloadClansCommand							  ManageClans
-// - TakeTurf							   TakeTurfCommand								 None
-// - GiveTurf							   GiveTurfCommand								 None
-// - ClanOwner							  SetClanOwnerCommand							 ManageClans
-// - SetClanTagCommand					  SetClanTagCommand							   ManageClans
-
-// -------------------------------------------------------------------------------------------------
-
 function AddClanCommandHandlers ( ) {
 
 	AddCommandHandler ( "NewClan" , NewClanCommand , GetStaffFlagValue ( "ManageClans" ) );
@@ -19,6 +8,14 @@ function AddClanCommandHandlers ( ) {
 	AddCommandHandler ( "TakeTurf" , TakeTurfCommand , GetStaffFlagValue ( "None" ) );
 	AddCommandHandler ( "GiveTurf" , GiveTurfCommand , GetStaffFlagValue ( "None" ) );
 	AddCommandHandler ( "ClanOwner" , SetClanOwnerCommand , GetStaffFlagValue ( "ManageClans" ) );
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function SaveAllClansToDatabase ( ) {
+
+	return true;
 
 }
 
@@ -50,7 +47,7 @@ function LoadClansFromDatabase ( ) {
 
 function GetNumberOfClans ( ) {
 
-	return ReadIniInteger ( GetCoreTable ( ).Utilities.szScriptsPath + "Data/Index.ini" , "General" , "iClanAmount" );
+	return ReadIniInteger ( szScriptsPath + "Data/Index.ini" , "General" , "iClanAmount" );
 
 }
 
@@ -135,7 +132,7 @@ function TakeTurfCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
 
 	if ( bShowHelpOnly ) {
 		
-		SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Starts a turf war." , [ "taketurf" ] , "Must be in another clan's turf." );
+		SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Starts a turf war." , [ "TakeTurf" ] , "Must be in another clan's turf." );
 		
 		return false;
 	
@@ -151,7 +148,7 @@ function GiveTurfCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
 
 	if ( bShowHelpOnly ) {
 		
-		SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Gives a turf to another clan" , [ "giveturf" ] , "No turf war. Other clan has immediate ownership." );
+		SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Gives a turf to another clan" , [ "GiveTurf" ] , "No turf war. Other clan has immediate ownership." );
 		
 		return false;
 	
@@ -162,6 +159,7 @@ function GiveTurfCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
 		return false;
 	
 	}
+	
 	return true;
 
 }
@@ -172,7 +170,7 @@ function SetClanOwnerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) 
 
 	if ( bShowHelpOnly ) {
 		
-		SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Sets a clan owner" , [ "setclanowner" ] , "" );
+		SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Sets a clan owner" , [ "ClanOwner" ] , "" );
 		
 		return false;
 	
@@ -260,7 +258,7 @@ function SetClanTagCommand ( pPlayer , szCommand , szParams , bShowHelpOnly ) {
 
 	if ( bShowHelpOnly ) {
 		
-		SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Sets a clan tag (the letters in brackets)" , [ "clantag" ] , "" );
+		SendPlayerCommandInfoMessage ( pPlayer , szCommand , "Sets a clan tag (the letters in brackets)" , [ "ClanTag" ] , "" );
 		
 		return false;
 	
