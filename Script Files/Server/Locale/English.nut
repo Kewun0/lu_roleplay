@@ -47,7 +47,8 @@ return {
 		"- Use /lock to unlock your car." , 
 		"- The /lights command can turn on and off your headlights." , 
 		"- To turn an engine on or off, use /engine" , 
-	
+		"- Your vehicle will respawn wherever you leave it!" 
+		
 	] , 
 	
 	AccountHelp = [ 
@@ -205,6 +206,40 @@ return {
 	IPLoginOFF = "You will not be logged in by your IP." , 
 	LUIDLoginON = "You will now be logged in by your LUID." , 
 	LUIDLoginOFF = "You will not be logged in by your LUID." , 
+	
+	// Added on Feb 27 2017
+	ScriptIdeaSent = "Thank you! Your idea has been sent to the scripters!" ,
+	ScriptBugSent = "Thank you! Your bug has been sent to the scripters!" ,
+	PositionLogged = "Your position has been logged!" ,
+	CantUseMeAction = "You are muted, and cannot use /me actions!" ,
+	CommandDisabled = "The %s command is disabled. Reason: %s" , 
+	CantUseCommands = "You can't use commands right now!" , 
+	NeedAuthForCommand = "You need to be logged in to use commands!" , 
+	NeedAuthForSpawn = "You need to be logged in to spawn!" , 
+	
+	VehicleForSale = "This vehicle is for sale. Cost $%d" ,
+	BuyVehToUse = "Use /buyvehicle to buy it now. Otherwise, please exit the vehicle." , 
+	VehicleForRent = "This vehicle is for rent. Cost $%d" ,
+	RentVehToUse = "Use /rentvehicle to drive it now. Otherwise, please exit the vehicle." , 
+	YouAreVehRenter = "You are renting this %s" , 
+	YouAreVehOwner = "You are the owner of this %s" , 
+	
+	CommandUsageDescBug = "Reports a bug to the scripters"
+	CommandUsageDescIdea = "Sends an idea to the scripters"
+	CommandUsageDescPosition = "Saves a position for reference"
+	CommandUsageDescInVeh = "Shows information about the vehicle a player is in."
+	CommandUsageDescGetHere = "Teleports a player to you",
+	CommandUsageDescGetVeh = "Teleports a vehicle to you",
+	
+	NewPlayerReadyToPlay = [ 
+	
+		"Your flight has just landed in Liberty City.",
+		"You have some cash to get started.",
+		"Be sure to read the /rules and use /help for info.",
+		"To get started, get in a rental Blista or take the train.",
+		"The Shoreside Terminal train station is down the road to the south."	
+	
+	] , 
 	
 	LastItem = false 
 	

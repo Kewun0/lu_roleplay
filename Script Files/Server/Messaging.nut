@@ -55,6 +55,24 @@ function SendMessageToAdmins ( szMessage ) {
 
 // -------------------------------------------------------------------------------------------------
 
+function SendMessageToScripters ( szMessage ) {
+
+	foreach ( ii , iv in GetCoreTable ( ).Players ) {
+	
+		if ( HasBitFlag ( iv.iStaffFlags , GetStaffFlagValue ( "Scripter" ) ) ) {
+		
+			MessagePlayer ( szMessage , iv.pPlayer , GetRGBColour ( "White" ) );
+		
+		}
+	
+	}
+	
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
 function SendPlayerSyntaxMessage ( pPlayer , szMessage ) {
 
 	MessagePlayer ( GetColourByType ( "GeneralSyntaxHeader" ) + GetPlayerLocaleMessage ( pPlayer , "SyntaxMessageHeader" ) + ": " + GetColourByType ( "GeneralSyntaxMessage" ) + szMessage , pPlayer , GetRGBColour ( "White" ) );

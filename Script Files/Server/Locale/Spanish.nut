@@ -1,13 +1,13 @@
 return {
 
-	WelcomeToServer = "Welcome to Life in Liberty City RP.",
+	WelcomeToServer = "Welcome to Life in Liberty City RP." ,
 	ServerUnderDevelopment = "This server is under development, and may restart often" , 
 	PleaseWaitAccountLoading = "Please wait while your account is loaded ..." , 
 	
-	AlreadyRegistered = "You are already registered! Use /login to access this account."
-	AccountCreated = "Your account has been created! Please wait a moment ..."
-	AlreadyLoggedIn = "You are already logged in!"
-	AccountReadyToUse = "Your account is now ready to use. Please press left CTRL to spawn."
+	AlreadyRegistered = "You are already registered! Use /login to access this account." ,
+	AccountCreated = "Your account has been created! Please wait a moment ..." ,
+	AlreadyLoggedIn = "You are already logged in!" ,
+	AccountReadyToUse = "Your account is now ready to use. Please press left CTRL to spawn." ,
 	
 	ErrorMessageHeader = "ERROR" ,
 	SyntaxMessageHeader = "USAGE" ,
@@ -35,6 +35,7 @@ return {
 	
 		"== Job Help =================================" , 
 		"- Jobs are a good way to make money." , 
+		"- Jobs are yellow blips on the map, and have the info spinning icons" , 
 		"- Visit any job site, and use /takejob to get a job."
 	
 	] , 
@@ -46,7 +47,6 @@ return {
 		"- Use /lock to unlock your car." , 
 		"- The /lights command can turn on and off your headlights." , 
 		"- To turn an engine on or off, use /engine" , 
-		"- To sell your car to another player, use /sellcar"
 	
 	] , 
 	
@@ -124,8 +124,6 @@ return {
 	
 	] , 
 	
-	
-	
 	VehicleIsLocked = "This vehicle is locked!" , 
 	
 	VehicleLocked = "The %s's doors have been locked" , 
@@ -153,7 +151,7 @@ return {
 	BusinessNotFound = "That business does not exist!" , 
 	
 	LoginFailed = "You entered an invalid password. You have %d login attempts remaining." , 
-	LoginFailed = "You entered an invalid password too many times!" , 
+	LoginFailedKick = "You entered an invalid password too many times!" , 
 	LoginAttemptsRemaining = "You have %d login attempts remaining." , 
 	
 	AllVehiclesExploded = "All vehicles exploded by %s",
@@ -205,6 +203,34 @@ return {
 	IPLoginOFF = "You will not be logged in by your IP." , 
 	LUIDLoginON = "You will now be logged in by your LUID." , 
 	LUIDLoginOFF = "You will not be logged in by your LUID." , 
+	
+	// Added on Feb 27 2017
+	ScriptIdeaSent = "Thank you! Your idea has been sent to the scripters!" ,
+	ScriptBugSent = "Thank you! Your bug has been sent to the scripters!" ,
+	PositionLogged = "Your position has been logged!" ,
+	CantUseMeAction = "You are muted, and cannot use /me actions!" ,
+	CommandDisabled = "The %s command is disabled. Reason: %s" , 
+	CantUseCommands = "You can't use commands right now!" , 
+	NeedAuthForCommand = "You need to be logged in to use commands!" , 
+	NeedAuthForSpawn = "You need to be logged in to spawn!" , 
+	
+	VehicleForSale = "This vehicle is for sale. Cost $%d" ,
+	BuyVehToUse = "Use /buyvehicle to buy it now. Otherwise, please exit the vehicle." , 
+	VehicleForRent = "This vehicle is for rent. Cost $%d" ,
+	RentVehToUse = "Use /rentvehicle to drive it now. Otherwise, please exit the vehicle." , 
+	YouAreVehRenter = "You are renting this %s" , 
+	YouAreVehOwner = "You are the owner of this %s" , 
+	
+	
+	NewPlayerReadyToPlay = [ 
+	
+		"Your flight has just landed in Liberty City.",
+		"You have some cash to get started.",
+		"Be sure to read the /rules and use /help for info.",
+		"To get started, get in a rental Blista or take the train.",
+		"The Shoreside Terminal train station is down the road to the south."	
+	
+	] , 
 	
 	LastItem = false 
 	

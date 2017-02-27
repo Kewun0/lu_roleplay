@@ -6,7 +6,7 @@ function onPlayerJoin ( pPlayer ) {
 
 }
 
-function onPlayerPart ( pPlayer ) {
+function onPlayerPart ( pPlayer , iReason ) {
 
 	return 0;
 

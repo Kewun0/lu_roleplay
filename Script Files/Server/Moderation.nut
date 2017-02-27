@@ -28,16 +28,18 @@ function AddModerationCommandHandlers ( ) {
 	AddCommandHandler ( "ForumReport" , ForumStaffReportCommand , GetStaffFlagValue ( "BasicModeration" ) );
 	
 	AddCommandHandler ( "GiveStaffFlag" , GivePlayerStaffFlagCommand , GetStaffFlagValue ( "ManageAdmins" ) );
-	AddCommandHandler ( "TakeStaffFlag" , GivePlayerStaffFlagCommand , GetStaffFlagValue ( "ManageAdmins" ) );
+	AddCommandHandler ( "TakeStaffFlag" , TakePlayerStaffFlagCommand , GetStaffFlagValue ( "ManageAdmins" ) );
 	AddCommandHandler ( "StaffFlags" , ListAllStaffFlagsCommand , GetStaffFlagValue ( "ManageAdmins" ) );
 	
 	AddCommandHandler ( "SetSkin" , SetPlayerSkinCommand , GetStaffFlagValue ( "ManagePlayerStats" ) );
 	AddCommandHandler ( "GiveMoney" , GivePlayerMoneyCommand , GetStaffFlagValue ( "ManagePlayerStats" ) );
+	AddCommandHandler ( "TakeMoney" , TakePlayerMoneyCommand , GetStaffFlagValue ( "ManagePlayerStats" ) );
 	AddCommandHandler ( "GiveGun" , GivePlayerWeaponCommand , GetStaffFlagValue ( "ManagePlayerStats" ) );
 	
 	AddCommandHandler ( "SaveAll" , SaveServerDataCommand , GetStaffFlagValue ( "ManageServer" ) );
 	
-	AddCommandHandler ( "InVeh" , SaveServerDataCommand , GetStaffFlagValue ( "BasicModeration" ) );
+	AddCommandHandler ( "InVeh" , GetPlayerVehicleInfoCommand , GetStaffFlagValue ( "BasicModeration" ) );
+	AddCommandHandler ( "RespawnVeh" , RespawnVehicleCommand , GetStaffFlagValue ( "BasicModeration" ) );
 	
 	return true;
 
@@ -65,7 +67,7 @@ function BanPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fal
 	
 	if ( !FindPlayer ( szParams ) ) {
 	
-		SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "PlayerNotFound" ) );
 		
 		return false;
 	
@@ -129,7 +131,7 @@ function TempBanPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly =
 	
 	if ( !FindPlayer ( szParams ) ) {
 	
-		SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "PlayerNotFound" ) );
 		
 		return false;
 	
@@ -167,7 +169,7 @@ function KickPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fa
 	
 	if ( !FindPlayer ( szParams ) ) {
 	
-		SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "PlayerNotFound" ) );
 		
 		return false;
 	
@@ -205,7 +207,7 @@ function MutePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fa
 	
 	if ( !FindPlayer ( szParams ) ) {
 	
-		SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "PlayerNotFound" ) );
 		
 		return false;
 	
@@ -227,7 +229,7 @@ function UnmutePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = 
 
 	if ( bShowHelpOnly ) {
 		
-		SendPlayerCommandInfoMessage ( pPlayer , "Unmutes a player so they can use chat again." , [ "Unmute" , "UnmutePlayer" ] , "" );
+		SendPlayerCommandInfoMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "CommandUsageDescUnmute" ) , [ "Unmute" , "UnmutePlayer" ] , "" );
 		
 		return false;
 	
@@ -243,7 +245,7 @@ function UnmutePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = 
 	
 	if ( !FindPlayer ( szParams ) ) {
 	
-		SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "PlayerNotFound" ) );
 		
 		return false;
 	
@@ -265,7 +267,7 @@ function FreezePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = 
 
 	if ( bShowHelpOnly ) {
 		
-		SendPlayerCommandInfoMessage ( pPlayer , "Freezes a player so they can't move." , [ "Freeze" , "FreezePlayer" ] , "They can still look around with their mouse." );
+		SendPlayerCommandInfoMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "CommandUsageDesc" ) , [ "Freeze" , "FreezePlayer" ] , "They can still look around with their mouse." );
 		
 		return false;
 	
@@ -281,7 +283,7 @@ function FreezePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = 
 	
 	if ( !FindPlayer ( szParams ) ) {
 	
-		SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "PlayerNotFound" ) );
 		
 		return false;
 	
@@ -305,7 +307,7 @@ function UnfreezePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly 
 
 	if ( bShowHelpOnly ) {
 		
-		SendPlayerCommandInfoMessage ( pPlayer , "Unfreezes a player so they can move again." , [ "Unfreeze" ] , "" );
+		SendPlayerCommandInfoMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "CommandUsageDescUnfreeze" ) , [ "Unfreeze" ] , "" );
 		
 		return false;
 	
@@ -321,7 +323,7 @@ function UnfreezePlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly 
 	
 	if ( !FindPlayer ( szParams ) ) {
 	
-		SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "PlayerNotFound" ) );
 		
 		return false;
 	
@@ -345,7 +347,7 @@ function GotoPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fa
 
 	if ( bShowHelpOnly ) {
 		
-		SendPlayerCommandInfoMessage ( pPlayer , "Teleports you to a player" , [ "Goto" , "GotoPlayer" ] , "You can provide offset X, Y, and Z." );
+		SendPlayerCommandInfoMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "CommandUsageDescGoto" ) , [ "Goto" , "GotoPlayer" ] , "You can provide offset X, Y, and Z." );
 		
 		return false;
 	
@@ -361,7 +363,7 @@ function GotoPlayerCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fa
 	
 	if ( !FindPlayer ( szParams ) ) {
 	
-		SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "PlayerNotFound" ) );
 		
 		return false;
 	
@@ -391,7 +393,7 @@ function GetPlayerToMeCommand ( pPlayer , szCommand , szParams , bShowHelpOnly =
 
 	if ( bShowHelpOnly ) {
 		
-		SendPlayerCommandInfoMessage ( pPlayer , "Teleports a player to you" , [ "GetHere" , "BringPlayer" ] , "You can provide offset X, Y, and Z." );
+		SendPlayerCommandInfoMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "CommandUsageDescGetHere" ) , [ "GetHere" , "BringPlayer" ] , "You can provide offset X, Y, and Z." );
 		
 		return false;
 	
@@ -407,7 +409,7 @@ function GetPlayerToMeCommand ( pPlayer , szCommand , szParams , bShowHelpOnly =
 	
 	if ( !FindPlayer ( szParams ) ) {
 	
-		SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "PlayerNotFound" ) );
 		
 		return false;
 	
@@ -421,7 +423,7 @@ function GetPlayerToMeCommand ( pPlayer , szCommand , szParams , bShowHelpOnly =
 	
 	} else {
 	
-		pTarget.Pos = GetVectorInFrontVector ( pPlayer.Pos , pPlayer.Angle , 3.0 );
+		pTarget.Pos = GetVectorInFrontOfVector ( pPlayer.Pos , pPlayer.Angle , 3.0 );
 	
 	}
 	
@@ -438,7 +440,7 @@ function GetPlayerVehicleInfoCommand ( pPlayer , szCommand , szParams , bShowHel
 
 	if ( bShowHelpOnly ) {
 		
-		SendPlayerCommandInfoMessage ( pPlayer , "Gets info for the vehicle a player is driving" , [ "InVeh" ] , "" );
+		SendPlayerCommandInfoMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "CommandUsageDescInVeh" ) , [ "InVeh" ] , "" );
 		
 		return false;
 	
@@ -454,7 +456,7 @@ function GetPlayerVehicleInfoCommand ( pPlayer , szCommand , szParams , bShowHel
 	
 	if ( !FindPlayer ( szParams ) ) {
 	
-		SendPlayerErrorMessage ( pPlayer , "That player is invalid." );
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "PlayerNotFound" ) );
 		
 		return false;
 	
@@ -462,7 +464,7 @@ function GetPlayerVehicleInfoCommand ( pPlayer , szCommand , szParams , bShowHel
 	
 	local pTarget = FindPlayer ( szParams );
 	
-	if ( pTarget.Vehicle ) {
+	if ( !pTarget.Vehicle ) {
 	
 		SendPlayerErrorMessage ( pPlayer , "That player is not in a vehicle!" );
 		
@@ -470,14 +472,22 @@ function GetPlayerVehicleInfoCommand ( pPlayer , szCommand , szParams , bShowHel
 	
 	}
 	
+	local szOwnerInfo = "None";
+	
+	if ( GetVehicleData ( pTarget.Vehicle ).iOwnerType != 0 ) {
+	
+		szOwnerInfo = GetVehicleOwnerName ( pTarget.Vehicle ) + "(" + GetVehicleOwnerTypeName ( pTarget.Vehicle ) + ")";
+	
+	}
+	
 	MessagePlayer ( "== VEHICLE INFO ======================" );
-	MessagePlayer ( "- Owner: " + GetVehicleOwnerTypeName ( pTarget.Vehicle ) + " " + GetVehicleOwnerName ( pTarget.Vehicle ) + ", Seat: " + pTarget.VehicleSeat , pPlayer , GetRGBColour ( "White" ) );
-	MessagePlayer ( "- Locked: " + GetYesNoBoolText ( GetVehicleData ( pTarget.Vehicle ).bLocked ) + ", Engine: " + GetOnOffBoolText ( GetVehicleData ( pTarget.Vehicle ).bEngineState ) , pPlayer , GetRGBColour ( "White" ) );
-	MessagePlayer ( "- Database ID: " + GetVehicleData ( pTarget.Vehicle ).iDatabaseID + ", Type: " + GetVehicleName ( pTarget.Vehicle.Model ) , pPlayer , GetRGBColour ( "White" ) );
+	MessagePlayer ( GetHexColour ( "White" ) + "-Owner: " + GetHexColour ( "LightGrey" ) + szOwnerInfo + GetHexColour ( "White" ) + "  -Seat: " + pTarget.VehicleSeat + GetHexColour ( "White" ) + "  -Vehicle ID + " + GetHexColour ( "LightGrey" ) + pTarget.Vehicle.ID , pPlayer , GetRGBColour ( "White" ) );
+	MessagePlayer ( GetHexColour ( "White" ) + "-Locked: " + GetHexColour ( "LightGrey" ) + GetYesNoBoolText ( GetVehicleData ( pTarget.Vehicle ).bLocked ) + GetHexColour ( "White" ) + "  -Engine: " + GetHexColour ( "LightGrey" ) + GetOnOffBoolText ( GetVehicleData ( pTarget.Vehicle ).bEngine ) , pPlayer , GetRGBColour ( "White" ) );
+	MessagePlayer ( GetHexColour ( "White" ) + "-Database ID: " + GetHexColour ( "LightGrey" ) + GetVehicleData ( pTarget.Vehicle ).iDatabaseID + GetHexColour ( "White" ) + "  -Type: " + GetHexColour ( "LightGrey" ) + GetVehicleName ( pTarget.Vehicle.Model ) , pPlayer , GetRGBColour ( "White" ) );
 	
 	return true;
 
-}
+}	
 
 // -------------------------------------------------------------------------------------------------
 
@@ -485,7 +495,7 @@ function GotoVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = f
 
 	if ( bShowHelpOnly ) {
 		
-		SendPlayerCommandInfoMessage ( pPlayer , "Teleports you to a vehicle." , [ "GotoVeh" ] , "You can provide offset X, Y, and Z." );
+		SendPlayerCommandInfoMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "CommandUsageDescGotoVeh" ) , [ "GotoVeh" ] , "You can provide offset X, Y, and Z." );
 		
 		return false;
 	
@@ -520,7 +530,7 @@ function GotoVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = f
 	if ( !FindVehicle ( szParams ) ) {
 	
 		
-		SendPlayerErrorMessage ( pPlayer , "That vehicle does not exist!" );
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "VehicleNotFound" ) );
 		
 		return false;
 	
@@ -576,7 +586,7 @@ function GetVehicleDatabaseIDCommand ( pPlayer , szCommand , szParams , bShowHel
 	
 	if ( !FindVehicle ( szParams ) ) {
 		
-		SendPlayerErrorMessage ( pPlayer , "That vehicle does not exist!" );
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "VehicleNotFound" ) );
 		
 		return false;
 	
@@ -628,7 +638,7 @@ function RespawnVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly 
 	
 	if ( !FindVehicle ( szParams ) ) {
 		
-		SendPlayerErrorMessage ( pPlayer , "That vehicle does not exist!" );
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "VehicleNotFound" ) );
 		
 		return false;
 	
@@ -689,7 +699,7 @@ function GetVehicleCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = fa
 	if ( !FindVehicle ( szParams ) ) {
 	
 		
-		SendPlayerErrorMessage ( pPlayer , "That vehicle does not exist!" );
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "VehicleNotFound" ) );
 		
 		return false;
 	
@@ -744,7 +754,7 @@ function GivePlayerStaffFlagCommand ( pPlayer , szCommand , szParams , bShowHelp
 
 	if ( !pTarget ) {
 
-		SendPlayerErrorMessage ( pPlayer , "There is no player that matches '" + szFlagName + "'!" );
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "PlayerNotFound" ) );
 
 		return false;
 
@@ -843,7 +853,7 @@ function TakePlayerStaffFlagCommand ( pPlayer , szCommand , szParams , bShowHelp
 
 	if ( !pTarget ) {
 
-		SendPlayerErrorMessage ( pPlayer , "There is no player that matches '" + szFlagName + "'!" );
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "PlayerNotFound" ) );
 
 		return false;
 
@@ -1396,7 +1406,7 @@ function SetPlayerSkinCommand ( pPlayer , szCommand , szParams , bShowHelpOnly =
 	
 	if ( !FindPlayer ( szTargetParam ) ) {
 	
-		SendPlayerErrorMessage ( pPlayer , "That player is not connected!" );
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "PlayerNotFound" ) );
 		
 		return false;
 	
@@ -1426,6 +1436,77 @@ function SetPlayerSkinCommand ( pPlayer , szCommand , szParams , bShowHelpOnly =
 	SendPlayerAlertMessage ( pTarget , pTarget.Name + " has set your skin to ID " + szSkinParam );
 	
 	SetPlayerSkin ( pTarget , szSkinParam );
+	
+	return true;
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function TakePlayerMoneyCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
+
+	if( bShowHelpOnly ) {
+
+		SendPlayerCommandInfoMessage ( pPlayer , "Takes money from a player" , [ "TakeMoney" ] , "" );
+
+		return false;
+
+	}
+
+	local szTargetParam = false;
+	local szMoneyParam = false;
+	
+	if( !szParams ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/TakeMoney <Player Name/ID> <Amount>" );
+		
+		return false;
+	
+	}
+	
+	if( NumTok ( szParams , " " ) != 2 ) {
+	
+		SendPlayerSyntaxMessage ( pPlayer , "/TakeMoney <Player Name/ID> <Amount>" );
+		
+		return false;
+	
+	}	
+	
+	szTargetParam = GetTok ( szParams , " " , 1 );
+	szMoneyParam = GetTok ( szParams , " " , 2 );
+	
+	if ( !FindPlayer ( szTargetParam ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "PlayerNotFound" ) );
+		
+		return false;
+	
+	}
+	
+	if ( !IsNum ( szMoneyParam ) ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The amount of money must be a number!" );
+		
+		return false;	
+	
+	}
+	
+	szMoneyParam = szMoneyParam.tointeger ( );
+	
+	if ( szMoneyParam > 0 ) {
+	
+		SendPlayerErrorMessage ( pPlayer , "The amount must be more than 0!" );
+		
+		return false;	
+	
+	}
+	
+	local pTarget = FindPlayer ( szTargetParam );
+	
+	SendPlayerSuccessMessage ( pPlayer , "You took $" + szMoneyParam + " from " + pTarget.Name );
+	SendPlayerAlertMessage ( pTarget , pTarget.Name + " has taken $" + szMoneyParam + " from you" );
+	
+	TakePlayerCash ( pTarget , szMoneyParam );
 	
 	return true;
 
@@ -1467,7 +1548,7 @@ function GivePlayerMoneyCommand ( pPlayer , szCommand , szParams , bShowHelpOnly
 	
 	if ( !FindPlayer ( szTargetParam ) ) {
 	
-		SendPlayerErrorMessage ( pPlayer , "That player is not connected!" );
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "PlayerNotFound" ) );
 		
 		return false;
 	
@@ -1496,7 +1577,7 @@ function GivePlayerMoneyCommand ( pPlayer , szCommand , szParams , bShowHelpOnly
 	SendPlayerSuccessMessage ( pPlayer , "You gave " + pTarget.Name + " $" + szMoneyParam );
 	SendPlayerAlertMessage ( pTarget , pTarget.Name + " has given you $" + szMoneyParam );
 	
-	GivePlayerMoney ( pTarget , szMoneyParam );
+	GivePlayerCash ( pTarget , szMoneyParam );
 	
 	return true;
 
@@ -1540,7 +1621,7 @@ function GivePlayerWeaponCommand ( pPlayer , szCommand , szParams , bShowHelpOnl
 	
 	if ( !FindPlayer ( szTargetParam ) ) {
 	
-		SendPlayerErrorMessage ( pPlayer , "That player is not connected!" );
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "PlayerNotFound" ) );
 		
 		return false;
 	
@@ -1605,11 +1686,11 @@ function CanPlayerSubmitStaffReport ( pPlayer ) {
 
 function SaveServerDataCommand ( pPlayer , szCommand , szParams , bShowHelpOnly = false ) {
 
-	SendAdminMessageToAll ( pPlayer , "All server data is being saved. You might experience some lag!" );
+	SendAdminMessageToAll ( "All server data is being saved. You might experience some lag!" );
 
 	SaveServerDataToDatabase ( );
 	
-	SendAdminMessageToAll ( pPlayer , "All server data has been saved! The lag should be gone now!" );
+	SendAdminMessageToAll ( "All server data has been saved! The lag should be gone now!" );
 	
 	SendPlayerSuccessMessage ( pPlayer , "All server data has been saved!" );
 	

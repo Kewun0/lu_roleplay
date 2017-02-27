@@ -1,31 +1,5 @@
-<!-- <script file="Script Files/Server/Bit Flags.nut" client="0" />
-<script file="Script Files/Server/Bugs.nut" client="0" />
-<script file="Script Files/Server/Business.nut" client="0" />
-
-<script file="Script Files/Server/Chat.nut" client="0" />
-<script file="Script Files/Server/Clan.nut" client="0" />
-<script file="Script Files/Server/Classes.nut" client="0" />
-<script file="Script Files/Server/Command.nut" client="0" />
-<script file="Script Files/Server/Configuration.nut" client="0" />
-<script file="Script Files/Server/Database.nut" client="0" />
-<script file="Script Files/Server/Fire.nut" client="0" />
-<script file="Script Files/Server/House.nut" client="0" />
-<script file="Script Files/Server/Jobs.nut" client="0" />
-<script file="Script Files/Server/Locale.nut" client="0" />
-<script file="Script Files/Server/Messaging.nut" client="0" />
-<script file="Script Files/Server/Moderation.nut" client="0" />
-<script file="Script Files/Server/Player.nut" client="0" />
-<script file="Script Files/Server/Police.nut" client="0" />
-<script file="Script Files/Server/Vehicle.nut" client="0" />
-
-<script file="Script Files/Server/Core.nut" client="0" />
-<script file="Script Files/Server/Scripter.nut" client="0" />
-<script file="Script Files/Server/Security.nut" client="0" />
-<script file="Script Files/Server/Server Events.nut" client="0" />
-<script file="Script Files/Server/Startup.nut" client="0" />
-<script file="Script Files/Server/Utilities.nut" client="0" /> -->
-
 <script file="Server.nut" client="0" />
 
 <script file="Script Files/Client/Vehicle GUI.nut" client="1" />
 <script file="Script Files/Client/3D Labels.nut" client="1" />
+<script file="Script Files/Client/Core.nut" client="1" />

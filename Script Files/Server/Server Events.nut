@@ -16,6 +16,8 @@ function onServerStart ( ) {
 
 function onScriptUnload ( ) {
 
+	SaveServerDataToDatabase ( );
+
 	Message ( "SCRIPT RE-LOADING ... PLEASE /RECONNECT !!!" , Colour ( 255 , 0 , 0 ) );
 	
 	foreach ( ii , iv in ConnectedPlayers ) {
@@ -31,10 +33,14 @@ function onScriptUnload ( ) {
 // -------------------------------------------------------------------------------------------------
 
 function onPlayerConnect ( pPlayer ) {
+
+	pPlayer.ColouredName = GetHexColour ( "White" ) + pPlayer.Name;
+	pPlayer.Colour = 1;
 	
-	ConnectedPlayers [ pPlayer.ID ] <- pPlayer;
+	ConnectedPlayers.rawset ( pPlayer.ID , pPlayer );
 	
-	GetCoreTable ( ).Players [ pPlayer.ID ] <- GetCoreTable ( ).Classes.PlayerData ( pPlayer );
+	GetCoreTable ( ).Players [ pPlayer.ID ] <- GetCoreTable ( ).Classes.PlayerData ( );
+	GetCoreTable ( ).Players [ pPlayer.ID ].pPlayer = pPlayer;
 	
 	Message ( GetHexColour ( "White" ) + pPlayer.Name + GetHexColour ( "LightGrey" ) + " has connected!" , GetRGBColour ( "White" ) );
 	
@@ -45,6 +51,9 @@ function onPlayerConnect ( pPlayer ) {
 // -------------------------------------------------------------------------------------------------
 
 function onPlayerJoin ( pPlayer ) {
+	
+	pPlayer.ColouredName = GetHexColour ( "White" ) + pPlayer.Name;
+	pPlayer.Colour = 1;
 	
 	MessagePlayer ( "Please wait a moment ..." , pPlayer , GetRGBColour ( "White" ) );
 	
@@ -70,7 +79,7 @@ function onPlayerPart ( pPlayer , iReason ) {
 	
 	GetCoreTable ( ).Players [ pPlayer.ID ] <- null;
 
-	ConnectedPlayers [ pPlayer.ID ] <- null;
+	ConnectedPlayers.rawdelete ( pPlayer.ID );
 	
 	return true;
 	
@@ -116,7 +125,7 @@ function onPlayerEnteredVehicle ( pPlayer , pVehicle , iSeatID ) {
 		
 		if ( pVehicleData.iOwnerType == GetCoreTable ( ).Utilities.pVehicleOwnerType.Player && pVehicleData.iOwnerID == pPlayerData.iDatabaseID ) {
 		
-			SendPlayerAlertMessage ( pPlayer , "You are the owner of this " + GetVehicleName ( pVehicle.Model ) );
+			SendPlayerAlertMessage ( pPlayer , format ( GetPlayerLocaleMessage ( pPlayer , "YouAreVehOwner" ) , GetVehicleName ( pVehicle.Model ) ) );
 		
 		}
 		
@@ -128,7 +137,7 @@ function onPlayerEnteredVehicle ( pPlayer , pVehicle , iSeatID ) {
 			
 				if ( pVehicleData.pRenter.ID == pPlayer.ID ) {
 				
-					SendPlayerAlertMessage ( pPlayer , "You are renting this " + GetVehicleName ( pVehicle.Model ) );
+					SendPlayerAlertMessage ( pPlayer , format ( GetPlayerLocaleMessage ( pPlayer , "YouAreVehRenter" ) , GetVehicleName ( pVehicle.Model ) ) );
 				
 				}
 			
@@ -136,8 +145,8 @@ function onPlayerEnteredVehicle ( pPlayer , pVehicle , iSeatID ) {
 			
 				pVehicleData.bEngine = false;
 				
-				MessagePlayer ( "If you want to drive this vehicle, you'll need to rent it for $" + pVehicleData.iRentPrice , pPlayer , GetRGBColour ( "White" ) );
-				MessagePlayer ( "Use /rentvehicle to drive it now. Otherwise, please exit the vehicle." , pPlayer , GetRGBColour ( "White" ) );
+				MessagePlayer ( format ( GetPlayerLocaleMessage ( pPlayer , "VehicleForRent" ) , pVehicleData.iRentPrice ) , pPlayer , GetRGBColour ( "White" ) );
+				MessagePlayer ( GetPlayerLocaleMessage ( pPlayer , "RentVehToUse" ) , pPlayer , GetRGBColour ( "White" ) );
 		
 			}
 		
@@ -155,8 +164,8 @@ function onPlayerEnteredVehicle ( pPlayer , pVehicle , iSeatID ) {
 			pPlayerData.pBuyVehPosition = pVehicle.Pos;
 			pPlayerData.pBuyVehAngle = pVehicle.Angle;
 		
-			MessagePlayer ( "This vehicle is for sale. Cost $" + pVehicleData.iBuyPrice , pPlayer , GetRGBColour ( "White" ) );
-			MessagePlayer ( "Use /buyvehicle to buy it now. Otherwise, please exit the vehicle." , pPlayer , GetRGBColour ( "White" ) );			
+			MessagePlayer ( format ( GetPlayerLocaleMessage ( pPlayer , "VehicleForSale" ) , pVehicleData.iBuyPrice ) , pPlayer , GetRGBColour ( "White" ) );
+			MessagePlayer ( GetPlayerLocaleMessage ( pPlayer , "BuyVehToUse" ) , pPlayer , GetRGBColour ( "White" ) );			
 
 		}
 		
@@ -189,7 +198,11 @@ function onPlayerUpdate ( pPlayer ) {
 				GetPlayerData ( pPlayer ).pBuyVehState = 0; // Player left parking space, create new dealership car and reset
 				local pVehicle = CreateNewVehicle ( GetPlayerData ( pPlayer ).pBuyVehVehicle.Model , GetPlayerData ( pPlayer ).pBuyVehPosition , GetPlayerData ( pPlayer ).pBuyVehAngle );
 				GetVehicleData ( pVehicle ).iBuyPrice = GetPlayerData ( pPlayer ).pBuyVehPrice;
-			
+				GetVehicleData ( pVehicle ).pColour1 = { r = 255 , g = 255 , b = 255 };
+				GetVehicleData ( pVehicle ).pColour2 = { r = 255 , g = 255 , b = 255 };
+				pVehicle.RGBColour1 = GetRGBColour ( "White" );
+				pVehicle.RGBColour2 = GetRGBColour ( "White" );
+				
 			}
 		
 		}
@@ -200,15 +213,29 @@ function onPlayerUpdate ( pPlayer ) {
 
 // -------------------------------------------------------------------------------------------------
 
-function onPlayerExitedVehicle ( pPlayer , pVehicle , iSeatID ) {
+function onPlayerExitedVehicle ( pPlayer , pVehicle ) {
 	
 	if ( GetPlayerData ( pPlayer ).pBuyVehState == 2 ) { // Player bought car, but they got out before leaving the lot
 		
-		GetPlayerData ( pPlayer ).pBuyVehVehicle.Pos = Vector ( 1215.1 , -102.78 , 14.15 );
-		GetPlayerData ( pPlayer ).pBuyVehVehicle.Angle = 90.0;
-
-		CreateNewVehicle ( pVehicleData , GetPlayerData ( pPlayer ).pBuyVehPosition , GetPlayerData ( pPlayer ).pBuyVehAngle );
-		GetPlayerData ( pPlayer ).pBuyVehState = 0; // Create new dealership car and reset	
+		GetVehicleData ( pVehicle ).iBuyPrice = pVehicleData.iBuyPrice;
+		GetVehicleData ( pVehicle ).iOwnerType = 0;
+		GetVehicleData ( pVehicle ).iOwnerType = 0;
+		GetVehicleData ( pVehicle ).bEngine = false;
+		
+	}
+	
+	if ( !GetVehicleData ( pVehicle ).bSpawnLock ) {
+		
+		GetVehicleData ( pVehicle ).pPosition = pVehicle.Pos;
+		GetVehicleData ( pVehicle ).fAngle = pVehicle.Angle;	
+		pVehicle.SpawnPos = pVehicle.Pos;
+		pVehicle.SpawnAngle = pVehicle.Angle;
+		
+	}
+	
+	if ( !pVehicle.Driver ) {
+	
+		pVehicle.SetEngineState ( false );
 		
 	}
 	
@@ -226,7 +253,7 @@ function onPlayerSpawn ( pPlayer , iSpawnClass ) {
 	
 		ClearChat ( pPlayer );
 		
-		MessagePlayer ( "You need to be logged in to spawn!" , pPlayer , GetRGBColour ( "BrightRed" ) );
+		MessagePlayer ( GetPlayerLocaleMessage ( pPlayer , "NeedAuthForSpawn" ) , pPlayer , GetRGBColour ( "BrightRed" ) );
 		
 		pPlayer.ForceToSpawnScreen ( );
 		
@@ -248,15 +275,25 @@ function onPlayerSpawn ( pPlayer , iSpawnClass ) {
 	if ( pPlayerData.bNewlyRegistered ) {
 	
 		ClearChat ( pPlayer );
+		
+		local pMessages = GetPlayerLocaleMultiMessage ( pPlayer , "NewPlayerReadyToPlay" );
+		
+		local pMessageColours = [ 
 			
-		MessagePlayer ( "Your flight has just landed in Liberty City." , pPlayer , GetRGBColour ( "White" ) );
-		MessagePlayer ( "You have some cash to get started." , pPlayer , GetRGBColour ( "White" ) );
+			GetRGBColour ( "White" ) ,
+			GetRGBColour ( "White" ) ,
+			GetRGBColour ( "Yellow" ) , 
+			GetRGBColour ( "LightGrey" ) , 
+			GetRGBColour ( "LightGrey" )
+			
+		];
 		
-		MessagePlayer ( "Be sure to read the /rules and use /help for info." , pPlayer , GetRGBColour ( "Yellow" ) );
+		foreach ( ii , iv in pMessages ) {
+
+			MessagePlayer ( iv , pMessageColours [ ii ] );
 		
-		MessagePlayer ( "To get started, get in a rental Blista or take the train." , pPlayer , GetRGBColour ( "LightGrey" ) );
-		MessagePlayer ( "The Shoreside Terminal train station is down the road to the south." , pPlayer , GetRGBColour ( "LightGrey" ) );
-	
+		}
+		
 	}
 	
 	return 1;
@@ -281,7 +318,7 @@ function onPlayerCommand ( pPlayer , szCommand , szParams ) {
 		
 		if ( !pPlayerData.bAuthenticated ) {
 		
-			SendPlayerErrorMessage ( pPlayer , "You need to be logged in to use commands!" );
+			SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NeedAuthForCommand" ) );
 		
 			print ( "- Player '" + pPlayer.Name + "' (ID " + pPlayer.ID + ") failed to use command. Reason: Not authenticated - String: /" + szCommand + " " + szParams );
 			
@@ -291,7 +328,7 @@ function onPlayerCommand ( pPlayer , szCommand , szParams ) {
 		
 		if( !pPlayerData.bCanUseCommands ) {
 		
-			SendPlayerErrorMessage ( pPlayer , "You can't use commands right now!" );
+			SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "CantUseCommands" ) );
 		
 			print ( "- Player '" + pPlayer.Name + "' (ID " + pPlayer.ID + ") failed to use command. Reason: bCanUseCommands is false - String: /" + szCommand + " " + szParams );
 			
@@ -307,7 +344,7 @@ function onPlayerCommand ( pPlayer , szCommand , szParams ) {
 			
 			if ( !HasBitFlag ( pPlayerData.iStaffFlags , GetCoreTable ( ).Commands.rawget ( szCommand.tolower ( ) ).iStaffFlags ) ) {
 			
-				SendPlayerErrorMessage ( pPlayer , "You don't have permission to use this command!" );
+				SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "NoCommandPermission" ) );
 				
 				print ( "- Player '" + pPlayer.Name + "' (ID " + pPlayer.ID + ") failed to use command. Reason: Does not have required staff flags - String: /" + szCommand + " " + szParams );
 				
@@ -319,7 +356,7 @@ function onPlayerCommand ( pPlayer , szCommand , szParams ) {
 	
 		if ( !GetCoreTable ( ).Commands.rawget ( szCommand.tolower ( ) ).bEnabled ) {
 		
-			SendPlayerErrorMessage ( pPlayer , "The " + szCommand + " command is disabled. Reason: " + szCommand.tolower ( ).szDisableReason );
+			SendPlayerErrorMessage ( pPlayer , format ( GetPlayerLocaleMessage ( pPlayer , "CommandDisabled" ) , szCommand , szCommand.tolower ( ).szDisableReason ) );
 			
 			print ( "- Player '" + pPlayer.Name + "' (ID " + pPlayer.ID + ") failed to use command. Reason: Command is disabled - String: /" + szCommand + " " + szParams );
 			
@@ -370,7 +407,9 @@ function onPlayerChat ( pPlayer , szText ) {
 	}
 	
 	Message ( GetCoreTable ( ).Colours.ByType.ChatPlayerHeader + "(All) " + GetCoreTable ( ).Colours.ByType.ChatPlayerName + pPlayer.Name + ": " + GetCoreTable ( ).Colours.ByType.ChatMessage + szText , GetCoreTable ( ).Colours.RGB.White );
-
+	
+	CallFunc ( "Scripts/LiLC.IRC/Server.nut" , "EchoPlayerChat" , pPlayer , szText );
+	
 	return 0;
 	
 }
@@ -383,13 +422,27 @@ function onPlayerAction ( pPlayer , szText ) {
 	
 	if ( pPlayerData.bMuted ) {
 	
-		SendPlayerErrorMessage ( pPlayer , "You are muted, and cannot use an action!" );
+		SendPlayerErrorMessage ( pPlayer , GetPlayerLocaleMessage ( pPlayer , "CantUseMeAction" ) );
 		
 		return 0;
 	
 	}
 
 	return 1;
+	
+}
+
+// -------------------------------------------------------------------------------------------------
+
+function onVehicleRespawn ( pVehicle ) {
+
+	local pVehicleData = GetVehicleData ( pVehicle );
+	
+	pVehicle.RGBColour1 = Colour ( pVehicleData.pColour1.r , pVehicleData.pColour1.g , pVehicleData.pColour1.b );
+	pVehicle.RGBColour2 = Colour ( pVehicleData.pColour2.r , pVehicleData.pColour2.g , pVehicleData.pColour2.b );
+	
+	pVehicle.bLocked = true;
+	pVehicle.SetEngineState ( false );
 	
 }
 

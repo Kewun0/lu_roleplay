@@ -203,6 +203,34 @@ return {
 	IPLoginOFF = "Je wordt niet ingelogd met je IP." , 
 	LUIDLoginON = "Je wordt nu ingelogd met je LUID." , 
 	LUIDLoginOFF = "Je wordt niet ingelogd met je LUID." , 
+	
+	// -- Added on Feb 27 2017
+	ScriptIdeaSent = "Thank you! Your idea has been sent to the scripters!" ,
+	ScriptBugSent = "Thank you! Your bug has been sent to the scripters!" ,
+	PositionLogged = "Your position has been logged!" ,
+	CantUseMeAction = "You are muted, and cannot use /me actions!" ,
+	CommandDisabled = "The %s command is disabled. Reason: %s" , 
+	CantUseCommands = "You can't use commands right now!" , 
+	NeedAuthForCommand = "You need to be logged in to use commands!" , 
+	NeedAuthForSpawn = "You need to be logged in to spawn!" , 
+	
+	VehicleForSale = "This vehicle is for sale. Cost $%d" ,
+	BuyVehToUse = "Use /buyvehicle to buy it now. Otherwise, please exit the vehicle." , 
+	VehicleForRent = "This vehicle is for rent. Cost $%d" ,
+	RentVehToUse = "Use /rentvehicle to drive it now. Otherwise, please exit the vehicle." , 
+	YouAreVehRenter = "You are renting this %s" , 
+	YouAreVehOwner = "You are the owner of this %s" , 
+	
+	
+	NewPlayerReadyToPlay = [ 
+	
+		"Your flight has just landed in Liberty City.",
+		"You have some cash to get started.",
+		"Be sure to read the /rules and use /help for info.",
+		"To get started, get in a rental Blista or take the train.",
+		"The Shoreside Terminal train station is down the road to the south."	
+	
+	] , 	
 
 	LastItem = false 
 			

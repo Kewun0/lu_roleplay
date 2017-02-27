@@ -50,10 +50,18 @@ function CreateHousePickups ( ) {
 
 // -------------------------------------------------------------------------------------------------
 
+function SaveAllHousesToDatabase ( ) {
+
+	
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
 
 function GetNumberOfHouses ( ) {
 
-	return ReadIniInteger ( "Scripts/United Islands RPG/Data/Index.ini" , "General" , "iHouseAmount" );
+	return ReadIniInteger ( szScriptsPath + "Data/Index.ini" , "General" , "iHouseAmount" );
 
 }
 
