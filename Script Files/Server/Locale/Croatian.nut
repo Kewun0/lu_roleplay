@@ -1,238 +1,210 @@
 return {
 
-	WelcomeToServer = "Welcome to Life in Liberty City RP." ,
-	ServerUnderDevelopment = "This server is under development, and may restart often" , 
-	PleaseWaitAccountLoading = "Please wait while your account is loaded ..." , 
+	WelcomeToServer = "Dobrodosli u Life in Liberty City RP.",
+	ServerUnderDevelopment = "Ovaj server je jos u izradi i moze biti cesto ponovno pokrenut." , 
+	PleaseWaitAccountLoading = "Molimo pricekajte dok se vas racun ucita ..." , 
 	
-	AlreadyRegistered = "You are already registered! Use /login to access this account." ,
-	AccountCreated = "Your account has been created! Please wait a moment ..." ,
-	AlreadyLoggedIn = "You are already logged in!" ,
-	AccountReadyToUse = "Your account is now ready to use. Please press left CTRL to spawn." ,
+	AlreadyRegistered = "Vec ste registrirani! Koristite /login da bi dobili dozvolu za ovaj racun."
+	AccountCreated = "Vas racun je upravo izraden! Molimo pricekajte ..."
+	AlreadyLoggedIn = "Vec ste dobili dozvolu za ovaj racun!"
+	AccountReadyToUse = "Vas je racun sada spreman za koristenje. Molimo pritisnite lijevi CTRL za stvoriti se."
 	
-	ErrorMessageHeader = "ERROR" ,
-	SyntaxMessageHeader = "USAGE" ,
-	SuccessMessageHeader = "SUCCESS" ,
-	AlertMessageHeader = "ALERT" ,
+	ErrorMessageHeader = "GRESKA" ,
+	SyntaxMessageHeader = "UPOTREBA" ,
+	SuccessMessageHeader = "USPJEH" ,
+	AlertMessageHeader = "OPREZ" ,
 	AdminAnnounceHeader = "ADMIN" , 
 	
-	CommandInfoHeader = "USAGE" , 
-	CommandAliasesHeader = "ALIAS" ,
-	CommandExtraInfoHeader = "EXTRA" ,
+	CommandInfoHeader = "UPOTREBA" , 
+	CommandAliasesHeader = "PSEUDONIM" ,
+	CommandExtraInfoHeader = "EKSTRA" ,
 	
 	RandomHints = [
 
-		"You can check your stats at any time with /stats" , 
-		"Collect hidden packages for extra cash!" , 
-		"Liberty City is a high-crime place. Buy a gun and protect yourself!" , 
-		"Fun fact ... The police cause more crime than the criminals!" , 
-		"Don't forget to exit the game when you're done playing!" , 
-		"Remember, life has no /q command ... Don't bring the game to the real world :)" , 
-		"What happens in this server, stays on YouTube"		 
+		"Mozete provjeriti svoje statistike bilo kada koristeci /stats" , 
+		"Sakupljajte skrivene paketice za ekstra novac!" , 
+		"Liberty City je podrucje visokog kriminaliteta. Kupite pistolj i zastitite se!" , 
+		"Zanimljiva cinjenica ... Policija izaziva vise kriminala od kriminalaca!" , 
+		"Ne zaboravite iskljuciti igru kada zavrsite sa igrom!" , 
+		"Zapamtite, zivot nema /q komandu ... Nemoj unositi igru u stvarni svijet :)" , 
+		"Sve sto se dogodi na ovom serveru ostaje na youtube-u"		 
 	
 	] , 
 	
 	JobHelpUnemployed = [
 	
-		"== Job Help =================================" , 
-		"- Jobs are a good way to make money." , 
-		"- Jobs are yellow blips on the map, and have the info spinning icons" , 
-		"- Visit any job site, and use /takejob to get a job."
+		"== Pomoc za posao =================================" , 
+		"- Poslovi su dobar nacin za zaraditi novac." , 
+		"- Posjetite bilo koji posao i koristite /takejob za dobiti posao."
 	
 	] , 
 	
 	VehicleHelp = [
 	
-		"== Vehicle Help =============================" , 
-		"- Visit the dealership in Portland to buy vehicles." , 
-		"- Use /lock to unlock your car." , 
-		"- The /lights command can turn on and off your headlights." , 
-		"- To turn an engine on or off, use /engine" , 
+		"== Pomoc za vozila =============================" , 
+		"- Posjetite trgovinu u Portland-u za kupnju vozila." , 
+		"- Koristite /lock za zakljucati auto." , 
+		"- /lights komanda pali i gasi vasa prednja svjetla na vozilu." , 
+		"- Za pokretanje ili iskljucivanje motora koristite /engine" , 
+		"- Za prodaju vaseg vozila drugom igracu koristite /sellcar"
 	
 	] , 
 	
 	AccountHelp = [ 
 	
-		"== Account Help =============================" , 
-		"- Do not share your password with anybody else." , 
-		"- The server staff will never ask for your password." , 
-		"- Use /iplogin or /luidlogin to automatically log you in with your IP or LUID" , 
-		"- Use /changepass to change your password."		
+		"== Pomoc za racun =============================" , 
+		"- Ne dijelite svoju lozinku sa drugim igracima." , 
+		"- Vodeci ljudi servera te nikad nece traziti lozinku." , 
+		"- Koristite /iplogin ili /luidlogin za automatski pristup vasem racunu." , 
+		"- Koristite /changepass za promjenu vase lozinke."		
 	
 	] , 
 	
-	NoCommandPermission = "You do not have permission to use this command!" ,
-	UnknownCommand = "Unknown command!" ,
-	MustBeNumber = "The %s must be a number!" , 
-	MustBeBetween = "The %s must be between %d and %d characters" ,
-	MustHaveCaps = "The %s must have at least 1 uppercase letter." , 
-	MustHaveNumber = "The %s must have at least 1 number." , 
-	MustHaveSymbol = "The %s must have at least 1 special symbol." , 
-	CommandSpamWait = "You must wait %d seconds before using another command." ,
-	CommandSpamAlert = "You have been blocked from using commands for %d seconds." ,
-	CommandSpamWarn = "Please do not spam commands!" , 
-	YouAreMuted = "You are muted, and cannot speak or use commands!" , 
+	NoCommandPermission = "Nemate dozvolu za koristiti ovu komandu!" ,
+	UnknownCommand = "Nepoznata komanda!" ,
+	MustBeNumber = "%s mora biti broj!" , 
+	MustBeBetween = "%s mora biti izmedu %d i %d" ,
+	MustHaveCaps = "%s mora imati barem jedno slovo veliko." , 
+	MustHaveNumber = "%s mora imati barem jedan broj." , 
+	MustHaveSymbol = "%s mora imati barem jedan specijalni simbol." , 
+	CommandSpamWait = "Morate pricekati %d sekundi za koristenje jos jedne komande." ,
+	CommandSpamAlert = "Blokirani ste od koristenja komandi na %d sekundi." ,
+	CommandSpamWarn = "Molimo nemojte spamati komande!" , 
+	YouAreMuted = "Priguseni ste i nemozete vise govoriti ili koristiti komande!" , 
 	
 	PartReasons = [
 	
-		"Left" ,
-		"Crashed" , 
-		"Timed Out" , 
-		"Kicked" , 
-		"Banned"
+		"Otisao" ,
+		"Srusio se" , 
+		"Tajm-aut" , 
+		"Izbacen" , 
+		"Zabrana"
 	] ,
 	
 	CardinalDirections = [
 	
-		"North" , 
-		"Northeast" , 
-		"East" , 
-		"Southeast" , 
-		"South" , 
-		"Southwest" , 
-		"West" , 
-		"Northwest" , 
-		"Unknown"
+		"Sjever" , 
+		"Sjever-istok" , 
+		"Istok" , 
+		"Jug-istok" , 
+		"Jug" , 
+		"Jug-zapad" , 
+		"Zapad" , 
+		"Sjever-zapad" , 
+		"Nepoznato"
 	
 	] , 
 	
 	Weekdays = [
 	
-		"Sunday" , 
-		"Monday" , 
-		"Tuesday" , 
-		"Wednesday" , 
-		"Thursday" , 
-		"Friday" , 
-		"Saturday"
+		"Nedjelja" , 
+		"Ponedjeljak" , 
+		"Utorak" , 
+		"Srijeda" , 
+		"Cetvrtak" , 
+		"Petak" , 
+		"Subota"
 	
 	] , 
 	
 	Months = [
 
-		"January" , 
-		"February" , 
-		"March" , 
-		"April" , 
-		"May" , 
-		"June" , 
-		"July" , 
-		"August" , 
-		"September" , 
-		"October" , 
-		"November" , 
-		"December"
+		"Sijecanj" , 
+		"Veljaca" , 
+		"Ozujak" , 
+		"Travanj" , 
+		"Svibanj" , 
+		"Lipanj" , 
+		"Srpanj" , 
+		"Kolovoz" , 
+		"Rujan" , 
+		"Listopad" , 
+		"Studeni" , 
+		"Prosinac"
 	
 	] , 
 	
 	
 	
-	VehicleIsLocked = "This vehicle is locked!" , 
+	VehicleIsLocked = "Ova vrata na vozilu su zatvorena!" , 
 	
-	VehicleLocked = "The %s's doors have been locked" , 
-	VehicleUnlocked = "The %s's doors have been unlocked" , 
-	VehicleLightsOn = "The %s's lights have been turned on" , 
-	VehicleLightsOff = "The %s's lights have been turned off" , 
-	VehicleSirenLightOn = "The %s's siren light has been turned on" , 
-	VehicleSirenLightOff = "The %s's siren light has been turned off" ,		 
-	VehicleTaxiLightOn = "The %s's taxi light has been turned on" , 
-	VehicleTaxiLightOff = "The %s's taxi light has been turned off" , 
-	VehicleSirenOn = "The %s's siren has been turned on" , 
-	VehicleSirenOff = "The %s's siren has been turned off" , 
-	VehicleEngineOn = "The %s's engine has been turned on" , 
-	VehicleEngineOff = "The %s's engine has been turned off" ,
+	VehicleLocked = "Vrata od %s su sada zakljucana" , 
+	VehicleUnlocked = "Vrata od %s su sada otkljucana" , 
+	VehicleLightsOn = "Svjetla od %s su sada upaljena" , 
+	VehicleLightsOff = "Svjetla od %s su sada iskljucena" , 
+	VehicleSirenLightOn = "Svejtlo sirene od %s je sada ukljuceno" , 
+	VehicleSirenLightOff = "Svjetlo sirene od %s je sada iskljuceno" ,		 
+	VehicleTaxiLightOn = "Taxi svjetlo od %s je sada ukljuceno" , 
+	VehicleTaxiLightOff = "Taxi svjetlo od %s je sada iskljuceno" , 
+	VehicleSirenOn = "Sirena od %s je sada ukljucena" , 
+	VehicleSirenOff = "Sirena od %s je sada iskljucena" , 
+	VehicleEngineOn = "Motor od %s je sada ukljucen" , 
+	VehicleEngineOff = "Motor od %s je sada iskljucen" ,
 
-	NotAtPoliceStation = "You are not at a police station!" , 
-	NotAtHospital =  "You are not at a hospital!" , 
-	NotAtFireStation = "You are not at a fire station!" , 
-	NotAtCarDealer = "You are not at a car dealership!" , 
-	NotAtAnyBusiness = "You are not at any business!" , 
+	NotAtPoliceStation = "Niste kod policijske postaje!" , 
+	NotAtHospital =  "Niste kod bolnice!" , 
+	NotAtFireStation = "Niste kod vatrogasne postaje!" , 
+	NotAtCarDealer = "Niste kod trgovine vozila!" , 
+	NotAtAnyBusiness = "Niste u nikakvom poslu!" , 
 	
-	PlayerNotFound = "That player could not be found!" , 
-	VehicleNotFound = "That vehicle does not exist!" , 
-	HouseNotFound = "That house does not exist!" , 
-	BusinessNotFound = "That business does not exist!" , 
+	PlayerNotFound = "Taj igrac nije pronaden!" , 
+	VehicleNotFound = "To vozilo nije pronadeno!" , 
+	HouseNotFound = "Ta kuca nije pronadena!" , 
+	BusinessNotFound = "Taj posao nije pronaden!" , 
 	
-	LoginFailed = "You entered an invalid password. You have %d login attempts remaining." , 
-	LoginFailedKick = "You entered an invalid password too many times!" , 
-	LoginAttemptsRemaining = "You have %d login attempts remaining." , 
+	LoginFailed = "Unijeli ste pogresnu lozinku. Imate jos %d pokusaja." , 
+	LoginFailedKick = "Unijeli ste pogresnu lozinku previse puta!" , 
+	LoginAttemptsRemaining = "Imate jos %d pokusaja." , 
 	
-	AllVehiclesExploded = "All vehicles exploded by %s",
-	AllVehiclesRespawned = "All vehicles exploded by %s",
-	AllVehiclesLocked = "All vehicles locked by %s",
-	AllVehiclesUnlocked = "All vehicles unlocked by %s",
+	AllVehiclesExploded = "Sva vozila su eksplodirana od strane %s",
+	AllVehiclesRespawned = "Sva vozila su ponovno stvorena od strane %s",
+	AllVehiclesLocked = "Sva vozila su zakljucana od strane %s",
+	AllVehiclesUnlocked = "Sva vozila su otkljucana od strane %s",
 	
-	TakeJobSuccessful = "You now have the %s job! Use /Help Job for info.",
+	TakeJobSuccessful = "Sada imas posao %s! Koristite /Help Posao za informacije.",
 	
-	LoggedInByIP = "Welcome back, %s. You have been automatically logged in with your IP!",
-	LoggedInByLUID = "Welcome back, %s. You have been automatically logged in with your LUID!",
+	LoggedInByIP = "Dobrodosli natrag, %s. Automatski ste logirani koristeci IP!",
+	LoggedInByLUID = "Dobrodosli natrag, %s. Automatski ste logirani koristeci LUID!",
 	
-	CommandUsageDescShout = "Shouts to nearby players" , 
-	CommandUsageDescTalk = "Talks to nearby players." , 
-	CommandUsageDescLogin = "Allows you to login to your account" , 
-	CommandUsageDescChangePass = "Allows you to change your password" , 
-	CommandUsageDescRegister = "Allows you to create an account" , 
-	CommandUsageDescIPLogin = "Toggles ON/OFF automatic login by IP." , 
-	CommandUsageDescLUIDLogin = "Toggles ON/OFF automatic login by LUID." , 
-	CommandUsageDescPM = "Sends a private message to another player" , 
-	CommandUsageDescBug = "Reports a bug to the scripters" , 
-	CommandUsageDescIdea = "Submits an idea to the scripters" , 
-	CommandUsageDescBan = "Bans a player from the server" , 
-	CommandUsageDescTempBan = "Temporarily bans a player from the server" , 
-	CommandUsageDescKick = "Kicks a player from the server" , 
-	CommandUsageDescMute = "Mutes a player. Keeps them from using any chat." , 
-	CommandUsageDescUnmute = "Unmutes a player so they can use chat again." , 
-	CommandUsageDescFreeze = "Freezes a player so they can't move." , 
-	CommandUsageDescUnfreeze = "Unfreezes a player so they can move again." , 
-	CommandUsageDescGoto = "Teleports you to a player" , 
-	CommandUsageDescGotoVeh = "Teleports you to a vehicle." , 
-	CommandUsageDescGiveStaffFlag = "Gives a staff flag to a player" , 
-	CommandUsageDescTakeStaffFlag = "Takes a staff flag from a player" , 
-	CommandUsageDescStaffFlags = "Shows a list of all staff flags." , 
-	CommandUsageDescReport = "Reports a player or message to admins" , 
-	CommandUsageDescReports = "Shows all unhandled staff reports" , 
-	CommandUsageDescAR = "Accepts a report submitted by a player" , 
-	CommandUsageDescDR = "Denies a report submitted by a player" , 
-	CommandUsageDescForumReport = "Sets a report as needing to be put on forum" , 
-	CommandUsageDescResetReport = "Resets a handled staff report to handle it again" , 
+	CommandUsageDescShout = "Dovikuje na igrace u blizini" , 
+	CommandUsageDescTalk = "Salje poruku igracima u blizini." , 
+	CommandUsageDescLogin = "Logira vas u racun" , 
+	CommandUsageDescChangePass = "Mijenja vasu lozinku" , 
+	CommandUsageDescRegister = "Kreira vas racun" , 
+	CommandUsageDescIPLogin = "Mijenja status automatskog logiranja putem IP-a." , 
+	CommandUsageDescLUIDLogin = "Mijenja status automatskog logiranja putem LUID-a." , 
+	CommandUsageDescPM = "Salje privatnu poruku nekom igracu" , 
+	CommandUsageDescBug = "Prijavljuje kvar skripterima" , 
+	CommandUsageDescIdea = "Salje ideju skripterima" , 
+	CommandUsageDescBan = "Zabranjuje pristup igracu na server" , 
+	CommandUsageDescTempBan = "Zabranjuje pristup igracu na server na neko vrijeme" , 
+	CommandUsageDescKick = "Izbacuje igraca sa servera" , 
+	CommandUsageDescMute = "Utisava igraca. Makne im mogucnost chat-a." , 
+	CommandUsageDescUnmute = "Od-utisava igraca da moze ponovno koristiti chat." , 
+	CommandUsageDescFreeze = "Smrzne igraca da se ne mogu micati." , 
+	CommandUsageDescUnfreeze = "Odmrzne igraca da se mogu micati." , 
+	CommandUsageDescGoto = "Salje te na mjesto nekog drugog igraca." , 
+	CommandUsageDescGotoVeh = "Salje te na mjesto nekog drugog vozila." , 
+	CommandUsageDescGiveStaffFlag = "Daje oznaku vodeceg covjeka" , 
+	CommandUsageDescTakeStaffFlag = "Makne oznaku vodeceg covjeka" , 
+	CommandUsageDescStaffFlags = "Prikazuje listu svih oznaka vodecih ljudi." , 
+	CommandUsageDescReport = "Prijavljuje igraca ili poruku vodecim ljudima" , 
+	CommandUsageDescReports = "Prikazuje sve ne provjerene prijave vodecim ljudima" , 
+	CommandUsageDescAR = "Potvrduje prijavu poslanu od igraca" , 
+	CommandUsageDescDR = "Odbacuje prijavu poslanu od igraca" , 
+	CommandUsageDescForumReport = "Postavlja prijavu kao potrebnu za staviti na forum" , 
+	CommandUsageDescResetReport = "Resetira provjerenu prijavu vodecim ljudima za ponovnu provjeru" , 
 	
-	CommandExtraDescIPLogin = "Only uses your last IP to automatically login" , 
-	CommandExtraDescLUIDLogin = "Only uses your last LUID to automatically login" , 
-	CommandExtraDescMute = "This also blocks chat-related commands (ME, DO, etc)" , 
-	CommandExtraDescGoto = "You can provide offset X, Y, and Z." , 
-	CommandExtraDescFreeze = "They can still look around with their mouse." , 
+	CommandExtraDescIPLogin = "Koristi samo vas zadnji IP za automatski pristup racunu" , 
+	CommandExtraDescLUIDLogin = "Koristi samo vas zadnji LUID za automatski pristup racunu" , 
+	CommandExtraDescMute = "Takoder blokira komande koje imaju veze sa chat-om (ME, DO, itd)" , 
+	CommandExtraDescGoto = "Mozete izjednaciti X, Y i Z koordinate." , 
+	CommandExtraDescFreeze = "Mogu i dalje gledati uokolo sa svojim misevima." , 
 	
-	IPLoginON = "You will now be logged in by your IP." , 
-	IPLoginOFF = "You will not be logged in by your IP." , 
-	LUIDLoginON = "You will now be logged in by your LUID." , 
-	LUIDLoginOFF = "You will not be logged in by your LUID." , 
-	
-	// Added on Feb 27 2017
-	ScriptIdeaSent = "Thank you! Your idea has been sent to the scripters!" ,
-	ScriptBugSent = "Thank you! Your bug has been sent to the scripters!" ,
-	PositionLogged = "Your position has been logged!" ,
-	CantUseMeAction = "You are muted, and cannot use /me actions!" ,
-	CommandDisabled = "The %s command is disabled. Reason: %s" , 
-	CantUseCommands = "You can't use commands right now!" , 
-	NeedAuthForCommand = "You need to be logged in to use commands!" , 
-	NeedAuthForSpawn = "You need to be logged in to spawn!" , 
-	
-	VehicleForSale = "This vehicle is for sale. Cost $%d" ,
-	BuyVehToUse = "Use /buyvehicle to buy it now. Otherwise, please exit the vehicle." , 
-	VehicleForRent = "This vehicle is for rent. Cost $%d" ,
-	RentVehToUse = "Use /rentvehicle to drive it now. Otherwise, please exit the vehicle." , 
-	YouAreVehRenter = "You are renting this %s" , 
-	YouAreVehOwner = "You are the owner of this %s" , 
-	
-	
-	NewPlayerReadyToPlay = [ 
-	
-		"Your flight has just landed in Liberty City.",
-		"You have some cash to get started.",
-		"Be sure to read the /rules and use /help for info.",
-		"To get started, get in a rental Blista or take the train.",
-		"The Shoreside Terminal train station is down the road to the south."	
-	
-	] , 
+	IPLoginON = "Od sada cete biti logirani koristeci IP." , 
+	IPLoginOFF = "Od sada necete vise biti logirani koristeci IP." , 
+	LUIDLoginON = "Od sada cete biti logirani koristeci LUID." , 
+	LUIDLoginOFF = "Od sada necete vise biti logirani koristeci LUID." , 
 	
 	LastItem = false 
 	
